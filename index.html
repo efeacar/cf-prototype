@@ -1,0 +1,1825 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Childfree Türkiye — Prototip</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,500;1,400&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+/* ═══════════════════════════════════
+   TEMA DEĞİŞKENLERİ
+═══════════════════════════════════ */
+:root {
+  --app-dark:    #2C1A0E;
+  --app-mid:     #7A5C42;
+  --app-accent:  #C1491E;
+  --app-accent2: #A33C18;
+  --app-bg:      #F5EFE8;
+  --app-surface: #EDE4D8;
+  --app-light:   #FAF7F3;
+  --app-border:  rgba(44,26,14,0.13);
+  --app-teal:    #EBF3F0;
+  --app-teal-dk: #1A4A3A;
+  --app-text:    #2C1A0E;
+  --app-text2:   #7A5C42;
+  --app-gold:    #E8C84A;
+}
+
+[data-dark="true"] {
+  --app-bg:      #1A1108;
+  --app-surface: #261809;
+  --app-light:   #201509;
+  --app-border:  rgba(245,239,232,0.1);
+  --app-teal:    #0E2420;
+  --app-teal-dk: #7ECFB8;
+  --app-text:    #F0E8DC;
+  --app-text2:   #A08060;
+  --app-mid:     #A08060;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+/* ═══════════════════════════════════
+   DESKTOP LAYOUT
+═══════════════════════════════════ */
+body {
+  font-family: 'DM Sans', system-ui, sans-serif;
+  background: #1C1108;
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 32px;
+  padding: 24px;
+}
+
+body::before {
+  content: '';
+  position: fixed; inset: 0;
+  background:
+    radial-gradient(ellipse at 20% 30%, rgba(193,73,30,0.12) 0%, transparent 55%),
+    radial-gradient(ellipse at 80% 70%, rgba(122,92,66,0.1) 0%, transparent 55%);
+  pointer-events: none;
+}
+
+/* ═══════════════════════════════════
+   SOL PANEL
+═══════════════════════════════════ */
+.side-panel {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  width: 180px;
+  flex-shrink: 0;
+  position: relative;
+  z-index: 1;
+}
+
+.panel-logo {
+  text-align: center;
+  padding: 16px 12px;
+  background: rgba(245,239,232,0.04);
+  border-radius: 14px;
+  border: 0.5px solid rgba(245,239,232,0.08);
+}
+
+.panel-logo-icon {
+  width: 40px; height: 40px;
+  background: var(--app-dark);
+  border-radius: 12px;
+  display: flex; align-items: center; justify-content: center;
+  margin: 0 auto 8px;
+}
+
+.panel-logo-name {
+  font-family: 'Playfair Display', serif;
+  font-size: 13px;
+  color: #F0E8DC;
+  font-style: italic;
+}
+
+.panel-logo-sub {
+  font-size: 10px;
+  color: rgba(240,232,220,0.4);
+  margin-top: 3px;
+}
+
+.panel-section {
+  background: rgba(245,239,232,0.04);
+  border-radius: 14px;
+  border: 0.5px solid rgba(245,239,232,0.08);
+  padding: 14px 12px;
+}
+
+.panel-label {
+  font-size: 9px;
+  font-weight: 500;
+  color: rgba(240,232,220,0.4);
+  text-transform: uppercase;
+  letter-spacing: .6px;
+  margin-bottom: 10px;
+}
+
+.mode-toggle {
+  display: flex;
+  background: rgba(0,0,0,0.3);
+  border-radius: 8px;
+  overflow: hidden;
+  border: 0.5px solid rgba(245,239,232,0.1);
+}
+
+.mode-btn {
+  flex: 1;
+  padding: 7px 4px;
+  text-align: center;
+  font-size: 11px;
+  cursor: pointer;
+  color: rgba(240,232,220,0.45);
+  background: transparent;
+  border: none;
+  font-family: 'DM Sans', sans-serif;
+  transition: all .2s;
+}
+
+.mode-btn.on {
+  background: #2C1A0E;
+  color: #F0E8DC;
+}
+
+.mode-badge {
+  margin-top: 8px;
+  text-align: center;
+  font-size: 10px;
+  padding: 4px 8px;
+  border-radius: 8px;
+  background: rgba(245,239,232,0.07);
+  color: rgba(240,232,220,0.5);
+}
+
+.mode-badge.premium {
+  background: rgba(232,200,74,0.15);
+  color: #E8C84A;
+}
+
+.panel-info {
+  font-size: 10px;
+  color: rgba(240,232,220,0.3);
+  line-height: 1.5;
+  text-align: center;
+  padding: 10px 4px;
+}
+
+/* ═══════════════════════════════════
+   TELEFON FRAME
+═══════════════════════════════════ */
+.phone-wrap {
+  position: relative;
+  z-index: 1;
+  flex-shrink: 0;
+}
+
+.phone-frame {
+  width: 320px;
+  background: var(--app-light);
+  border-radius: 44px;
+  border: 3px solid #3A2510;
+  box-shadow:
+    0 0 0 1px #1a0d04,
+    0 24px 80px rgba(0,0,0,0.6),
+    inset 0 1px 0 rgba(255,255,255,0.05);
+  overflow: hidden;
+  transition: background 0.3s;
+}
+
+.phone-notch {
+  background: #1A0D04;
+  padding: 10px 20px 8px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.notch-time {
+  font-size: 12px;
+  color: rgba(240,232,220,0.8);
+  font-weight: 500;
+}
+
+.notch-icons {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 11px;
+  color: rgba(240,232,220,0.6);
+}
+
+.phone-screen {
+  height: 580px;
+  overflow: hidden;
+  position: relative;
+}
+
+/* ═══════════════════════════════════
+   EKRANLAR
+═══════════════════════════════════ */
+.sc {
+  display: none;
+  height: 100%;
+  overflow-y: auto;
+  overflow-x: hidden;
+  flex-direction: column;
+  background: var(--app-bg);
+  transition: background 0.3s;
+}
+
+.sc.show {
+  display: flex;
+  animation: sc-in .22s ease;
+}
+
+@keyframes sc-in {
+  from { opacity: 0; transform: translateY(6px); }
+  to   { opacity: 1; transform: none; }
+}
+
+.sc-inner {
+  flex: 1;
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+
+/* ─── SHARED ─── */
+.app-header {
+  background: var(--app-dark);
+  padding: 12px 16px 10px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-shrink: 0;
+}
+
+.app-logo {
+  font-family: 'Playfair Display', serif;
+  font-size: 14px;
+  color: #F0E8DC;
+  font-style: italic;
+}
+
+.app-bell {
+  width: 20px; height: 20px;
+  color: rgba(240,232,220,0.7);
+  position: relative;
+}
+
+.bell-dot {
+  width: 7px; height: 7px;
+  background: var(--app-accent);
+  border-radius: 50%;
+  position: absolute;
+  top: -2px; right: -2px;
+  border: 1.5px solid var(--app-dark);
+}
+
+.sec-head {
+  font-size: 10px;
+  font-weight: 500;
+  color: var(--app-text2);
+  text-transform: uppercase;
+  letter-spacing: .5px;
+  padding: 13px 16px 5px;
+}
+
+.pg-title {
+  font-family: 'Playfair Display', serif;
+  font-size: 18px;
+  color: var(--app-text);
+  text-align: center;
+  margin-bottom: 2px;
+  padding-top: 14px;
+}
+
+.pg-sub {
+  font-size: 12px;
+  color: var(--app-text2);
+  text-align: center;
+  margin-bottom: 12px;
+}
+
+/* CARDS */
+.card {
+  background: var(--app-light);
+  border-radius: 12px;
+  border: 0.5px solid var(--app-border);
+  margin: 0 14px 8px;
+  padding: 12px 14px;
+  cursor: pointer;
+  transition: transform 0.1s, opacity 0.1s;
+}
+
+.card:active { transform: scale(0.98); opacity: .85; }
+.card-t { font-size: 13px; color: var(--app-text); font-weight: 500; margin-bottom: 2px; }
+.card-s { font-size: 11px; color: var(--app-text2); line-height: 1.4; }
+
+.badge {
+  display: inline-block;
+  font-size: 9px;
+  padding: 2px 8px;
+  border-radius: 10px;
+  margin-top: 5px;
+  background: var(--app-surface);
+  color: var(--app-text2);
+}
+
+.badge.red { background: #FAECE7; color: #993C1D; }
+.badge.teal { background: #C9DDD8; color: #1A4A3A; }
+.badge.gold { background: rgba(232,200,74,0.2); color: #A08020; }
+
+.tcard { background: var(--app-teal) !important; border-color: rgba(29,158,117,0.2) !important; }
+.tcard .card-t { color: var(--app-teal-dk); }
+.tcard .card-s { color: var(--app-teal-dk); opacity: .7; }
+
+/* BOTTOM NAV */
+.bnav {
+  background: var(--app-dark);
+  display: flex;
+  padding: 8px 0 12px;
+  border-top: 0.5px solid rgba(255,255,255,0.06);
+  flex-shrink: 0;
+}
+
+.ni {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 3px;
+  cursor: pointer;
+  opacity: .35;
+  transition: opacity .15s;
+}
+
+.ni.on { opacity: 1; }
+.ni:active { opacity: .7; }
+.ni svg { width: 20px; height: 20px; color: #F0E8DC; }
+.ni span { font-size: 9px; color: #F0E8DC; }
+
+/* BUTTONS */
+.btn-accent {
+  width: 100%;
+  padding: 13px;
+  background: var(--app-accent);
+  color: #fff;
+  border: none;
+  border-radius: 10px;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background .15s, transform .1s;
+}
+
+.btn-accent:hover  { background: var(--app-accent2); }
+.btn-accent:active { transform: scale(0.98); }
+
+.btn-dark {
+  width: 100%;
+  padding: 13px;
+  background: var(--app-dark);
+  color: #F0E8DC;
+  border: none;
+  border-radius: 10px;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: opacity .15s, transform .1s;
+}
+
+.btn-dark:active { transform: scale(0.98); }
+
+.btn-outline {
+  width: 100%;
+  padding: 11px;
+  background: transparent;
+  color: var(--app-accent);
+  border: 1px solid var(--app-accent);
+  border-radius: 10px;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 13px;
+  cursor: pointer;
+}
+
+/* INPUTS */
+.inp {
+  width: 100%;
+  padding: 12px 14px;
+  background: var(--app-bg);
+  border: 1px solid var(--app-border);
+  border-radius: 10px;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 14px;
+  color: var(--app-text);
+  outline: none;
+  transition: border-color .2s, box-shadow .2s;
+}
+
+.inp:focus {
+  border-color: var(--app-accent);
+  box-shadow: 0 0 0 3px rgba(193,73,30,0.12);
+}
+
+.inp-label {
+  display: block;
+  font-size: 10px;
+  font-weight: 500;
+  color: var(--app-text2);
+  text-transform: uppercase;
+  letter-spacing: .4px;
+  margin-bottom: 5px;
+}
+
+.field { margin-bottom: 14px; }
+
+/* LOCK BANNER */
+.lock-banner {
+  background: var(--app-dark);
+  border-radius: 12px;
+  margin: 0 14px 10px;
+  padding: 12px 14px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.lock-banner-text {
+  font-size: 12px;
+  color: #F0E8DC;
+  line-height: 1.4;
+  flex: 1;
+}
+
+.lock-banner-btn {
+  background: var(--app-accent);
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  padding: 7px 11px;
+  font-size: 10px;
+  font-family: 'DM Sans', sans-serif;
+  cursor: pointer;
+  flex-shrink: 0;
+  white-space: nowrap;
+}
+
+.full-lock {
+  background: var(--app-dark);
+  border-radius: 12px;
+  margin: 0 14px 10px;
+  padding: 18px 14px;
+  text-align: center;
+}
+
+.fl-icon { font-size: 26px; margin-bottom: 8px; }
+.fl-title { font-size: 14px; color: #F0E8DC; font-weight: 500; margin-bottom: 4px; }
+.fl-sub { font-size: 11px; color: rgba(240,232,220,0.5); line-height: 1.4; margin-bottom: 12px; }
+
+/* BACK HEADER */
+.back-header {
+  background: var(--app-dark);
+  padding: 12px 16px 10px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-shrink: 0;
+}
+
+.back-btn {
+  color: rgba(240,232,220,0.65);
+  font-size: 20px;
+  cursor: pointer;
+  line-height: 1;
+  background: none;
+  border: none;
+  padding: 0;
+  transition: opacity .15s;
+}
+
+.back-btn:active { opacity: .5; }
+.back-title { font-size: 14px; color: #F0E8DC; font-weight: 500; flex: 1; }
+.back-sub { font-size: 10px; color: rgba(240,232,220,0.4); }
+
+/* TOGGLE SWITCH */
+.sw {
+  width: 40px; height: 22px;
+  background: var(--app-surface);
+  border-radius: 11px;
+  position: relative;
+  cursor: pointer;
+  transition: background .25s;
+  flex-shrink: 0;
+  border: 0.5px solid var(--app-border);
+}
+
+.sw.on { background: var(--app-dark); border-color: var(--app-dark); }
+.sw::after {
+  content: '';
+  position: absolute;
+  top: 2px; left: 2px;
+  width: 16px; height: 16px;
+  background: #fff;
+  border-radius: 50%;
+  transition: transform .25s;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.2);
+}
+
+.sw.on::after { transform: translateX(18px); }
+
+/* ═══════════════════════════════════
+   SCREEN: GİRİŞ
+═══════════════════════════════════ */
+#sc-login {
+  justify-content: center;
+  padding: 20px 16px;
+}
+
+.login-logo {
+  text-align: center;
+  margin-bottom: 24px;
+}
+
+.login-icon {
+  width: 52px; height: 52px;
+  background: var(--app-dark);
+  border-radius: 16px;
+  display: flex; align-items: center; justify-content: center;
+  margin: 0 auto 10px;
+}
+
+.login-name {
+  font-family: 'Playfair Display', serif;
+  font-size: 20px;
+  color: var(--app-text);
+  font-style: italic;
+}
+
+.login-sub {
+  font-size: 11px;
+  color: var(--app-text2);
+  margin-top: 3px;
+}
+
+.login-card {
+  background: var(--app-light);
+  border-radius: 16px;
+  border: 0.5px solid var(--app-border);
+  padding: 20px 16px;
+}
+
+.login-card-title { font-size: 16px; color: var(--app-text); font-weight: 500; margin-bottom: 4px; }
+.login-card-sub { font-size: 12px; color: var(--app-text2); margin-bottom: 16px; line-height: 1.4; }
+
+.code-input {
+  background: var(--app-bg);
+  border: 2px dashed var(--app-mid);
+  border-radius: 12px;
+  padding: 16px;
+  text-align: center;
+  font-size: 22px;
+  letter-spacing: 6px;
+  color: var(--app-surface);
+  margin-bottom: 14px;
+  font-weight: 500;
+  cursor: text;
+  transition: border-color .2s;
+}
+
+.code-input:focus { border-color: var(--app-accent); outline: none; color: var(--app-text); }
+
+.divider { border: none; border-top: 0.5px solid var(--app-border); margin: 16px 0; }
+
+.link-text {
+  text-align: center;
+  font-size: 12px;
+  color: var(--app-text2);
+  margin-top: 12px;
+}
+
+.link-text a {
+  color: var(--app-accent);
+  cursor: pointer;
+  text-decoration: none;
+}
+
+/* ═══════════════════════════════════
+   SCREEN: KAYIT
+═══════════════════════════════════ */
+.step-bar {
+  display: flex;
+  gap: 5px;
+  padding: 14px 16px 0;
+}
+
+.step-dot {
+  height: 3px;
+  flex: 1;
+  border-radius: 2px;
+  background: var(--app-surface);
+  transition: background .3s;
+}
+
+.step-dot.done { background: var(--app-accent); }
+
+.reg-body { padding: 16px 16px 20px; }
+
+.tag-cloud {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 7px;
+  margin-bottom: 6px;
+}
+
+.tag-chip {
+  padding: 6px 13px;
+  border: 1px solid var(--app-border);
+  border-radius: 20px;
+  font-size: 12px;
+  color: var(--app-text);
+  background: var(--app-bg);
+  cursor: pointer;
+  transition: all .15s;
+  user-select: none;
+}
+
+.tag-chip.sel {
+  background: var(--app-dark);
+  color: #F0E8DC;
+  border-color: var(--app-dark);
+}
+
+select.inp {
+  appearance: none;
+  cursor: pointer;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath fill='%237A5C42' d='M6 8L0 0h12z'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 14px center;
+}
+
+.two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+
+/* ═══════════════════════════════════
+   SCREEN: ANASAYFA
+═══════════════════════════════════ */
+.ritual-card {
+  background: var(--app-dark);
+  margin: 12px 14px 0;
+  border-radius: 14px;
+  padding: 14px 16px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  cursor: pointer;
+  transition: opacity .15s;
+}
+
+.ritual-card:active { opacity: .85; }
+.ritual-tag { font-size: 9px; color: var(--app-accent); font-weight: 500; text-transform: uppercase; letter-spacing: .5px; }
+.ritual-q { font-size: 13px; color: #F0E8DC; margin-top: 3px; line-height: 1.3; }
+.ritual-count { font-size: 10px; color: rgba(240,232,220,0.4); margin-top: 4px; }
+
+.ritual-btn {
+  background: var(--app-accent);
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  padding: 8px 10px;
+  font-size: 10px;
+  font-family: 'DM Sans', sans-serif;
+  cursor: pointer;
+  flex-shrink: 0;
+  text-align: center;
+  line-height: 1.4;
+}
+
+/* ═══════════════════════════════════
+   SCREEN: BUGÜN
+═══════════════════════════════════ */
+.timer-pill {
+  background: var(--app-accent);
+  color: #fff;
+  font-size: 10px;
+  padding: 4px 9px;
+  border-radius: 10px;
+}
+
+.bq-card {
+  background: var(--app-dark);
+  margin: 12px 14px 0;
+  border-radius: 14px;
+  padding: 16px;
+}
+
+.bq-label { font-size: 9px; color: var(--app-accent); font-weight: 500; text-transform: uppercase; letter-spacing: .5px; margin-bottom: 6px; }
+.bq-text { font-family: 'Playfair Display', serif; font-size: 16px; color: #F0E8DC; line-height: 1.4; font-style: italic; }
+.bq-count { font-size: 10px; color: rgba(240,232,220,0.35); margin-top: 7px; }
+
+.ans-input-row {
+  display: flex;
+  gap: 8px;
+  margin: 12px 14px;
+  align-items: center;
+}
+
+.ans-inp {
+  flex: 1;
+  padding: 10px 13px;
+  background: var(--app-light);
+  border: 0.5px solid var(--app-border);
+  border-radius: 10px;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 13px;
+  color: var(--app-text2);
+  outline: none;
+}
+
+.ans-send {
+  background: var(--app-accent);
+  border: none;
+  border-radius: 10px;
+  padding: 10px 12px;
+  cursor: pointer;
+}
+
+.ans-send svg { width: 16px; height: 16px; color: #fff; }
+
+.ans-item {
+  background: var(--app-light);
+  margin: 0 14px 8px;
+  border-radius: 12px;
+  padding: 12px 14px;
+  border: 0.5px solid var(--app-border);
+}
+
+.ai-meta { font-size: 10px; color: var(--app-text2); margin-bottom: 4px; display: flex; justify-content: space-between; }
+.ai-text { font-size: 13px; color: var(--app-text); line-height: 1.5; }
+.ai-like { font-size: 11px; color: var(--app-text2); margin-top: 6px; display: flex; align-items: center; gap: 4px; cursor: pointer; }
+.ai-like svg { width: 13px; height: 13px; }
+
+/* ═══════════════════════════════════
+   SCREEN: LIBRARY
+═══════════════════════════════════ */
+.tab-bar {
+  display: flex;
+  margin: 0 14px 12px;
+  border-radius: 9px;
+  overflow: hidden;
+  border: 0.5px solid var(--app-border);
+}
+
+.tab-btn {
+  flex: 1;
+  padding: 9px;
+  text-align: center;
+  font-size: 12px;
+  cursor: pointer;
+  background: var(--app-light);
+  color: var(--app-text2);
+  border: none;
+  font-family: 'DM Sans', sans-serif;
+  transition: all .2s;
+}
+
+.tab-btn.on { background: var(--app-dark); color: #F0E8DC; }
+
+.conv-item {
+  background: var(--app-light);
+  border-radius: 10px;
+  border: 0.5px solid var(--app-border);
+  margin: 0 14px 7px;
+  padding: 11px 13px;
+  cursor: pointer;
+  transition: opacity .1s;
+}
+
+.conv-item:active { opacity: .8; }
+.ci-title { font-size: 13px; color: var(--app-text); font-weight: 500; margin-bottom: 3px; }
+.ci-meta { font-size: 10px; color: var(--app-text2); display: flex; justify-content: space-between; align-items: center; }
+.ci-new { background: var(--app-accent); color: #fff; font-size: 9px; padding: 2px 7px; border-radius: 8px; }
+
+.ch-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+  padding: 0 14px;
+}
+
+.ch-tile {
+  background: var(--app-light);
+  border-radius: 12px;
+  border: 0.5px solid var(--app-border);
+  padding: 12px;
+  cursor: pointer;
+  transition: opacity .1s;
+}
+
+.ch-tile:active { opacity: .8; }
+.ct-emoji { font-size: 20px; margin-bottom: 5px; }
+.ct-name { font-size: 12px; color: var(--app-text); font-weight: 500; margin-bottom: 2px; }
+.ct-sub { font-size: 10px; color: var(--app-text2); }
+.ct-count { font-size: 10px; margin-top: 5px; }
+.ct-count.prem { color: var(--app-accent); }
+.ct-count.open { color: var(--app-teal-dk); }
+
+/* ═══════════════════════════════════
+   SCREEN: KANAL
+═══════════════════════════════════ */
+.ch-header {
+  background: var(--app-dark);
+  padding: 12px 16px 10px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-shrink: 0;
+}
+
+.ch-title { font-size: 14px; color: #F0E8DC; font-weight: 500; flex: 1; }
+.ch-save { color: rgba(240,232,220,0.6); font-size: 18px; cursor: pointer; background: none; border: none; }
+
+.ch-body { flex: 1; overflow-y: auto; padding: 12px 14px; background: var(--app-bg); }
+
+.msg {
+  background: var(--app-light);
+  border-radius: 12px;
+  padding: 11px 13px;
+  margin-bottom: 8px;
+  border: 0.5px solid var(--app-border);
+}
+
+.msg-meta { font-size: 10px; color: var(--app-text2); margin-bottom: 4px; }
+.msg-text { font-size: 13px; color: var(--app-text); line-height: 1.5; }
+.msg-like { font-size: 11px; color: var(--app-text2); margin-top: 6px; display: flex; align-items: center; gap: 4px; cursor: pointer; }
+.msg-like svg { width: 13px; height: 13px; }
+
+.ch-input-row {
+  background: var(--app-light);
+  border-top: 0.5px solid var(--app-border);
+  padding: 10px 14px;
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  flex-shrink: 0;
+}
+
+.ch-inp {
+  flex: 1;
+  padding: 9px 13px;
+  background: var(--app-bg);
+  border: 0.5px solid var(--app-border);
+  border-radius: 9px;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 13px;
+  color: var(--app-text2);
+  outline: none;
+}
+
+.ch-send {
+  background: var(--app-accent);
+  border: none;
+  border-radius: 9px;
+  padding: 9px 11px;
+  cursor: pointer;
+}
+
+.ch-send svg { width: 16px; height: 16px; color: #fff; }
+
+/* ═══════════════════════════════════
+   SCREEN: BULUŞMALAR
+═══════════════════════════════════ */
+.meet-card {
+  background: var(--app-light);
+  border-radius: 12px;
+  border: 0.5px solid var(--app-border);
+  margin: 0 14px 8px;
+  padding: 13px 14px;
+  cursor: pointer;
+  transition: opacity .1s;
+}
+
+.meet-card:active { opacity: .8; }
+.mc-date { font-size: 10px; color: var(--app-text2); margin-bottom: 4px; font-weight: 500; }
+.mc-title { font-size: 14px; color: var(--app-text); font-weight: 500; margin-bottom: 3px; }
+.mc-host { font-size: 12px; color: var(--app-text2); }
+.mc-tags { display: flex; gap: 5px; margin-top: 8px; flex-wrap: wrap; }
+.mc-tag { font-size: 10px; padding: 3px 9px; border-radius: 10px; background: var(--app-surface); color: var(--app-text2); }
+
+/* ═══════════════════════════════════
+   SCREEN: BULUŞMA DETAY
+═══════════════════════════════════ */
+.md-hero {
+  background: var(--app-dark);
+  padding: 14px 16px;
+  flex-shrink: 0;
+}
+
+.md-badge { font-size: 9px; color: var(--app-accent); font-weight: 500; text-transform: uppercase; letter-spacing: .5px; margin-bottom: 5px; }
+.md-title { font-family: 'Playfair Display', serif; font-size: 20px; color: #F0E8DC; margin-bottom: 3px; }
+.md-host { font-size: 12px; color: rgba(240,232,220,0.5); }
+
+.md-body { padding: 14px 16px; }
+.md-row { display: flex; gap: 10px; margin-bottom: 9px; font-size: 13px; color: var(--app-text); align-items: flex-start; }
+.md-row svg { width: 16px; height: 16px; color: var(--app-text2); flex-shrink: 0; margin-top: 1px; }
+.md-desc { background: var(--app-surface); border-radius: 10px; padding: 12px 14px; margin-bottom: 14px; font-size: 13px; color: var(--app-text); line-height: 1.5; }
+.md-att-label { font-size: 11px; color: var(--app-text2); font-weight: 500; margin-bottom: 8px; }
+.att-row { display: flex; margin-bottom: 16px; }
+.att-av { width: 34px; height: 34px; border-radius: 50%; background: var(--app-surface); border: 2px solid var(--app-light); display: flex; align-items: center; justify-content: center; font-size: 11px; color: var(--app-text2); font-weight: 500; margin-left: -6px; }
+.att-av:first-child { margin-left: 0; }
+
+/* ═══════════════════════════════════
+   SCREEN: BAĞLANTILAR
+═══════════════════════════════════ */
+.conn-item {
+  background: var(--app-light);
+  border-radius: 11px;
+  border: 0.5px solid var(--app-border);
+  margin: 0 14px 7px;
+  padding: 11px 13px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  cursor: pointer;
+  transition: opacity .1s;
+}
+
+.conn-item:active { opacity: .8; }
+.conn-left { display: flex; align-items: center; gap: 10px; }
+.conn-av { width: 36px; height: 36px; border-radius: 50%; background: var(--app-surface); display: flex; align-items: center; justify-content: center; font-size: 12px; color: var(--app-text2); font-weight: 500; flex-shrink: 0; }
+.conn-name { font-size: 13px; color: var(--app-text); font-weight: 500; }
+.conn-loc { font-size: 11px; color: var(--app-text2); }
+.conn-status { font-size: 11px; color: var(--app-text2); }
+
+/* ═══════════════════════════════════
+   SCREEN: KEŞFET
+═══════════════════════════════════ */
+.kes-header {
+  background: var(--app-dark);
+  padding: 12px 16px 10px;
+  flex-shrink: 0;
+}
+
+.kes-title { font-family: 'Playfair Display', serif; font-size: 18px; color: #F0E8DC; }
+.kes-sub { font-size: 11px; color: rgba(240,232,220,0.4); margin-top: 2px; }
+
+.cat-scroll {
+  display: flex;
+  gap: 7px;
+  padding: 12px 14px 6px;
+  overflow-x: auto;
+}
+
+.cat-scroll::-webkit-scrollbar { display: none; }
+
+.cat-pill {
+  padding: 5px 13px;
+  border-radius: 14px;
+  border: 0.5px solid var(--app-border);
+  background: var(--app-light);
+  color: var(--app-text);
+  font-size: 11px;
+  white-space: nowrap;
+  cursor: pointer;
+  flex-shrink: 0;
+  transition: all .15s;
+}
+
+.cat-pill.on { background: var(--app-dark); color: #F0E8DC; border-color: var(--app-dark); }
+
+.prod-card {
+  background: var(--app-light);
+  border-radius: 14px;
+  border: 0.5px solid var(--app-border);
+  margin: 0 14px 10px;
+  overflow: hidden;
+}
+
+.prod-img {
+  width: 100%;
+  height: 100px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 40px;
+  background: linear-gradient(135deg, var(--app-surface), var(--app-bg));
+}
+
+.prod-body { padding: 12px 14px; }
+.prod-cat { font-size: 9px; font-weight: 500; color: var(--app-accent); text-transform: uppercase; letter-spacing: .5px; margin-bottom: 4px; }
+.prod-name { font-size: 14px; color: var(--app-text); font-weight: 500; margin-bottom: 3px; }
+.prod-price { font-size: 12px; color: var(--app-text2); margin-bottom: 10px; }
+
+.prod-note {
+  background: var(--app-bg);
+  border-radius: 9px;
+  padding: 10px 12px;
+  border-left: 2.5px solid var(--app-accent);
+  margin-bottom: 10px;
+}
+
+.pn-label { font-size: 9px; color: var(--app-accent); font-weight: 500; margin-bottom: 3px; }
+.pn-text { font-size: 12px; color: var(--app-text); line-height: 1.5; }
+
+.prod-btn {
+  width: 100%;
+  padding: 11px;
+  background: var(--app-dark);
+  color: #F0E8DC;
+  border: none;
+  border-radius: 9px;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 13px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  transition: opacity .15s;
+}
+
+.prod-btn:active { opacity: .8; }
+.prod-btn svg { width: 14px; height: 14px; }
+
+/* ═══════════════════════════════════
+   SCREEN: PROFİL
+═══════════════════════════════════ */
+.prof-hero {
+  background: var(--app-dark);
+  padding: 20px 16px 16px;
+  text-align: center;
+  flex-shrink: 0;
+}
+
+.prof-av {
+  width: 60px; height: 60px;
+  border-radius: 50%;
+  background: var(--app-surface);
+  margin: 0 auto 10px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 22px;
+  color: var(--app-mid);
+  font-weight: 500;
+  border: 2.5px solid var(--app-accent);
+}
+
+.prof-name { font-family: 'Playfair Display', serif; font-size: 18px; color: #F0E8DC; }
+.prof-loc { font-size: 11px; color: rgba(240,232,220,0.5); margin-top: 3px; }
+.prof-badge { display: inline-block; font-size: 10px; padding: 3px 10px; border-radius: 10px; margin-top: 8px; background: rgba(232,200,74,0.2); color: #E8C84A; }
+
+.prof-inner { padding: 14px 16px; }
+.p-sec { font-size: 10px; font-weight: 500; color: var(--app-text2); text-transform: uppercase; letter-spacing: .5px; margin-bottom: 8px; }
+.p-tags { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 14px; }
+.p-tag { font-size: 11px; padding: 5px 11px; border-radius: 14px; background: var(--app-surface); color: var(--app-text); border: 0.5px solid var(--app-border); }
+
+.inv-card {
+  background: var(--app-dark);
+  border-radius: 12px;
+  padding: 14px;
+  margin-bottom: 14px;
+}
+
+.inv-t { font-size: 12px; color: #F0E8DC; font-weight: 500; margin-bottom: 10px; }
+.inv-codes { display: flex; flex-direction: column; gap: 6px; }
+
+.inv-code {
+  background: rgba(245,239,232,0.07);
+  border: 0.5px solid rgba(245,239,232,0.12);
+  border-radius: 8px;
+  padding: 8px 12px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.inv-code span { font-size: 13px; color: #F0E8DC; letter-spacing: 2px; }
+.inv-copy { font-size: 10px; color: var(--app-accent); background: none; border: none; cursor: pointer; font-family: 'DM Sans', sans-serif; }
+.inv-used { opacity: .3; }
+
+.menu-item {
+  background: var(--app-light);
+  border-radius: 12px;
+  border: 0.5px solid var(--app-border);
+  padding: 13px 14px;
+  margin-bottom: 7px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  cursor: pointer;
+  transition: opacity .1s;
+}
+
+.menu-item:active { opacity: .8; }
+.mi-left { display: flex; align-items: center; gap: 10px; }
+
+.mi-icon {
+  width: 34px; height: 34px;
+  border-radius: 9px;
+  background: var(--app-surface);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 16px;
+}
+
+.mi-title { font-size: 13px; color: var(--app-text); font-weight: 500; }
+.mi-sub { font-size: 11px; color: var(--app-text2); margin-top: 1px; }
+.mi-arr { color: var(--app-text2); font-size: 18px; }
+
+/* ═══════════════════════════════════
+   SCREEN: HESABIM
+═══════════════════════════════════ */
+.acc-body { padding: 14px 16px; }
+.acc-sec { font-size: 10px; font-weight: 500; color: var(--app-text2); text-transform: uppercase; letter-spacing: .5px; margin: 14px 0 8px; }
+.acc-sec:first-child { margin-top: 0; }
+
+.sub-card {
+  background: var(--app-dark);
+  border-radius: 14px;
+  padding: 16px;
+  margin-bottom: 4px;
+}
+
+.sub-top { display: flex; align-items: flex-start; justify-content: space-between; margin-bottom: 10px; }
+.sub-plan { font-size: 14px; color: #F0E8DC; font-weight: 500; }
+.sub-detail { font-size: 11px; color: rgba(240,232,220,0.45); margin-top: 2px; }
+.sub-badge-pill { font-size: 10px; padding: 3px 10px; border-radius: 10px; }
+.sub-badge-pill.free { background: rgba(245,239,232,0.1); color: rgba(240,232,220,0.6); }
+.sub-badge-pill.prem { background: rgba(232,200,74,0.2); color: #E8C84A; }
+
+.pay-card {
+  background: var(--app-light);
+  border-radius: 11px;
+  border: 0.5px solid var(--app-border);
+  padding: 12px 14px;
+  margin-bottom: 7px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.pc-left { display: flex; align-items: center; gap: 10px; }
+
+.pc-icon {
+  width: 38px; height: 24px;
+  background: var(--app-surface);
+  border-radius: 5px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 10px;
+  font-weight: 700;
+  color: var(--app-text2);
+}
+
+.pc-title { font-size: 13px; color: var(--app-text); font-weight: 500; }
+.pc-sub { font-size: 11px; color: var(--app-text2); }
+.pc-edit { font-size: 11px; color: var(--app-accent); cursor: pointer; }
+
+.add-card {
+  background: transparent;
+  border: 0.5px dashed var(--app-border);
+  border-radius: 11px;
+  padding: 12px;
+  margin-bottom: 7px;
+  text-align: center;
+  font-size: 13px;
+  color: var(--app-text2);
+  cursor: pointer;
+  transition: opacity .15s;
+  width: 100%;
+  font-family: 'DM Sans', sans-serif;
+}
+
+.set-row {
+  background: var(--app-light);
+  border-radius: 11px;
+  border: 0.5px solid var(--app-border);
+  padding: 12px 14px;
+  margin-bottom: 7px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.sr-title { font-size: 13px; color: var(--app-text); }
+.sr-sub { font-size: 11px; color: var(--app-text2); margin-top: 2px; }
+
+.danger-btn {
+  width: 100%;
+  padding: 12px;
+  background: transparent;
+  color: #E24B4A;
+  border: 0.5px solid rgba(226,75,74,0.3);
+  border-radius: 10px;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 13px;
+  cursor: pointer;
+  margin-top: 4px;
+  transition: background .15s;
+}
+
+.danger-btn:hover { background: rgba(226,75,74,0.05); }
+
+/* ═══════════════════════════════════
+   UTILITY
+═══════════════════════════════════ */
+.spacer { height: 16px; }
+.mt-8 { margin-top: 8px; }
+.px-14 { padding: 0 14px; }
+.hidden { display: none !important; }
+.blurred { filter: blur(2.5px); pointer-events: none; opacity: .4; }
+
+/* Scrollbar */
+.sc-inner::-webkit-scrollbar { width: 3px; }
+.sc-inner::-webkit-scrollbar-track { background: transparent; }
+.sc-inner::-webkit-scrollbar-thumb { background: var(--app-surface); border-radius: 2px; }
+</style>
+</head>
+<body>
+
+<!-- SOL PANEL -->
+<div class="side-panel">
+  <div class="panel-logo">
+    <div class="panel-logo-icon">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+        <circle cx="12" cy="8" r="4" fill="#C1491E"/>
+        <path d="M4 20c0-4 3.6-7 8-7s8 3 8 7" stroke="#F5EFE8" stroke-width="1.8" stroke-linecap="round"/>
+        <path d="M17 3l2-2M19 5h2M17 7l2 2" stroke="#C1491E" stroke-width="1.4" stroke-linecap="round"/>
+      </svg>
+    </div>
+    <div class="panel-logo-name">childfree türkiye</div>
+    <div class="panel-logo-sub">Prototip v3</div>
+  </div>
+
+  <div class="panel-section">
+    <div class="panel-label">Üye Tipi</div>
+    <div class="mode-toggle">
+      <button class="mode-btn on" id="btn-std" onclick="setMode('std')">Standart</button>
+      <button class="mode-btn" id="btn-prm" onclick="setMode('prm')">Premium</button>
+    </div>
+    <div class="mode-badge" id="mode-badge">Ücretsiz üye</div>
+  </div>
+
+  <div class="panel-info">
+    Telefon içindeki butonlara basarak gezebilirsin.<br><br>
+    Premium/Standart değişimi tüm ekranları etkiler.
+  </div>
+</div>
+
+<!-- TELEFON -->
+<div class="phone-wrap">
+  <div class="phone-frame" id="app" data-dark="false">
+    <div class="phone-notch">
+      <span class="notch-time" id="clock">09:41</span>
+      <div class="notch-icons">
+        <svg width="16" height="12" viewBox="0 0 16 12" fill="none">
+          <rect x="0" y="4" width="3" height="8" fill="currentColor" opacity=".4"/>
+          <rect x="4" y="2" width="3" height="10" fill="currentColor" opacity=".6"/>
+          <rect x="8" y="0" width="3" height="12" fill="currentColor" opacity=".8"/>
+          <rect x="12" y="0" width="3" height="12" fill="currentColor"/>
+        </svg>
+        <span>4G</span>
+        <svg width="22" height="12" viewBox="0 0 22 12" fill="none">
+          <rect x="0" y="2" width="18" height="8" rx="2" stroke="currentColor" stroke-width="1.2"/>
+          <rect x="2" y="4" width="12" height="4" rx="1" fill="currentColor"/>
+          <path d="M19 4.5v3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+        </svg>
+      </div>
+    </div>
+
+    <div class="phone-screen">
+
+      <!-- ── GİRİŞ ── -->
+      <div class="sc show" id="sc-login" style="justify-content:center;padding:20px 16px;">
+        <div class="login-logo">
+          <div class="login-icon">
+            <svg width="28" height="28" viewBox="0 0 28 28" fill="none">
+              <circle cx="14" cy="10" r="5" fill="#C1491E"/>
+              <path d="M5 24c0-4.5 4-8 9-8s9 3.5 9 8" stroke="#F5EFE8" stroke-width="2" stroke-linecap="round"/>
+              <path d="M20 5.5l2.5-2.5M23 8h2.5M20 10.5l2.5 2.5" stroke="#C1491E" stroke-width="1.6" stroke-linecap="round"/>
+            </svg>
+          </div>
+          <div class="login-name">childfree türkiye</div>
+          <div class="login-sub">seçimini paylaş, topluluğunu bul</div>
+        </div>
+        <div class="login-card">
+          <div class="login-card-title">Davet kodunu gir</div>
+          <div class="login-card-sub">Bu topluluk davetiye ile büyür. Bir üyeden aldığın kodu yaz.</div>
+          <input class="code-input inp" maxlength="8" placeholder="_ _ _ _ _ _ _ _" style="letter-spacing:6px;text-align:center;font-size:20px;" oninput="this.value=this.value.toUpperCase()">
+          <button class="btn-accent" onclick="go('reg1')">Devam Et →</button>
+          <div class="divider"></div>
+          <div class="link-text">Hesabın var mı? <a onclick="go('home')">Giriş yap</a></div>
+        </div>
+      </div>
+
+      <!-- ── KAYIT 1 ── -->
+      <div class="sc" id="sc-reg1">
+        <div class="back-header">
+          <button class="back-btn" onclick="go('login')">←</button>
+          <span class="back-title">Hesap oluştur</span>
+          <span class="back-sub">1 / 2</span>
+        </div>
+        <div class="sc-inner" style="padding-bottom:20px;">
+          <div class="step-bar"><div class="step-dot done"></div><div class="step-dot"></div></div>
+          <div class="reg-body">
+            <div class="field"><label class="inp-label">E-posta</label><input class="inp" placeholder="ornek@mail.com" type="email"></div>
+            <div class="field"><label class="inp-label">Şifre</label><input class="inp" placeholder="En az 8 karakter" type="password"></div>
+            <div class="field"><label class="inp-label">Şifre tekrar</label><input class="inp" placeholder="Şifreyi tekrar gir" type="password"></div>
+            <button class="btn-accent" onclick="go('reg2')">Devam Et →</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- ── KAYIT 2 ── -->
+      <div class="sc" id="sc-reg2">
+        <div class="back-header">
+          <button class="back-btn" onclick="go('reg1')">←</button>
+          <span class="back-title">Kendini tanıt</span>
+          <span class="back-sub">2 / 2</span>
+        </div>
+        <div class="sc-inner" style="padding-bottom:20px;">
+          <div class="step-bar"><div class="step-dot done"></div><div class="step-dot done"></div></div>
+          <div class="reg-body">
+            <div class="two-col" style="margin-bottom:14px;">
+              <div><label class="inp-label">Adın</label><input class="inp" placeholder="Adın"></div>
+              <div><label class="inp-label">Soyad</label><input class="inp" placeholder="Opsiyonel"></div>
+            </div>
+            <div class="field">
+              <label class="inp-label">Şehrin</label>
+              <select class="inp" style="appearance:none;">
+                <option value="">Şehir seç...</option>
+                <option>İstanbul</option><option>Ankara</option><option>İzmir</option>
+                <option>Bursa</option><option>Antalya</option><option>Eskişehir</option><option>Diğer</option>
+              </select>
+            </div>
+            <div class="field">
+              <label class="inp-label">Seni anlatan etiketler (en az 2)</label>
+              <div class="tag-cloud">
+                <span class="tag-chip sel" onclick="this.classList.toggle('sel')">Solo seyahat</span>
+                <span class="tag-chip" onclick="this.classList.toggle('sel')">Sakin yaşam</span>
+                <span class="tag-chip sel" onclick="this.classList.toggle('sel')">Kariyer</span>
+                <span class="tag-chip" onclick="this.classList.toggle('sel')">Kitap</span>
+                <span class="tag-chip" onclick="this.classList.toggle('sel')">Kahve</span>
+                <span class="tag-chip" onclick="this.classList.toggle('sel')">Doğa</span>
+                <span class="tag-chip" onclick="this.classList.toggle('sel')">Film & Dizi</span>
+                <span class="tag-chip" onclick="this.classList.toggle('sel')">Hayvanlar</span>
+              </div>
+            </div>
+            <button class="btn-accent" onclick="go('home')">Topluluğa Katıl 🎉</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- ── ANASAYFA ── -->
+      <div class="sc" id="sc-home">
+        <div class="app-header">
+          <span class="app-logo">childfree türkiye</span>
+          <div style="position:relative;width:22px;height:22px;cursor:pointer;">
+            <svg viewBox="0 0 22 22" fill="none" style="width:100%;height:100%;color:rgba(240,232,220,0.7);">
+              <path d="M11 2a6 6 0 00-6 6v4l-2 2v1h16v-1l-2-2V8a6 6 0 00-6-6zM9 18a2 2 0 004 0" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/>
+            </svg>
+            <div class="bell-dot"></div>
+          </div>
+        </div>
+        <div class="sc-inner">
+          <div class="ritual-card" onclick="go('bugun')">
+            <div>
+              <div class="ritual-tag">✦ Günün sorusu</div>
+              <div class="ritual-q">Hayatında en büyük özgürlüğün ne?</div>
+              <div class="ritual-count">47 cevap · 14s 22dk kaldı</div>
+            </div>
+            <button class="ritual-btn">Cevapla<br><span style="font-size:8px;opacity:.8;">& Gör →</span></button>
+          </div>
+          <div class="sec-head">Senin için</div>
+          <div class="card" onclick="go('channel')">
+            <div class="card-t">Herkese kendini tanıt</div>
+            <div class="card-s">Yeni üyeler seni bekliyor.</div>
+            <span class="badge red">Tanışma · 3 yeni</span>
+          </div>
+          <div class="sec-head">Yakınındaki Üyeler</div>
+          <div class="card tcard" onclick="handleNearby()" id="nearby-card">
+            <div class="card-t">İstanbul'da 48 üye</div>
+            <div class="card-s" id="nearby-sub">Ortak etiketli kişiler yakında.</div>
+            <span class="badge teal" id="nearby-badge">Premium ile bağlan</span>
+          </div>
+          <div class="sec-head">Keşfet'ten</div>
+          <div class="card" onclick="go('kesf')">
+            <div class="card-t">Bu haftanın önerisi</div>
+            <div class="card-s">"Childfree" kitabı · Admin notu var</div>
+            <span class="badge">Kitap · ₺185</span>
+          </div>
+          <div class="spacer"></div>
+        </div>
+        <div class="bnav">
+          <div class="ni" onclick="go('library')"><svg viewBox="0 0 22 22" fill="none"><rect x="3" y="3" width="6" height="16" rx="1.5" stroke="currentColor" stroke-width="1.3"/><rect x="11" y="3" width="8" height="16" rx="1.5" stroke="currentColor" stroke-width="1.3"/></svg><span>Kütüphane</span></div>
+          <div class="ni" onclick="go('conn')"><svg viewBox="0 0 22 22" fill="none"><circle cx="8" cy="8" r="3.5" stroke="currentColor" stroke-width="1.3"/><path d="M2 19c0-3.3 2.7-6 6-6s6 2.7 6 6" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/><circle cx="16" cy="8" r="2.5" stroke="currentColor" stroke-width="1.2"/><path d="M16 13c2.2.5 4 2.3 4 6" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></svg><span>Bağlantılar</span></div>
+          <div class="ni on"><svg viewBox="0 0 22 22" fill="none"><path d="M3 11.5L11 4l8 7.5V18a1 1 0 01-1 1H4a1 1 0 01-1-1v-6.5z" stroke="currentColor" stroke-width="1.3"/></svg><span>Anasayfa</span></div>
+          <div class="ni" onclick="go('meet')"><svg viewBox="0 0 22 22" fill="none"><rect x="3" y="4" width="16" height="14" rx="2" stroke="currentColor" stroke-width="1.3"/><path d="M8 2v3M14 2v3M3 9h16" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg><span>Buluşmalar</span></div>
+          <div class="ni" onclick="go('kesf')"><svg viewBox="0 0 22 22" fill="none"><path d="M11 2l2.7 5.5 6 .9-4.4 4.2 1 5.9L11 15.7l-5.3 2.8 1-5.9L2.3 8.4l6-.9z" stroke="currentColor" stroke-width="1.3" stroke-linejoin="round"/></svg><span>Keşfet</span></div>
+        </div>
+      </div>
+
+      <!-- ── BUGÜN ── -->
+      <div class="sc" id="sc-bugun">
+        <div class="back-header">
+          <button class="back-btn" onclick="go('home')">←</button>
+          <div style="flex:1;"><div class="back-title">Bugünün sorusu</div><div class="back-sub">47 cevap · sadece bugün görünür</div></div>
+          <div class="timer-pill">⏱ 14s 22dk</div>
+        </div>
+        <div class="sc-inner">
+          <div class="bq-card">
+            <div class="bq-label">✦ Günün sorusu</div>
+            <div class="bq-text">"Hayatında en büyük özgürlüğün ne?"</div>
+            <div class="bq-count">47 kişi cevapladı</div>
+          </div>
+          <div class="ans-input-row">
+            <input class="ans-inp" placeholder="Cevabını yaz...">
+            <button class="ans-send"><svg viewBox="0 0 18 18" fill="none"><path d="M2 9l14-6-6 14-2-6-6-2z" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/></svg></button>
+          </div>
+          <div class="ans-item"><div class="ai-meta"><span>Ayşe K.</span><span>2 sa önce</span></div><div class="ai-text">Sabah kalktığımda bugün ne yapmak istiyorum diye düşünebilmek. Kimsenin programına bağlı değilim.</div><div class="ai-like"><svg viewBox="0 0 16 16" fill="none"><path d="M8 13s-5-3.5-5-7a4 4 0 018 0" stroke="currentColor" stroke-width="1.2"/><path d="M8 13s5-3.5 5-7a4 4 0 00-8 0" stroke="currentColor" stroke-width="1.2"/></svg>14</div></div>
+          <div class="ans-item"><div class="ai-meta"><span>Merve T.</span><span>1 sa önce</span></div><div class="ai-text">Spontane seyahat edebilmek. Cuma akşamı bilet alıp Cumartesi uçmak — bu his başka.</div><div class="ai-like"><svg viewBox="0 0 16 16" fill="none"><path d="M8 13s-5-3.5-5-7a4 4 0 018 0" stroke="currentColor" stroke-width="1.2"/><path d="M8 13s5-3.5 5-7a4 4 0 00-8 0" stroke="currentColor" stroke-width="1.2"/></svg>9</div></div>
+          <div class="ans-item"><div class="ai-meta"><span>Selin A.</span><span>30 dk önce</span></div><div class="ai-text">Suçluluk duymadan kariyer peşinde koşabilmek. Büyümek, üretmek, özgürce.</div><div class="ai-like"><svg viewBox="0 0 16 16" fill="none"><path d="M8 13s-5-3.5-5-7a4 4 0 018 0" stroke="currentColor" stroke-width="1.2"/><path d="M8 13s5-3.5 5-7a4 4 0 00-8 0" stroke="currentColor" stroke-width="1.2"/></svg>6</div></div>
+          <div class="ans-item"><div class="ai-meta"><span>Canan B.</span><span>15 dk önce</span></div><div class="ai-text">Haftasonlarım tamamen bana ait. Kimsenin randevusuna, doğum gününe, etkinliğine takılmadan.</div><div class="ai-like"><svg viewBox="0 0 16 16" fill="none"><path d="M8 13s-5-3.5-5-7a4 4 0 018 0" stroke="currentColor" stroke-width="1.2"/><path d="M8 13s5-3.5 5-7a4 4 0 00-8 0" stroke="currentColor" stroke-width="1.2"/></svg>3</div></div>
+          <div class="spacer"></div>
+        </div>
+      </div>
+
+      <!-- ── KÜTÜPHANE ── -->
+      <div class="sc" id="sc-library">
+        <div class="app-header"><span class="app-logo">childfree türkiye</span><svg style="width:20px;height:20px;color:rgba(240,232,220,0.7);" viewBox="0 0 22 22" fill="none"><path d="M11 2a6 6 0 00-6 6v4l-2 2v1h16v-1l-2-2V8a6 6 0 00-6-6zM9 18a2 2 0 004 0" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg></div>
+        <div class="sc-inner">
+          <div class="pg-title">Kütüphane</div>
+          <div class="pg-sub">Bugün nerede paylaşmak istersin?</div>
+          <div class="tab-bar">
+            <button class="tab-btn on" id="lib-tab1" onclick="libTab('akis')">Akışım</button>
+            <button class="tab-btn" id="lib-tab2" onclick="libTab('kanallar')">Tüm Kanallar</button>
+          </div>
+          <div id="lib-akis">
+            <div class="sec-head" style="padding-top:0;">Katıldığın Konuşmalar</div>
+            <div class="conv-item" onclick="go('channel')"><div class="ci-title">Seyahat anılarını paylaş!</div><div class="ci-meta"><span>Seyahat · 1 sa önce</span><span class="ci-new">2 yeni</span></div></div>
+            <div class="conv-item" onclick="go('channel')"><div class="ci-title">Hangi dizi izliyorsunuz?</div><div class="ci-meta"><span>Film & Dizi · 3 sa önce</span></div></div>
+            <div class="conv-item" onclick="go('channel')"><div class="ci-title">Ev bitkileri ve bakımı</div><div class="ci-meta"><span>Hobiler · dün</span></div></div>
+            <div class="sec-head">Kaydettiklerin</div>
+            <div class="conv-item"><div class="ci-title">Evcil hayvanınızı tanıtın</div><div class="ci-meta"><span>Hayvanlar · 6 sa önce</span></div></div>
+          </div>
+          <div id="lib-kanallar" class="hidden">
+            <div class="sec-head" style="padding-top:0;">Tüm Kanallar</div>
+            <div class="ch-grid">
+              <div class="ch-tile" onclick="go('channel')"><div class="ct-emoji">✈️</div><div class="ct-name">Seyahat</div><div class="ct-sub">Solo & grup</div><div class="ct-count open">127 üye</div></div>
+              <div class="ch-tile" onclick="go('channel')"><div class="ct-emoji">🎬</div><div class="ct-name">Film & Dizi</div><div class="ct-sub">Ne izleyelim?</div><div class="ct-count open">94 üye</div></div>
+              <div class="ch-tile" onclick="go('channel')"><div class="ct-emoji">☕</div><div class="ct-name">Kahve</div><div class="ct-sub">Kafe buluşmaları</div><div class="ct-count open">82 üye</div></div>
+              <div class="ch-tile" onclick="handlePremChannel()"><div class="ct-emoji">💼</div><div class="ct-name">Kariyer</div><div class="ct-sub">İş & büyüme</div><div class="ct-count prem" id="ch-kariyer">🔒 Premium</div></div>
+              <div class="ch-tile" onclick="go('channel')"><div class="ct-emoji">🌿</div><div class="ct-name">Hobiler</div><div class="ct-sub">Bitki, sanat...</div><div class="ct-count open">66 üye</div></div>
+              <div class="ch-tile" onclick="handlePremChannel()"><div class="ct-emoji">💕</div><div class="ct-name">İlişki</div><div class="ct-sub">Flört & partner</div><div class="ct-count prem" id="ch-iliski">🔒 Premium</div></div>
+            </div>
+          </div>
+          <div class="spacer"></div>
+        </div>
+        <div class="bnav">
+          <div class="ni on"><svg viewBox="0 0 22 22" fill="none"><rect x="3" y="3" width="6" height="16" rx="1.5" stroke="currentColor" stroke-width="1.3"/><rect x="11" y="3" width="8" height="16" rx="1.5" stroke="currentColor" stroke-width="1.3"/></svg><span>Kütüphane</span></div>
+          <div class="ni" onclick="go('conn')"><svg viewBox="0 0 22 22" fill="none"><circle cx="8" cy="8" r="3.5" stroke="currentColor" stroke-width="1.3"/><path d="M2 19c0-3.3 2.7-6 6-6s6 2.7 6 6" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/><circle cx="16" cy="8" r="2.5" stroke="currentColor" stroke-width="1.2"/><path d="M16 13c2.2.5 4 2.3 4 6" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></svg><span>Bağlantılar</span></div>
+          <div class="ni" onclick="go('home')"><svg viewBox="0 0 22 22" fill="none"><path d="M3 11.5L11 4l8 7.5V18a1 1 0 01-1 1H4a1 1 0 01-1-1v-6.5z" stroke="currentColor" stroke-width="1.3"/></svg><span>Anasayfa</span></div>
+          <div class="ni" onclick="go('meet')"><svg viewBox="0 0 22 22" fill="none"><rect x="3" y="4" width="16" height="14" rx="2" stroke="currentColor" stroke-width="1.3"/><path d="M8 2v3M14 2v3M3 9h16" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg><span>Buluşmalar</span></div>
+          <div class="ni" onclick="go('kesf')"><svg viewBox="0 0 22 22" fill="none"><path d="M11 2l2.7 5.5 6 .9-4.4 4.2 1 5.9L11 15.7l-5.3 2.8 1-5.9L2.3 8.4l6-.9z" stroke="currentColor" stroke-width="1.3" stroke-linejoin="round"/></svg><span>Keşfet</span></div>
+        </div>
+      </div>
+
+      <!-- ── KANAL ── -->
+      <div class="sc" id="sc-channel" style="flex-direction:column;">
+        <div class="ch-header">
+          <button class="back-btn" onclick="go('library')">←</button>
+          <span class="ch-title">Seyahat ✈️</span>
+          <button class="ch-save">🔖</button>
+        </div>
+        <div class="ch-body">
+          <div class="msg"><div class="msg-meta">Ayşe K. · 2 sa önce</div><div class="msg-text">Geçen ay yalnız Kyoto'ya gittim, inanılmazdı. Childfree olmanın en güzel yanı böyle ani kararlar verebilmek!</div><div class="msg-like"><svg viewBox="0 0 16 16" fill="none"><path d="M8 13s-5-3.5-5-7a4 4 0 018 0" stroke="currentColor" stroke-width="1.2"/><path d="M8 13s5-3.5 5-7a4 4 0 00-8 0" stroke="currentColor" stroke-width="1.2"/></svg>12</div></div>
+          <div class="msg"><div class="msg-meta">Merve T. · 1 sa önce</div><div class="msg-text">Ben de geçen yaz Portekiz'e solo gittim. "Yalnız mısın?" diye sordular ama harika vakit geçirdim 😄</div><div class="msg-like"><svg viewBox="0 0 16 16" fill="none"><path d="M8 13s-5-3.5-5-7a4 4 0 018 0" stroke="currentColor" stroke-width="1.2"/><path d="M8 13s5-3.5 5-7a4 4 0 00-8 0" stroke="currentColor" stroke-width="1.2"/></svg>8</div></div>
+          <div class="msg"><div class="msg-meta">Selin A. · 20 dk önce</div><div class="msg-text">Bali'yi düşünüyorum sonbahar için, kim gelir? Küçük grup olur, harika olur!</div><div class="msg-like"><svg viewBox="0 0 16 16" fill="none"><path d="M8 13s-5-3.5-5-7a4 4 0 018 0" stroke="currentColor" stroke-width="1.2"/><path d="M8 13s5-3.5 5-7a4 4 0 00-8 0" stroke="currentColor" stroke-width="1.2"/></svg>4</div></div>
+        </div>
+        <div class="ch-input-row">
+          <input class="ch-inp" placeholder="Düşünceni ekle...">
+          <button class="ch-send"><svg viewBox="0 0 18 18" fill="none"><path d="M2 9l14-6-6 14-2-6-6-2z" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/></svg></button>
+        </div>
+      </div>
+
+      <!-- ── BULUŞMALAR ── -->
+      <div class="sc" id="sc-meet">
+        <div class="app-header"><span class="app-logo">childfree türkiye</span><svg style="width:20px;height:20px;color:rgba(240,232,220,0.7);" viewBox="0 0 22 22" fill="none"><path d="M11 2a6 6 0 00-6 6v4l-2 2v1h16v-1l-2-2V8a6 6 0 00-6-6zM9 18a2 2 0 004 0" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg></div>
+        <div class="sc-inner">
+          <div class="pg-title">Buluşmalar</div>
+          <div class="pg-sub">Gerçek hayatta bağlan</div>
+          <div id="meet-lock" class="lock-banner"><div class="lock-banner-text">Buluşmaları görmek ve katılmak Premium özelliğidir.</div><button class="lock-banner-btn" onclick="setMode('prm')">Premium'a Geç</button></div>
+          <div id="meet-cards">
+            <div class="meet-card" onclick="go('meetdetay')"><div class="mc-date">Paz · 13 Nis · 11:00</div><div class="mc-title">Brunch — Kadıköy</div><div class="mc-host">Beth tarafından düzenlendi · İstanbul</div><div class="mc-tags"><span class="mc-tag">Solo-Dostu</span><span class="mc-tag">4 kişi</span></div></div>
+            <div class="meet-card" onclick="go('meetdetay')"><div class="mc-date">Cmt · 19 Nis · 19:00</div><div class="mc-title">Akşam yemeği & müzik</div><div class="mc-host">Ira tarafından düzenlendi · Beşiktaş</div><div class="mc-tags"><span class="mc-tag">Küçük Grup</span><span class="mc-tag">7 kişi</span></div></div>
+            <div class="meet-card"><div class="mc-date">Paz · 27 Nis · 14:00</div><div class="mc-title">Kitap okuma buluşması</div><div class="mc-host">Zeynep tarafından düzenlendi · Moda</div><div class="mc-tags"><span class="mc-tag">Kitapseverler</span><span class="mc-tag">3 kişi</span></div></div>
+          </div>
+          <div class="spacer"></div>
+        </div>
+        <div class="bnav">
+          <div class="ni" onclick="go('library')"><svg viewBox="0 0 22 22" fill="none"><rect x="3" y="3" width="6" height="16" rx="1.5" stroke="currentColor" stroke-width="1.3"/><rect x="11" y="3" width="8" height="16" rx="1.5" stroke="currentColor" stroke-width="1.3"/></svg><span>Kütüphane</span></div>
+          <div class="ni" onclick="go('conn')"><svg viewBox="0 0 22 22" fill="none"><circle cx="8" cy="8" r="3.5" stroke="currentColor" stroke-width="1.3"/><path d="M2 19c0-3.3 2.7-6 6-6s6 2.7 6 6" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/><circle cx="16" cy="8" r="2.5" stroke="currentColor" stroke-width="1.2"/><path d="M16 13c2.2.5 4 2.3 4 6" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></svg><span>Bağlantılar</span></div>
+          <div class="ni" onclick="go('home')"><svg viewBox="0 0 22 22" fill="none"><path d="M3 11.5L11 4l8 7.5V18a1 1 0 01-1 1H4a1 1 0 01-1-1v-6.5z" stroke="currentColor" stroke-width="1.3"/></svg><span>Anasayfa</span></div>
+          <div class="ni on"><svg viewBox="0 0 22 22" fill="none"><rect x="3" y="4" width="16" height="14" rx="2" stroke="currentColor" stroke-width="1.3"/><path d="M8 2v3M14 2v3M3 9h16" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg><span>Buluşmalar</span></div>
+          <div class="ni" onclick="go('kesf')"><svg viewBox="0 0 22 22" fill="none"><path d="M11 2l2.7 5.5 6 .9-4.4 4.2 1 5.9L11 15.7l-5.3 2.8 1-5.9L2.3 8.4l6-.9z" stroke="currentColor" stroke-width="1.3" stroke-linejoin="round"/></svg><span>Keşfet</span></div>
+        </div>
+      </div>
+
+      <!-- ── BULUŞMA DETAY ── -->
+      <div class="sc" id="sc-meetdetay" style="flex-direction:column;">
+        <div class="back-header">
+          <button class="back-btn" onclick="go('meet')">←</button>
+          <span class="back-title">Buluşma Detayı</span>
+        </div>
+        <div class="sc-inner">
+          <div class="md-hero">
+            <div class="md-badge">Solo-Dostu · Açık Katılım</div>
+            <div class="md-title">Brunch — Kadıköy</div>
+            <div class="md-host">Beth tarafından düzenlendi</div>
+          </div>
+          <div class="md-body">
+            <div class="md-row"><svg viewBox="0 0 18 18" fill="none"><rect x="2" y="3" width="14" height="12" rx="2" stroke="currentColor" stroke-width="1.3"/><path d="M6 1v3M12 1v3M2 8h14" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg><span>Pazar, 13 Nisan · 11:00 – 13:00</span></div>
+            <div class="md-row"><svg viewBox="0 0 18 18" fill="none"><path d="M9 2a5 5 0 015 5c0 4-5 9-5 9S4 11 4 7a5 5 0 015-5z" stroke="currentColor" stroke-width="1.3"/><circle cx="9" cy="7" r="1.5" stroke="currentColor" stroke-width="1.3"/></svg><span>Mandabatmaz, Kadıköy, İstanbul</span></div>
+            <div class="md-desc">Pazar sabahı brunch için buluşuyoruz. Childfree yaşamı, seyahat planları, ve daha fazlası konuşacağız. Yeni üyeler için harika bir başlangıç!</div>
+            <div class="md-att-label">4 katılımcı</div>
+            <div class="att-row"><div class="att-av">BT</div><div class="att-av">AK</div><div class="att-av">MT</div><div class="att-av">SA</div></div>
+            <button class="btn-accent" id="join-btn" onclick="toggleJoin(this)">Katıl</button>
+            <div style="text-align:center;font-size:11px;color:var(--app-text2);margin-top:8px;">Topluluk kurallarını kabul etmiş sayılırsın</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ── BAĞLANTILAR ── -->
+      <div class="sc" id="sc-conn">
+        <div class="app-header"><span class="app-logo">childfree türkiye</span><svg style="width:20px;height:20px;color:rgba(240,232,220,0.7);" viewBox="0 0 22 22" fill="none"><path d="M11 2a6 6 0 00-6 6v4l-2 2v1h16v-1l-2-2V8a6 6 0 00-6-6zM9 18a2 2 0 004 0" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg></div>
+        <div class="sc-inner">
+          <div class="pg-title">Bağlantılar</div>
+          <div class="pg-sub">Yakın olduğun insanlar burada.</div>
+          <div class="sec-head" style="padding-top:0;">Şehir Grubu</div>
+          <div class="conn-item"><div class="conn-left"><div class="conn-av" style="background:var(--app-teal);color:var(--app-teal-dk);">İST</div><div><div class="conn-name">İstanbul</div><div class="conn-loc">48 üye</div></div></div><div class="conn-status">Dün aktif</div></div>
+          <div id="conn-lock"><div class="full-lock"><div class="fl-icon">🔒</div><div class="fl-title">Mesajlaşmak Premium'a özel</div><div class="fl-sub">DM ve grup sohbetleri için Premium üye ol.</div><button class="btn-accent" onclick="setMode('prm')">Premium'a Geç</button></div></div>
+          <div id="conn-dm" class="hidden">
+            <div class="sec-head">Direkt Mesajlar</div>
+            <div class="conn-item"><div class="conn-left"><div class="conn-av">AK</div><div><div class="conn-name">Ayşe K.</div><div class="conn-loc">İstanbul</div></div></div><div class="conn-status">Bugün aktif</div></div>
+            <div class="conn-item"><div class="conn-left"><div class="conn-av">MT</div><div><div class="conn-name">Merve T.</div><div class="conn-loc">İstanbul</div></div></div><div class="conn-status">3 sa önce</div></div>
+            <div class="sec-head">Gruplarım</div>
+            <div class="conn-item"><div class="conn-left"><div class="conn-av" style="background:var(--app-teal);color:var(--app-teal-dk);">BG</div><div><div class="conn-name">Bali Grubu</div><div class="conn-loc">5 üye</div></div></div><div class="conn-status">Bugün aktif</div></div>
+          </div>
+          <div class="spacer"></div>
+        </div>
+        <div class="bnav">
+          <div class="ni" onclick="go('library')"><svg viewBox="0 0 22 22" fill="none"><rect x="3" y="3" width="6" height="16" rx="1.5" stroke="currentColor" stroke-width="1.3"/><rect x="11" y="3" width="8" height="16" rx="1.5" stroke="currentColor" stroke-width="1.3"/></svg><span>Kütüphane</span></div>
+          <div class="ni on"><svg viewBox="0 0 22 22" fill="none"><circle cx="8" cy="8" r="3.5" stroke="currentColor" stroke-width="1.3"/><path d="M2 19c0-3.3 2.7-6 6-6s6 2.7 6 6" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/><circle cx="16" cy="8" r="2.5" stroke="currentColor" stroke-width="1.2"/><path d="M16 13c2.2.5 4 2.3 4 6" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></svg><span>Bağlantılar</span></div>
+          <div class="ni" onclick="go('home')"><svg viewBox="0 0 22 22" fill="none"><path d="M3 11.5L11 4l8 7.5V18a1 1 0 01-1 1H4a1 1 0 01-1-1v-6.5z" stroke="currentColor" stroke-width="1.3"/></svg><span>Anasayfa</span></div>
+          <div class="ni" onclick="go('meet')"><svg viewBox="0 0 22 22" fill="none"><rect x="3" y="4" width="16" height="14" rx="2" stroke="currentColor" stroke-width="1.3"/><path d="M8 2v3M14 2v3M3 9h16" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg><span>Buluşmalar</span></div>
+          <div class="ni" onclick="go('kesf')"><svg viewBox="0 0 22 22" fill="none"><path d="M11 2l2.7 5.5 6 .9-4.4 4.2 1 5.9L11 15.7l-5.3 2.8 1-5.9L2.3 8.4l6-.9z" stroke="currentColor" stroke-width="1.3" stroke-linejoin="round"/></svg><span>Keşfet</span></div>
+        </div>
+      </div>
+
+      <!-- ── KEŞFET ── -->
+      <div class="sc" id="sc-kesf">
+        <div class="kes-header"><div class="kes-title">Keşfet</div><div class="kes-sub">Admin tarafından önerilen ürünler</div></div>
+        <div class="sc-inner">
+          <div class="cat-scroll">
+            <div class="cat-pill on" onclick="catSelect(this)">Tümü</div>
+            <div class="cat-pill" onclick="catSelect(this)">Kitap</div>
+            <div class="cat-pill" onclick="catSelect(this)">Aksesuar</div>
+            <div class="cat-pill" onclick="catSelect(this)">Yaşam</div>
+            <div class="cat-pill" onclick="catSelect(this)">Seyahat</div>
+          </div>
+          <div class="prod-card"><div class="prod-img">📗</div><div class="prod-body"><div class="prod-cat">Kitap</div><div class="prod-name">Childfree by Choice</div><div class="prod-price">₺185 · Amy Blackstone</div><div class="prod-note"><div class="pn-label">Admin notu</div><div class="pn-text">Bu kitabı okuyunca "benim gibi düşünen insanlar var" dedim. Topluluk için en iyi başlangıç noktası.</div></div><button class="prod-btn">Satın Al <svg viewBox="0 0 16 16" fill="none"><path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></button></div></div>
+          <div class="prod-card"><div class="prod-img">🎒</div><div class="prod-body"><div class="prod-cat">Seyahat</div><div class="prod-name">Solo Seyahat Çantası 26L</div><div class="prod-price">₺890 · Fjällräven</div><div class="prod-note"><div class="pn-label">Admin notu</div><div class="pn-text">4 yıldır her seyahatimde bu çanta. Kabin bagajına giriyor, sırt ağrısı yapmıyor.</div></div><button class="prod-btn">Satın Al <svg viewBox="0 0 16 16" fill="none"><path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></button></div></div>
+          <div class="spacer"></div>
+        </div>
+        <div class="bnav">
+          <div class="ni" onclick="go('library')"><svg viewBox="0 0 22 22" fill="none"><rect x="3" y="3" width="6" height="16" rx="1.5" stroke="currentColor" stroke-width="1.3"/><rect x="11" y="3" width="8" height="16" rx="1.5" stroke="currentColor" stroke-width="1.3"/></svg><span>Kütüphane</span></div>
+          <div class="ni" onclick="go('conn')"><svg viewBox="0 0 22 22" fill="none"><circle cx="8" cy="8" r="3.5" stroke="currentColor" stroke-width="1.3"/><path d="M2 19c0-3.3 2.7-6 6-6s6 2.7 6 6" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/><circle cx="16" cy="8" r="2.5" stroke="currentColor" stroke-width="1.2"/><path d="M16 13c2.2.5 4 2.3 4 6" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></svg><span>Bağlantılar</span></div>
+          <div class="ni" onclick="go('home')"><svg viewBox="0 0 22 22" fill="none"><path d="M3 11.5L11 4l8 7.5V18a1 1 0 01-1 1H4a1 1 0 01-1-1v-6.5z" stroke="currentColor" stroke-width="1.3"/></svg><span>Anasayfa</span></div>
+          <div class="ni" onclick="go('meet')"><svg viewBox="0 0 22 22" fill="none"><rect x="3" y="4" width="16" height="14" rx="2" stroke="currentColor" stroke-width="1.3"/><path d="M8 2v3M14 2v3M3 9h16" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg><span>Buluşmalar</span></div>
+          <div class="ni on"><svg viewBox="0 0 22 22" fill="none"><path d="M11 2l2.7 5.5 6 .9-4.4 4.2 1 5.9L11 15.7l-5.3 2.8 1-5.9L2.3 8.4l6-.9z" stroke="currentColor" stroke-width="1.3" stroke-linejoin="round"/></svg><span>Keşfet</span></div>
+        </div>
+      </div>
+
+      <!-- ── PROFİL ── -->
+      <div class="sc" id="sc-profile">
+        <div class="sc-inner">
+          <div class="prof-hero">
+            <div class="prof-av">ZD</div>
+            <div class="prof-name">Zeynep Demir</div>
+            <div class="prof-loc">📍 İstanbul · 2025'ten beri üye</div>
+            <div id="prof-badge" class="prof-badge hidden">⭐ Premium Üye</div>
+          </div>
+          <div class="prof-inner">
+            <div class="p-sec">Etiketlerim</div>
+            <div class="p-tags"><span class="p-tag">Solo seyahat</span><span class="p-tag">Sakin yaşam</span><span class="p-tag">Kariyer</span><span class="p-tag">Kahve</span><span class="p-tag">Childfree ✓</span></div>
+            <div class="p-sec">Davet Kodlarım</div>
+            <div class="inv-card">
+              <div class="inv-t">3 davet hakkın var</div>
+              <div class="inv-codes">
+                <div class="inv-code"><span>CFT-A7X2</span><button class="inv-copy" onclick="copyCode(this,'CFT-A7X2')">Kopyala</button></div>
+                <div class="inv-code"><span>CFT-B3M9</span><button class="inv-copy" onclick="copyCode(this,'CFT-B3M9')">Kopyala</button></div>
+                <div class="inv-code inv-used"><span>CFT-C5K1</span><span style="font-size:10px;color:var(--app-text2);">Kullanıldı</span></div>
+              </div>
+            </div>
+            <div class="p-sec">Menü</div>
+            <div class="menu-item" onclick="go('hesabim')"><div class="mi-left"><div class="mi-icon">⚙️</div><div><div class="mi-title">Hesabım</div><div class="mi-sub">Abonelik, ödeme, ayarlar</div></div></div><span class="mi-arr">›</span></div>
+            <div class="menu-item"><div class="mi-left"><div class="mi-icon">✏️</div><div><div class="mi-title">Profili Düzenle</div><div class="mi-sub">Ad, fotoğraf, etiketler</div></div></div><span class="mi-arr">›</span></div>
+            <div class="menu-item"><div class="mi-left"><div class="mi-icon">🔔</div><div><div class="mi-title">Bildirimler</div><div class="mi-sub">Push ve e-posta tercihleri</div></div></div><span class="mi-arr">›</span></div>
+            <div class="spacer"></div>
+          </div>
+        </div>
+        <div class="bnav">
+          <div class="ni" onclick="go('library')"><svg viewBox="0 0 22 22" fill="none"><rect x="3" y="3" width="6" height="16" rx="1.5" stroke="currentColor" stroke-width="1.3"/><rect x="11" y="3" width="8" height="16" rx="1.5" stroke="currentColor" stroke-width="1.3"/></svg><span>Kütüphane</span></div>
+          <div class="ni" onclick="go('conn')"><svg viewBox="0 0 22 22" fill="none"><circle cx="8" cy="8" r="3.5" stroke="currentColor" stroke-width="1.3"/><path d="M2 19c0-3.3 2.7-6 6-6s6 2.7 6 6" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/><circle cx="16" cy="8" r="2.5" stroke="currentColor" stroke-width="1.2"/><path d="M16 13c2.2.5 4 2.3 4 6" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></svg><span>Bağlantılar</span></div>
+          <div class="ni" onclick="go('home')"><svg viewBox="0 0 22 22" fill="none"><path d="M3 11.5L11 4l8 7.5V18a1 1 0 01-1 1H4a1 1 0 01-1-1v-6.5z" stroke="currentColor" stroke-width="1.3"/></svg><span>Anasayfa</span></div>
+          <div class="ni" onclick="go('meet')"><svg viewBox="0 0 22 22" fill="none"><rect x="3" y="4" width="16" height="14" rx="2" stroke="currentColor" stroke-width="1.3"/><path d="M8 2v3M14 2v3M3 9h16" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg><span>Buluşmalar</span></div>
+          <div class="ni on"><svg viewBox="0 0 22 22" fill="none"><circle cx="11" cy="8" r="4" stroke="currentColor" stroke-width="1.3"/><path d="M3 20c0-4 3.6-7 8-7s8 3 8 7" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg><span>Profil</span></div>
+        </div>
+      </div>
+
+      <!-- ── HESABIM ── -->
+      <div class="sc" id="sc-hesabim">
+        <div class="back-header">
+          <button class="back-btn" onclick="go('profile')">←</button>
+          <span class="back-title">Hesabım</span>
+        </div>
+        <div class="sc-inner">
+          <div class="acc-body">
+            <div class="acc-sec">Abonelik</div>
+            <div class="sub-card">
+              <div class="sub-top">
+                <div>
+                  <div class="sub-plan" id="sub-plan">Ücretsiz Plan</div>
+                  <div class="sub-detail" id="sub-detail">Temel özellikler aktif</div>
+                </div>
+                <div class="sub-badge-pill free" id="sub-badge">Ücretsiz</div>
+              </div>
+              <div id="sub-upgrade">
+                <button class="btn-accent" onclick="setMode('prm')">Premium'a Geç — ₺89/ay</button>
+                <div style="text-align:center;font-size:10px;color:rgba(240,232,220,0.35);margin-top:6px;">veya ₺790/yıl · 3 ay bedava</div>
+              </div>
+              <div id="sub-cancel" class="hidden">
+                <div style="font-size:11px;color:rgba(240,232,220,0.4);margin-bottom:8px;">Sonraki ödeme: 13 Mayıs 2025 · ₺89</div>
+                <button style="width:100%;padding:10px;background:transparent;color:rgba(240,232,220,0.4);border:0.5px solid rgba(240,232,220,0.15);border-radius:9px;font-family:'DM Sans',sans-serif;font-size:12px;cursor:pointer;">Aboneliği İptal Et</button>
+              </div>
+            </div>
+
+            <div class="acc-sec">Ödeme Yöntemi</div>
+            <div class="pay-card"><div class="pc-left"><div class="pc-icon">VISA</div><div><div class="pc-title">•••• •••• •••• 4242</div><div class="pc-sub">Son kullanma: 12/26</div></div></div><span class="pc-edit">Düzenle</span></div>
+            <button class="add-card">+ Yeni kart ekle</button>
+
+            <div class="acc-sec">Bildirim Ayarları</div>
+            <div class="set-row"><div><div class="sr-title">Günün sorusu</div><div class="sr-sub">Her gün bildirim al</div></div><div class="sw on" onclick="this.classList.toggle('on')"></div></div>
+            <div class="set-row"><div><div class="sr-title">Yeni mesajlar</div><div class="sr-sub">DM ve grup mesajları</div></div><div class="sw on" onclick="this.classList.toggle('on')"></div></div>
+            <div class="set-row"><div><div class="sr-title">Buluşma hatırlatıcısı</div><div class="sr-sub">24 saat önce bildir</div></div><div class="sw" onclick="this.classList.toggle('on')"></div></div>
+            <div class="set-row"><div><div class="sr-title">E-posta bülteni</div><div class="sr-sub">Haftalık özet</div></div><div class="sw" onclick="this.classList.toggle('on')"></div></div>
+
+            <div class="acc-sec">Görünüm</div>
+            <div class="set-row"><div><div class="sr-title">Karanlık Mod</div><div class="sr-sub">Koyu renk tema</div></div><div class="sw" id="dark-sw" onclick="toggleDark()"></div></div>
+
+            <div class="acc-sec">Hesap</div>
+            <div class="set-row"><div><div class="sr-title">E-posta</div><div class="sr-sub">zeynep@mail.com</div></div><span class="pc-edit">Değiştir</span></div>
+            <div class="set-row"><div><div class="sr-title">Şifre</div><div class="sr-sub">Son değişiklik: 3 ay önce</div></div><span class="pc-edit">Değiştir</span></div>
+
+            <div class="acc-sec" style="color:#E24B4A;">Tehlikeli Alan</div>
+            <button class="danger-btn">Hesabı Sil</button>
+            <div class="spacer"></div>
+          </div>
+        </div>
+      </div>
+
+    </div><!-- phone-screen -->
+  </div><!-- phone-frame -->
+</div><!-- phone-wrap -->
+
+<script>
+var isPrem = false;
+var isDark = false;
+
+/* ── NAVİGASYON ── */
+function go(id) {
+  document.querySelectorAll('.sc').forEach(s => s.classList.remove('show'));
+  var el = document.getElementById('sc-' + id);
+  if (el) el.classList.add('show');
+}
+
+/* ── PREMIUM / STANDART ── */
+function setMode(mode) {
+  isPrem = mode === 'prm';
+  document.getElementById('btn-std').classList.toggle('on', !isPrem);
+  document.getElementById('btn-prm').classList.toggle('on', isPrem);
+  var badge = document.getElementById('mode-badge');
+  badge.textContent = isPrem ? '⭐ Premium üye' : 'Ücretsiz üye';
+  badge.className = 'mode-badge' + (isPrem ? ' premium' : '');
+  applyMode();
+}
+
+function applyMode() {
+  /* Buluşmalar */
+  var ml = document.getElementById('meet-lock');
+  var mc = document.getElementById('meet-cards');
+  if (ml) ml.style.display = isPrem ? 'none' : 'flex';
+  if (mc) { mc.classList.toggle('blurred', !isPrem); mc.style.pointerEvents = isPrem ? 'auto' : 'none'; }
+
+  /* Bağlantılar */
+  var cl = document.getElementById('conn-lock');
+  var cd = document.getElementById('conn-dm');
+  if (cl) cl.style.display = isPrem ? 'none' : 'block';
+  if (cd) cd.classList.toggle('hidden', !isPrem);
+
+  /* Profil badge */
+  var pb = document.getElementById('prof-badge');
+  if (pb) pb.classList.toggle('hidden', !isPrem);
+
+  /* Hesabım abonelik */
+  var sp = document.getElementById('sub-plan');
+  var sd = document.getElementById('sub-detail');
+  var sb = document.getElementById('sub-badge');
+  var su = document.getElementById('sub-upgrade');
+  var sc2 = document.getElementById('sub-cancel');
+  if (sp) {
+    sp.textContent = isPrem ? 'Premium Plan' : 'Ücretsiz Plan';
+    sd.textContent = isPrem ? 'Tüm özellikler açık' : 'Temel özellikler aktif';
+    sb.textContent = isPrem ? '⭐ Premium' : 'Ücretsiz';
+    sb.className = 'sub-badge-pill ' + (isPrem ? 'prem' : 'free');
+    su.classList.toggle('hidden', isPrem);
+    sc2.classList.toggle('hidden', !isPrem);
+  }
+
+  /* Anasayfa yakın üyeler */
+  var ns = document.getElementById('nearby-sub');
+  var nb = document.getElementById('nearby-badge');
+  if (ns) { ns.textContent = isPrem ? '4 kişi seninle aynı etikette!' : 'Ortak etiketli kişiler yakında.'; }
+  if (nb) { nb.textContent = isPrem ? 'Profilleri gör →' : 'Premium ile bağlan'; nb.className = 'badge ' + (isPrem ? 'red' : 'teal'); }
+
+  /* Kanallar premium lock */
+  ['ch-kariyer','ch-iliski'].forEach(id => {
+    var el = document.getElementById(id);
+    if (el) { el.textContent = isPrem ? '💬 Açık' : '🔒 Premium'; el.className = 'ct-count ' + (isPrem ? 'open' : 'prem'); }
+  });
+}
+
+/* ── DARK MODE ── */
+function toggleDark() {
+  isDark = !isDark;
+  document.getElementById('app').dataset.dark = isDark;
+  document.getElementById('dark-sw').classList.toggle('on', isDark);
+}
+
+/* ── LIBRARY TABS ── */
+function libTab(tab) {
+  document.getElementById('lib-akis').classList.toggle('hidden', tab !== 'akis');
+  document.getElementById('lib-kanallar').classList.toggle('hidden', tab !== 'kanallar');
+  document.getElementById('lib-tab1').classList.toggle('on', tab === 'akis');
+  document.getElementById('lib-tab2').classList.toggle('on', tab === 'kanallar');
+}
+
+/* ── NEARBY HANDLER ── */
+function handleNearby() {
+  if (!isPrem) { setMode('prm'); } else { go('conn'); }
+}
+
+/* ── PREMIUM CHANNEL ── */
+function handlePremChannel() {
+  if (!isPrem) { setMode('prm'); go('meet'); setTimeout(() => go('library'), 50); } else { go('channel'); }
+}
+
+/* ── JOIN BTN ── */
+function toggleJoin(btn) {
+  var joined = btn.dataset.joined === 'true';
+  btn.dataset.joined = !joined;
+  btn.textContent = joined ? 'Katıl' : '✓ Katıldım';
+  btn.style.background = joined ? 'var(--app-accent)' : 'var(--app-mid)';
+}
+
+/* ── KAT SEÇ ── */
+function catSelect(el) {
+  document.querySelectorAll('.cat-pill').forEach(p => p.classList.remove('on'));
+  el.classList.add('on');
+}
+
+/* ── KOD KOPYALA ── */
+function copyCode(btn, code) {
+  navigator.clipboard.writeText(code).catch(() => {});
+  btn.textContent = 'Kopyalandı!';
+  setTimeout(() => btn.textContent = 'Kopyala', 1500);
+}
+
+/* ── SAAT ── */
+function updateClock() {
+  var now = new Date();
+  var h = now.getHours().toString().padStart(2,'0');
+  var m = now.getMinutes().toString().padStart(2,'0');
+  var el = document.getElementById('clock');
+  if (el) el.textContent = h + ':' + m;
+}
+updateClock();
+setInterval(updateClock, 30000);
+
+/* Başlat */
+applyMode();
+</script>
+</body>
+</html>
