@@ -3,8 +3,8 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Childfree Türkiye — Prototip</title>
-<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,500;1,400&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<title>Childfree Türkiye — Prototip v2</title>
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,300;0,400;0,500;0,600;1,400&display=swap" rel="stylesheet">
 <style>
 /* ═══════════════════════════════════
    TEMA DEĞİŞKENLERİ
@@ -26,15 +26,15 @@
 }
 
 [data-dark="true"] {
-  --app-bg:      #1A1108;
-  --app-surface: #261809;
-  --app-light:   #201509;
+  --app-bg:      #1E150A;
+  --app-surface: #2A1C0E;
+  --app-light:   #261809;
   --app-border:  rgba(245,239,232,0.1);
   --app-teal:    #0E2420;
   --app-teal-dk: #7ECFB8;
-  --app-text:    #F0E8DC;
-  --app-text2:   #A08060;
-  --app-mid:     #A08060;
+  --app-text:    #EDE4D8;
+  --app-text2:   #9A7860;
+  --app-mid:     #9A7860;
 }
 
 * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -43,7 +43,7 @@
    DESKTOP LAYOUT
 ═══════════════════════════════════ */
 body {
-  font-family: 'DM Sans', system-ui, sans-serif;
+  font-family: 'Montserrat', sans-serif;
   background: #1C1108;
   min-height: 100vh;
   display: flex;
@@ -92,10 +92,10 @@ body::before {
 }
 
 .panel-logo-name {
-  font-family: 'Playfair Display', serif;
+  font-family: 'Montserrat', sans-serif;
   font-size: 13px;
   color: #F0E8DC;
-  font-style: italic;
+  font-style: normal; font-weight: 600; letter-spacing: -0.5px;
 }
 
 .panel-logo-sub {
@@ -137,7 +137,7 @@ body::before {
   color: rgba(240,232,220,0.45);
   background: transparent;
   border: none;
-  font-family: 'DM Sans', sans-serif;
+  font-family: 'Montserrat', sans-serif;
   transition: all .2s;
 }
 
@@ -259,10 +259,10 @@ body::before {
 }
 
 .app-logo {
-  font-family: 'Playfair Display', serif;
+  font-family: 'Montserrat', sans-serif;
   font-size: 14px;
   color: #F0E8DC;
-  font-style: italic;
+  font-style: normal; font-weight: 600; letter-spacing: -0.5px;
 }
 
 .app-bell {
@@ -290,8 +290,10 @@ body::before {
 }
 
 .pg-title {
-  font-family: 'Playfair Display', serif;
+  font-family: 'Montserrat', sans-serif;
   font-size: 18px;
+  font-weight: 600;
+  letter-spacing: -0.3px;
   color: var(--app-text);
   text-align: center;
   margin-bottom: 2px;
@@ -342,13 +344,14 @@ body::before {
 .bnav {
   background: var(--app-dark);
   display: flex;
-  padding: 8px 0 12px;
+  padding: 8px 2px 12px;
   border-top: 0.5px solid rgba(255,255,255,0.06);
   flex-shrink: 0;
 }
 
 .ni {
   flex: 1;
+  min-width: 0;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -356,12 +359,22 @@ body::before {
   cursor: pointer;
   opacity: .35;
   transition: opacity .15s;
+  padding: 0 2px;
 }
 
 .ni.on { opacity: 1; }
 .ni:active { opacity: .7; }
-.ni svg { width: 20px; height: 20px; color: #F0E8DC; }
-.ni span { font-size: 9px; color: #F0E8DC; }
+.ni svg { width: 18px; height: 18px; color: #F0E8DC; flex-shrink: 0; }
+.ni span {
+  font-size: clamp(7px, 2.2vw, 9px);
+  color: #F0E8DC;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 100%;
+  text-align: center;
+  line-height: 1;
+}
 
 /* BUTTONS */
 .btn-accent {
@@ -371,7 +384,7 @@ body::before {
   color: #fff;
   border: none;
   border-radius: 10px;
-  font-family: 'DM Sans', sans-serif;
+  font-family: 'Montserrat', sans-serif;
   font-size: 14px;
   font-weight: 500;
   cursor: pointer;
@@ -388,7 +401,7 @@ body::before {
   color: #F0E8DC;
   border: none;
   border-radius: 10px;
-  font-family: 'DM Sans', sans-serif;
+  font-family: 'Montserrat', sans-serif;
   font-size: 14px;
   font-weight: 500;
   cursor: pointer;
@@ -404,7 +417,7 @@ body::before {
   color: var(--app-accent);
   border: 1px solid var(--app-accent);
   border-radius: 10px;
-  font-family: 'DM Sans', sans-serif;
+  font-family: 'Montserrat', sans-serif;
   font-size: 13px;
   cursor: pointer;
 }
@@ -416,7 +429,7 @@ body::before {
   background: var(--app-bg);
   border: 1px solid var(--app-border);
   border-radius: 10px;
-  font-family: 'DM Sans', sans-serif;
+  font-family: 'Montserrat', sans-serif;
   font-size: 14px;
   color: var(--app-text);
   outline: none;
@@ -465,7 +478,7 @@ body::before {
   border-radius: 8px;
   padding: 7px 11px;
   font-size: 10px;
-  font-family: 'DM Sans', sans-serif;
+  font-family: 'Montserrat', sans-serif;
   cursor: pointer;
   flex-shrink: 0;
   white-space: nowrap;
@@ -556,10 +569,12 @@ body::before {
 }
 
 .login-name {
-  font-family: 'Playfair Display', serif;
+  font-family: 'Montserrat', sans-serif;
+  font-weight: 600;
+  letter-spacing: -0.3px;
   font-size: 20px;
   color: var(--app-text);
-  font-style: italic;
+  font-style: normal; font-weight: 600; letter-spacing: -0.5px;
 }
 
 .login-sub {
@@ -693,7 +708,7 @@ select.inp {
   border-radius: 8px;
   padding: 8px 10px;
   font-size: 10px;
-  font-family: 'DM Sans', sans-serif;
+  font-family: 'Montserrat', sans-serif;
   cursor: pointer;
   flex-shrink: 0;
   text-align: center;
@@ -719,7 +734,7 @@ select.inp {
 }
 
 .bq-label { font-size: 9px; color: var(--app-accent); font-weight: 500; text-transform: uppercase; letter-spacing: .5px; margin-bottom: 6px; }
-.bq-text { font-family: 'Playfair Display', serif; font-size: 16px; color: #F0E8DC; line-height: 1.4; font-style: italic; }
+.bq-text { font-family: 'Montserrat', sans-serif; font-size: 16px; color: #F0E8DC; line-height: 1.4; font-style: normal; font-weight: 600; letter-spacing: -0.5px; }
 .bq-count { font-size: 10px; color: rgba(240,232,220,0.35); margin-top: 7px; }
 
 .ans-input-row {
@@ -735,7 +750,7 @@ select.inp {
   background: var(--app-light);
   border: 0.5px solid var(--app-border);
   border-radius: 10px;
-  font-family: 'DM Sans', sans-serif;
+  font-family: 'Montserrat', sans-serif;
   font-size: 13px;
   color: var(--app-text2);
   outline: none;
@@ -784,7 +799,7 @@ select.inp {
   background: var(--app-light);
   color: var(--app-text2);
   border: none;
-  font-family: 'DM Sans', sans-serif;
+  font-family: 'Montserrat', sans-serif;
   transition: all .2s;
 }
 
@@ -849,15 +864,15 @@ select.inp {
 .msg {
   background: var(--app-light);
   border-radius: 12px;
-  padding: 11px 13px;
-  margin-bottom: 8px;
+  padding: 13px 15px;
+  margin-bottom: 10px;
   border: 0.5px solid var(--app-border);
 }
 
-.msg-meta { font-size: 10px; color: var(--app-text2); margin-bottom: 4px; }
-.msg-text { font-size: 13px; color: var(--app-text); line-height: 1.5; }
-.msg-like { font-size: 11px; color: var(--app-text2); margin-top: 6px; display: flex; align-items: center; gap: 4px; cursor: pointer; }
-.msg-like svg { width: 13px; height: 13px; }
+.msg-meta { font-size: 11px; color: var(--app-text2); margin-bottom: 6px; }
+.msg-text { font-size: 14px; color: var(--app-text); line-height: 1.6; }
+.msg-like { font-size: 12px; color: var(--app-text2); margin-top: 8px; display: flex; align-items: center; gap: 4px; cursor: pointer; }
+.msg-like svg { width: 14px; height: 14px; }
 
 .ch-input-row {
   background: var(--app-light);
@@ -875,7 +890,7 @@ select.inp {
   background: var(--app-bg);
   border: 0.5px solid var(--app-border);
   border-radius: 9px;
-  font-family: 'DM Sans', sans-serif;
+  font-family: 'Montserrat', sans-serif;
   font-size: 13px;
   color: var(--app-text2);
   outline: none;
@@ -921,7 +936,7 @@ select.inp {
 }
 
 .md-badge { font-size: 9px; color: var(--app-accent); font-weight: 500; text-transform: uppercase; letter-spacing: .5px; margin-bottom: 5px; }
-.md-title { font-family: 'Playfair Display', serif; font-size: 20px; color: #F0E8DC; margin-bottom: 3px; }
+.md-title { font-family: 'Montserrat', sans-serif; font-size: 20px; color: #F0E8DC; margin-bottom: 3px; }
 .md-host { font-size: 12px; color: rgba(240,232,220,0.5); }
 
 .md-body { padding: 14px 16px; }
@@ -965,7 +980,7 @@ select.inp {
   flex-shrink: 0;
 }
 
-.kes-title { font-family: 'Playfair Display', serif; font-size: 18px; color: #F0E8DC; }
+.kes-title { font-family: 'Montserrat', sans-serif; font-size: 18px; color: #F0E8DC; }
 .kes-sub { font-size: 11px; color: rgba(240,232,220,0.4); margin-top: 2px; }
 
 .cat-scroll {
@@ -1033,7 +1048,7 @@ select.inp {
   color: #F0E8DC;
   border: none;
   border-radius: 9px;
-  font-family: 'DM Sans', sans-serif;
+  font-family: 'Montserrat', sans-serif;
   font-size: 13px;
   cursor: pointer;
   display: flex;
@@ -1068,7 +1083,7 @@ select.inp {
   border: 2.5px solid var(--app-accent);
 }
 
-.prof-name { font-family: 'Playfair Display', serif; font-size: 18px; color: #F0E8DC; }
+.prof-name { font-family: 'Montserrat', sans-serif; font-size: 18px; font-weight: 600; letter-spacing: -0.3px; color: #F0E8DC; }
 .prof-loc { font-size: 11px; color: rgba(240,232,220,0.5); margin-top: 3px; }
 .prof-badge { display: inline-block; font-size: 10px; padding: 3px 10px; border-radius: 10px; margin-top: 8px; background: rgba(232,200,74,0.2); color: #E8C84A; }
 
@@ -1098,7 +1113,7 @@ select.inp {
 }
 
 .inv-code span { font-size: 13px; color: #F0E8DC; letter-spacing: 2px; }
-.inv-copy { font-size: 10px; color: var(--app-accent); background: none; border: none; cursor: pointer; font-family: 'DM Sans', sans-serif; }
+.inv-copy { font-size: 10px; color: var(--app-accent); background: none; border: none; cursor: pointer; font-family: 'Montserrat', sans-serif; }
 .inv-used { opacity: .3; }
 
 .menu-item {
@@ -1189,7 +1204,7 @@ select.inp {
   cursor: pointer;
   transition: opacity .15s;
   width: 100%;
-  font-family: 'DM Sans', sans-serif;
+  font-family: 'Montserrat', sans-serif;
 }
 
 .set-row {
@@ -1213,7 +1228,7 @@ select.inp {
   color: #E24B4A;
   border: 0.5px solid rgba(226,75,74,0.3);
   border-radius: 10px;
-  font-family: 'DM Sans', sans-serif;
+  font-family: 'Montserrat', sans-serif;
   font-size: 13px;
   cursor: pointer;
   margin-top: 4px;
@@ -1235,6 +1250,245 @@ select.inp {
 .sc-inner::-webkit-scrollbar { width: 3px; }
 .sc-inner::-webkit-scrollbar-track { background: transparent; }
 .sc-inner::-webkit-scrollbar-thumb { background: var(--app-surface); border-radius: 2px; }
+
+/* ═══════════════════════════════════
+   ANKET
+═══════════════════════════════════ */
+.poll-card {
+  background: var(--app-light);
+  border-radius: 14px;
+  border: 0.5px solid var(--app-border);
+  margin: 0 14px 10px;
+  padding: 14px;
+  border-left: 3px solid var(--app-accent);
+}
+
+.poll-label { font-size: 9px; font-weight: 500; color: var(--app-accent); text-transform: uppercase; letter-spacing: .5px; margin-bottom: 6px; }
+.poll-q { font-size: 14px; color: var(--app-text); font-weight: 500; margin-bottom: 12px; line-height: 1.4; }
+.poll-options { display: flex; flex-direction: column; gap: 7px; }
+
+.poll-opt {
+  position: relative;
+  border-radius: 9px;
+  border: 1px solid var(--app-border);
+  overflow: hidden;
+  cursor: pointer;
+  transition: border-color .15s;
+  background: var(--app-bg);
+}
+
+.poll-opt:hover { border-color: var(--app-accent); }
+.poll-opt.voted { border-color: var(--app-accent); cursor: default; }
+.poll-opt.voted.winner { border-color: var(--app-dark); }
+
+.poll-bar {
+  position: absolute; inset: 0; left: 0;
+  background: rgba(193,73,30,0.1);
+  border-radius: 8px;
+  width: 0%;
+  transition: width .6s ease;
+}
+
+.poll-opt.winner .poll-bar { background: rgba(44,26,14,0.12); }
+
+.poll-opt-inner {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 13px;
+}
+
+.poll-opt-text { font-size: 13px; color: var(--app-text); }
+.poll-opt-pct { font-size: 12px; color: var(--app-text2); font-weight: 500; display: none; }
+.poll-opt.voted .poll-opt-pct { display: block; }
+.poll-opt.voted .poll-opt-text { font-weight: 500; }
+.poll-opt.winner .poll-opt-text { color: var(--app-dark); }
+
+.poll-footer { font-size: 10px; color: var(--app-text2); margin-top: 9px; display: flex; justify-content: space-between; }
+
+/* ═══════════════════════════════════
+   ROZET SİSTEMİ
+═══════════════════════════════════ */
+.badge-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 8px;
+  margin-bottom: 14px;
+}
+
+.rozet {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 5px;
+  cursor: pointer;
+  transition: transform .15s;
+}
+
+.rozet:active { transform: scale(0.95); }
+
+.rozet-icon {
+  width: 52px; height: 52px;
+  border-radius: 16px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 24px;
+  border: 1.5px solid var(--app-border);
+  background: var(--app-light);
+  position: relative;
+  transition: all .2s;
+}
+
+.rozet.earned .rozet-icon {
+  border-color: var(--app-accent);
+  background: #FAECE7;
+}
+
+[data-dark="true"] .rozet.earned .rozet-icon { background: rgba(193,73,30,0.15); }
+
+.rozet.locked .rozet-icon { opacity: .3; filter: grayscale(1); }
+
+.rozet-check {
+  position: absolute;
+  bottom: -4px; right: -4px;
+  width: 16px; height: 16px;
+  background: var(--app-accent);
+  border-radius: 50%;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  border: 1.5px solid var(--app-light);
+}
+
+.rozet-check svg { width: 9px; height: 9px; color: #fff; }
+.rozet.earned .rozet-check { display: flex; }
+
+.rozet-name {
+  font-size: 9px;
+  color: var(--app-text2);
+  text-align: center;
+  line-height: 1.3;
+}
+
+.rozet.locked .rozet-name { opacity: .4; }
+
+/* Rozet tooltip */
+.rozet-tooltip {
+  display: none;
+  position: absolute;
+  bottom: 70px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: var(--app-dark);
+  color: #F0E8DC;
+  font-size: 12px;
+  padding: 8px 14px;
+  border-radius: 10px;
+  white-space: nowrap;
+  z-index: 999;
+  pointer-events: none;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+  max-width: 240px;
+  white-space: normal;
+  text-align: center;
+}
+
+.rozet-tooltip.show { display: block; animation: fi .2s ease; }
+
+/* ═══════════════════════════════════
+   ÖNE ÇIKAN BULUŞMA
+═══════════════════════════════════ */
+.featured-meet {
+  background: var(--app-dark);
+  border-radius: 14px;
+  margin: 0 14px 10px;
+  padding: 14px;
+  position: relative;
+  overflow: hidden;
+  cursor: pointer;
+  transition: opacity .15s;
+}
+
+.featured-meet:active { opacity: .85; }
+
+.featured-ribbon {
+  position: absolute;
+  top: 12px; right: -1px;
+  background: var(--app-accent);
+  color: #fff;
+  font-size: 9px;
+  font-weight: 500;
+  padding: 3px 10px;
+  border-radius: 6px 0 0 6px;
+  letter-spacing: .3px;
+}
+
+.fm-label { font-size: 9px; color: var(--app-accent); font-weight: 500; text-transform: uppercase; letter-spacing: .5px; margin-bottom: 5px; }
+.fm-title { font-size: 16px; color: #F0E8DC; font-weight: 500; margin-bottom: 2px; font-family: 'Montserrat', sans-serif; }
+.fm-host { font-size: 11px; color: rgba(240,232,220,0.5); margin-bottom: 10px; }
+.fm-row { display: flex; gap: 6px; align-items: center; margin-bottom: 4px; font-size: 11px; color: rgba(240,232,220,0.7); }
+.fm-row svg { width: 13px; height: 13px; color: var(--app-accent); flex-shrink: 0; }
+.fm-tags { display: flex; gap: 5px; margin-top: 10px; flex-wrap: wrap; }
+.fm-tag { font-size: 9px; padding: 3px 8px; border-radius: 8px; background: rgba(245,239,232,0.1); color: rgba(240,232,220,0.7); }
+
+/* Öne çıkar butonu (buluşma detayında) */
+.feature-btn {
+  width: 100%;
+  padding: 11px;
+  background: transparent;
+  color: var(--app-accent);
+  border: 1px solid var(--app-accent);
+  border-radius: 10px;
+  font-family: 'Montserrat', sans-serif;
+  font-size: 13px;
+  cursor: pointer;
+  margin-top: 8px;
+  transition: all .15s;
+  display: flex; align-items: center; justify-content: center; gap: 6px;
+}
+
+.feature-btn:hover { background: rgba(193,73,30,0.08); }
+.feature-btn.active { background: var(--app-accent); color: #fff; border-color: var(--app-accent); }
+.feature-btn svg { width: 14px; height: 14px; }
+
+/* Öne çıkar modal */
+.feature-modal-bg {
+  display: none;
+  position: absolute; inset: 0;
+  background: rgba(0,0,0,0.6);
+  z-index: 100;
+  align-items: flex-end;
+  justify-content: center;
+}
+
+.feature-modal-bg.show { display: flex; animation: fi .2s ease; }
+
+.feature-modal {
+  background: var(--app-light);
+  border-radius: 20px 20px 0 0;
+  padding: 20px 18px 28px;
+  width: 100%;
+}
+
+.fm-modal-title { font-size: 16px; color: var(--app-text); font-weight: 500; margin-bottom: 4px; }
+.fm-modal-sub { font-size: 12px; color: var(--app-text2); margin-bottom: 16px; line-height: 1.4; }
+.fm-price-row { display: flex; gap: 8px; margin-bottom: 14px; }
+
+.fm-price-opt {
+  flex: 1;
+  padding: 12px 8px;
+  border: 1.5px solid var(--app-border);
+  border-radius: 12px;
+  text-align: center;
+  cursor: pointer;
+  transition: all .15s;
+  background: var(--app-bg);
+}
+
+.fm-price-opt.sel { border-color: var(--app-accent); background: #FAECE7; }
+[data-dark="true"] .fm-price-opt.sel { background: rgba(193,73,30,0.15); }
+.fm-price { font-size: 16px; color: var(--app-text); font-weight: 500; }
+.fm-duration { font-size: 10px; color: var(--app-text2); margin-top: 2px; }
 </style>
 </head>
 <body>
@@ -1242,15 +1496,11 @@ select.inp {
 <!-- SOL PANEL -->
 <div class="side-panel">
   <div class="panel-logo">
-    <div class="panel-logo-icon">
-      <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
-        <circle cx="12" cy="8" r="4" fill="#C1491E"/>
-        <path d="M4 20c0-4 3.6-7 8-7s8 3 8 7" stroke="#F5EFE8" stroke-width="1.8" stroke-linecap="round"/>
-        <path d="M17 3l2-2M19 5h2M17 7l2 2" stroke="#C1491E" stroke-width="1.4" stroke-linecap="round"/>
-      </svg>
+    <div style="text-align:center;margin-bottom:2px;">
+      <div style="font-family:'Montserrat',sans-serif;font-weight:800;font-size:20px;color:#F0E8DC;letter-spacing:-0.8px;line-height:1;">childfree</div>
+      <div style="font-family:'Montserrat',sans-serif;font-weight:400;font-size:8px;color:rgba(240,232,220,0.45);letter-spacing:3px;text-transform:uppercase;margin-top:3px;">türkiye</div>
     </div>
-    <div class="panel-logo-name">childfree türkiye</div>
-    <div class="panel-logo-sub">Prototip v3</div>
+    <div class="panel-logo-sub">Prototip v2</div>
   </div>
 
   <div class="panel-section">
@@ -1294,14 +1544,10 @@ select.inp {
       <!-- ── GİRİŞ ── -->
       <div class="sc show" id="sc-login" style="justify-content:center;padding:20px 16px;">
         <div class="login-logo">
-          <div class="login-icon">
-            <svg width="28" height="28" viewBox="0 0 28 28" fill="none">
-              <circle cx="14" cy="10" r="5" fill="#C1491E"/>
-              <path d="M5 24c0-4.5 4-8 9-8s9 3.5 9 8" stroke="#F5EFE8" stroke-width="2" stroke-linecap="round"/>
-              <path d="M20 5.5l2.5-2.5M23 8h2.5M20 10.5l2.5 2.5" stroke="#C1491E" stroke-width="1.6" stroke-linecap="round"/>
-            </svg>
+          <div style="text-align:center;">
+            <div style="font-family:'Montserrat',sans-serif;font-weight:800;font-size:28px;color:#2C1A0E;letter-spacing:-1.2px;line-height:1;">childfree</div>
+            <div style="font-family:'Montserrat',sans-serif;font-weight:400;font-size:10px;color:#7A5C42;letter-spacing:4px;text-transform:uppercase;margin-top:4px;">türkiye</div>
           </div>
-          <div class="login-name">childfree türkiye</div>
           <div class="login-sub">seçimini paylaş, topluluğunu bul</div>
         </div>
         <div class="login-card">
@@ -1310,7 +1556,28 @@ select.inp {
           <input class="code-input inp" maxlength="8" placeholder="_ _ _ _ _ _ _ _" style="letter-spacing:6px;text-align:center;font-size:20px;" oninput="this.value=this.value.toUpperCase()">
           <button class="btn-accent" onclick="go('reg1')">Devam Et →</button>
           <div class="divider"></div>
-          <div class="link-text">Hesabın var mı? <a onclick="go('home')">Giriş yap</a></div>
+          <div class="link-text">Hesabın var mı? <a onclick="go('sc-giris-form')">Giriş yap</a></div>
+        </div>
+      </div>
+
+      <!-- ── GİRİŞ FORMU ── -->
+      <div class="sc" id="sc-giris-form" style="justify-content:center;padding:20px 16px;">
+        <div class="login-logo">
+          <div style="text-align:center;">
+            <div style="font-family:'Montserrat',sans-serif;font-weight:800;font-size:28px;color:#2C1A0E;letter-spacing:-1.2px;line-height:1;">childfree</div>
+            <div style="font-family:'Montserrat',sans-serif;font-weight:400;font-size:10px;color:#7A5C42;letter-spacing:4px;text-transform:uppercase;margin-top:4px;">türkiye</div>
+          </div>
+          <div class="login-sub">tekrar hoş geldin</div>
+        </div>
+        <div class="login-card">
+          <div class="login-card-title">Giriş yap</div>
+          <div class="login-card-sub">E-posta ve şifrenle devam et.</div>
+          <div class="field"><label class="inp-label">E-posta</label><input class="inp" placeholder="ornek [at] mail.com" type="email"></div>
+          <div class="field"><label class="inp-label">Şifre</label><input class="inp" placeholder="Şifren" type="password"></div>
+          <div style="text-align:right;margin-bottom:14px;"><a style="font-size:12px;color:var(--app-accent);cursor:pointer;">Şifremi unuttum</a></div>
+          <button class="btn-accent" onclick="go('home')">Giriş Yap →</button>
+          <div class="divider"></div>
+          <div class="link-text">Hesabın yok mu? <a onclick="go('login')">Davet koduyla kayıt ol</a></div>
         </div>
       </div>
 
@@ -1324,7 +1591,7 @@ select.inp {
         <div class="sc-inner" style="padding-bottom:20px;">
           <div class="step-bar"><div class="step-dot done"></div><div class="step-dot"></div></div>
           <div class="reg-body">
-            <div class="field"><label class="inp-label">E-posta</label><input class="inp" placeholder="ornek@mail.com" type="email"></div>
+            <div class="field"><label class="inp-label">E-posta</label><input class="inp" placeholder="ornek [at] mail.com" type="email"></div>
             <div class="field"><label class="inp-label">Şifre</label><input class="inp" placeholder="En az 8 karakter" type="password"></div>
             <div class="field"><label class="inp-label">Şifre tekrar</label><input class="inp" placeholder="Şifreyi tekrar gir" type="password"></div>
             <button class="btn-accent" onclick="go('reg2')">Devam Et →</button>
@@ -1375,7 +1642,7 @@ select.inp {
       <!-- ── ANASAYFA ── -->
       <div class="sc" id="sc-home">
         <div class="app-header">
-          <span class="app-logo">childfree türkiye</span>
+          <div class="app-logo"><span class="app-logo-main">childfree</span><span class="app-logo-sub">türkiye</span></div>
           <div style="position:relative;width:22px;height:22px;cursor:pointer;">
             <svg viewBox="0 0 22 22" fill="none" style="width:100%;height:100%;color:rgba(240,232,220,0.7);">
               <path d="M11 2a6 6 0 00-6 6v4l-2 2v1h16v-1l-2-2V8a6 6 0 00-6-6zM9 18a2 2 0 004 0" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/>
@@ -1400,9 +1667,9 @@ select.inp {
           </div>
           <div class="sec-head">Yakınındaki Üyeler</div>
           <div class="card tcard" onclick="handleNearby()" id="nearby-card">
-            <div class="card-t">İstanbul'da 48 üye</div>
-            <div class="card-s" id="nearby-sub">Ortak etiketli kişiler yakında.</div>
-            <span class="badge teal" id="nearby-badge">Premium ile bağlan</span>
+            <div class="card-t">İstanbul'da biri seni bekliyor</div>
+            <div class="card-s" id="nearby-sub">Seninle aynı şehirde, benzer etiketlerde 4 kişi var.</div>
+            <span class="badge teal" id="nearby-badge">Premium ile kim olduklarını gör →</span>
           </div>
           <div class="sec-head">Keşfet'ten</div>
           <div class="card" onclick="go('kesf')">
@@ -1412,12 +1679,12 @@ select.inp {
           </div>
           <div class="spacer"></div>
         </div>
-        <div class="bnav">
-          <div class="ni" onclick="go('library')"><svg viewBox="0 0 22 22" fill="none"><rect x="3" y="3" width="6" height="16" rx="1.5" stroke="currentColor" stroke-width="1.3"/><rect x="11" y="3" width="8" height="16" rx="1.5" stroke="currentColor" stroke-width="1.3"/></svg><span>Kütüphane</span></div>
-          <div class="ni" onclick="go('conn')"><svg viewBox="0 0 22 22" fill="none"><circle cx="8" cy="8" r="3.5" stroke="currentColor" stroke-width="1.3"/><path d="M2 19c0-3.3 2.7-6 6-6s6 2.7 6 6" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/><circle cx="16" cy="8" r="2.5" stroke="currentColor" stroke-width="1.2"/><path d="M16 13c2.2.5 4 2.3 4 6" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></svg><span>Bağlantılar</span></div>
-          <div class="ni on"><svg viewBox="0 0 22 22" fill="none"><path d="M3 11.5L11 4l8 7.5V18a1 1 0 01-1 1H4a1 1 0 01-1-1v-6.5z" stroke="currentColor" stroke-width="1.3"/></svg><span>Anasayfa</span></div>
-          <div class="ni" onclick="go('meet')"><svg viewBox="0 0 22 22" fill="none"><rect x="3" y="4" width="16" height="14" rx="2" stroke="currentColor" stroke-width="1.3"/><path d="M8 2v3M14 2v3M3 9h16" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg><span>Buluşmalar</span></div>
-          <div class="ni" onclick="go('kesf')"><svg viewBox="0 0 22 22" fill="none"><path d="M11 2l2.7 5.5 6 .9-4.4 4.2 1 5.9L11 15.7l-5.3 2.8 1-5.9L2.3 8.4l6-.9z" stroke="currentColor" stroke-width="1.3" stroke-linejoin="round"/></svg><span>Keşfet</span></div>
+                <div class="bnav">
+          <div class="ni" onclick="go('library')"><svg viewBox="0 0 20 20" fill="none"><rect x="2" y="3" width="5" height="14" rx="1" stroke="currentColor" stroke-width="1.4"/><rect x="9" y="3" width="5" height="14" rx="1" stroke="currentColor" stroke-width="1.4"/><rect x="15" y="6" width="3" height="11" rx="1" stroke="currentColor" stroke-width="1.4"/></svg><span>Kütüphane</span></div>
+          <div class="ni" onclick="go('conn')"><svg viewBox="0 0 20 20" fill="none"><circle cx="7" cy="7" r="3" stroke="currentColor" stroke-width="1.4"/><circle cx="15" cy="13" r="3" stroke="currentColor" stroke-width="1.4"/><line x1="9.5" y1="9.5" x2="12.5" y2="10.5" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg><span>Bağlantılar</span></div>
+          <div class="ni on"><svg viewBox="0 0 20 20" fill="none"><path d="M3 9L10 3l7 6v8a1 1 0 01-1 1H4a1 1 0 01-1-1V9z" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/><rect x="7" y="12" width="6" height="6" rx="0.5" stroke="currentColor" stroke-width="1.3"/></svg><span>Anasayfa</span></div>
+          <div class="ni" onclick="go('meet')"><svg viewBox="0 0 20 20" fill="none"><rect x="3" y="4" width="14" height="13" rx="2" stroke="currentColor" stroke-width="1.4"/><line x1="7" y1="2" x2="7" y2="6" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/><line x1="13" y1="2" x2="13" y2="6" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/><line x1="3" y1="9" x2="17" y2="9" stroke="currentColor" stroke-width="1.2"/></svg><span>Buluşmalar</span></div>
+          <div class="ni" onclick="go('profile')"><svg viewBox="0 0 20 20" fill="none"><circle cx="10" cy="7" r="3.5" stroke="currentColor" stroke-width="1.4"/><path d="M3 18c0-3.5 3.1-6 7-6s7 2.5 7 6" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg><span>Profil</span></div>
         </div>
       </div>
 
@@ -1442,13 +1709,23 @@ select.inp {
           <div class="ans-item"><div class="ai-meta"><span>Merve T.</span><span>1 sa önce</span></div><div class="ai-text">Spontane seyahat edebilmek. Cuma akşamı bilet alıp Cumartesi uçmak — bu his başka.</div><div class="ai-like"><svg viewBox="0 0 16 16" fill="none"><path d="M8 13s-5-3.5-5-7a4 4 0 018 0" stroke="currentColor" stroke-width="1.2"/><path d="M8 13s5-3.5 5-7a4 4 0 00-8 0" stroke="currentColor" stroke-width="1.2"/></svg>9</div></div>
           <div class="ans-item"><div class="ai-meta"><span>Selin A.</span><span>30 dk önce</span></div><div class="ai-text">Suçluluk duymadan kariyer peşinde koşabilmek. Büyümek, üretmek, özgürce.</div><div class="ai-like"><svg viewBox="0 0 16 16" fill="none"><path d="M8 13s-5-3.5-5-7a4 4 0 018 0" stroke="currentColor" stroke-width="1.2"/><path d="M8 13s5-3.5 5-7a4 4 0 00-8 0" stroke="currentColor" stroke-width="1.2"/></svg>6</div></div>
           <div class="ans-item"><div class="ai-meta"><span>Canan B.</span><span>15 dk önce</span></div><div class="ai-text">Haftasonlarım tamamen bana ait. Kimsenin randevusuna, doğum gününe, etkinliğine takılmadan.</div><div class="ai-like"><svg viewBox="0 0 16 16" fill="none"><path d="M8 13s-5-3.5-5-7a4 4 0 018 0" stroke="currentColor" stroke-width="1.2"/><path d="M8 13s5-3.5 5-7a4 4 0 00-8 0" stroke="currentColor" stroke-width="1.2"/></svg>3</div></div>
+          <div class="poll-card">
+            <div class="poll-label">📊 Bugünün anketi</div>
+            <div class="poll-q">Seninle aynı seçimi yapan biri sormadan anlasın ister misin?</div>
+            <div class="poll-options" id="poll-bg">
+              <div class="poll-opt" onclick="votePoll('poll-bg',0,61)"><div class="poll-bar"></div><div class="poll-opt-inner"><span class="poll-opt-text">Evet, hep böyle isterim</span><span class="poll-opt-pct">61%</span></div></div>
+              <div class="poll-opt" onclick="votePoll('poll-bg',1,24)"><div class="poll-bar"></div><div class="poll-opt-inner"><span class="poll-opt-text">Bazen, duruma göre</span><span class="poll-opt-pct">24%</span></div></div>
+              <div class="poll-opt" onclick="votePoll('poll-bg',2,15)"><div class="poll-bar"></div><div class="poll-opt-inner"><span class="poll-opt-text">Hayır, sormayı tercih ederim</span><span class="poll-opt-pct">15%</span></div></div>
+            </div>
+            <div class="poll-footer"><span id="poll-bg-count">89 oy · 8s 14dk kaldı</span><span>Oy ver →</span></div>
+          </div>
           <div class="spacer"></div>
         </div>
       </div>
 
       <!-- ── KÜTÜPHANE ── -->
       <div class="sc" id="sc-library">
-        <div class="app-header"><span class="app-logo">childfree türkiye</span><svg style="width:20px;height:20px;color:rgba(240,232,220,0.7);" viewBox="0 0 22 22" fill="none"><path d="M11 2a6 6 0 00-6 6v4l-2 2v1h16v-1l-2-2V8a6 6 0 00-6-6zM9 18a2 2 0 004 0" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg></div>
+        <div class="app-header"><div class="app-logo"><span class="app-logo-main">childfree</span><span class="app-logo-sub">türkiye</span></div><svg style="width:20px;height:20px;color:rgba(240,232,220,0.7);" viewBox="0 0 22 22" fill="none"><path d="M11 2a6 6 0 00-6 6v4l-2 2v1h16v-1l-2-2V8a6 6 0 00-6-6zM9 18a2 2 0 004 0" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg></div>
         <div class="sc-inner">
           <div class="pg-title">Kütüphane</div>
           <div class="pg-sub">Bugün nerede paylaşmak istersin?</div>
@@ -1477,12 +1754,12 @@ select.inp {
           </div>
           <div class="spacer"></div>
         </div>
-        <div class="bnav">
-          <div class="ni on"><svg viewBox="0 0 22 22" fill="none"><rect x="3" y="3" width="6" height="16" rx="1.5" stroke="currentColor" stroke-width="1.3"/><rect x="11" y="3" width="8" height="16" rx="1.5" stroke="currentColor" stroke-width="1.3"/></svg><span>Kütüphane</span></div>
-          <div class="ni" onclick="go('conn')"><svg viewBox="0 0 22 22" fill="none"><circle cx="8" cy="8" r="3.5" stroke="currentColor" stroke-width="1.3"/><path d="M2 19c0-3.3 2.7-6 6-6s6 2.7 6 6" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/><circle cx="16" cy="8" r="2.5" stroke="currentColor" stroke-width="1.2"/><path d="M16 13c2.2.5 4 2.3 4 6" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></svg><span>Bağlantılar</span></div>
-          <div class="ni" onclick="go('home')"><svg viewBox="0 0 22 22" fill="none"><path d="M3 11.5L11 4l8 7.5V18a1 1 0 01-1 1H4a1 1 0 01-1-1v-6.5z" stroke="currentColor" stroke-width="1.3"/></svg><span>Anasayfa</span></div>
-          <div class="ni" onclick="go('meet')"><svg viewBox="0 0 22 22" fill="none"><rect x="3" y="4" width="16" height="14" rx="2" stroke="currentColor" stroke-width="1.3"/><path d="M8 2v3M14 2v3M3 9h16" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg><span>Buluşmalar</span></div>
-          <div class="ni" onclick="go('kesf')"><svg viewBox="0 0 22 22" fill="none"><path d="M11 2l2.7 5.5 6 .9-4.4 4.2 1 5.9L11 15.7l-5.3 2.8 1-5.9L2.3 8.4l6-.9z" stroke="currentColor" stroke-width="1.3" stroke-linejoin="round"/></svg><span>Keşfet</span></div>
+                <div class="bnav">
+          <div class="ni on"><svg viewBox="0 0 20 20" fill="none"><rect x="2" y="3" width="5" height="14" rx="1" stroke="currentColor" stroke-width="1.4"/><rect x="9" y="3" width="5" height="14" rx="1" stroke="currentColor" stroke-width="1.4"/><rect x="15" y="6" width="3" height="11" rx="1" stroke="currentColor" stroke-width="1.4"/></svg><span>Kütüphane</span></div>
+          <div class="ni" onclick="go('conn')"><svg viewBox="0 0 20 20" fill="none"><circle cx="7" cy="7" r="3" stroke="currentColor" stroke-width="1.4"/><circle cx="15" cy="13" r="3" stroke="currentColor" stroke-width="1.4"/><line x1="9.5" y1="9.5" x2="12.5" y2="10.5" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg><span>Bağlantılar</span></div>
+          <div class="ni" onclick="go('home')"><svg viewBox="0 0 20 20" fill="none"><path d="M3 9L10 3l7 6v8a1 1 0 01-1 1H4a1 1 0 01-1-1V9z" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/><rect x="7" y="12" width="6" height="6" rx="0.5" stroke="currentColor" stroke-width="1.3"/></svg><span>Anasayfa</span></div>
+          <div class="ni" onclick="go('meet')"><svg viewBox="0 0 20 20" fill="none"><rect x="3" y="4" width="14" height="13" rx="2" stroke="currentColor" stroke-width="1.4"/><line x1="7" y1="2" x2="7" y2="6" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/><line x1="13" y1="2" x2="13" y2="6" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/><line x1="3" y1="9" x2="17" y2="9" stroke="currentColor" stroke-width="1.2"/></svg><span>Buluşmalar</span></div>
+          <div class="ni" onclick="go('profile')"><svg viewBox="0 0 20 20" fill="none"><circle cx="10" cy="7" r="3.5" stroke="currentColor" stroke-width="1.4"/><path d="M3 18c0-3.5 3.1-6 7-6s7 2.5 7 6" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg><span>Profil</span></div>
         </div>
       </div>
 
@@ -1497,6 +1774,17 @@ select.inp {
           <div class="msg"><div class="msg-meta">Ayşe K. · 2 sa önce</div><div class="msg-text">Geçen ay yalnız Kyoto'ya gittim, inanılmazdı. Childfree olmanın en güzel yanı böyle ani kararlar verebilmek!</div><div class="msg-like"><svg viewBox="0 0 16 16" fill="none"><path d="M8 13s-5-3.5-5-7a4 4 0 018 0" stroke="currentColor" stroke-width="1.2"/><path d="M8 13s5-3.5 5-7a4 4 0 00-8 0" stroke="currentColor" stroke-width="1.2"/></svg>12</div></div>
           <div class="msg"><div class="msg-meta">Merve T. · 1 sa önce</div><div class="msg-text">Ben de geçen yaz Portekiz'e solo gittim. "Yalnız mısın?" diye sordular ama harika vakit geçirdim 😄</div><div class="msg-like"><svg viewBox="0 0 16 16" fill="none"><path d="M8 13s-5-3.5-5-7a4 4 0 018 0" stroke="currentColor" stroke-width="1.2"/><path d="M8 13s5-3.5 5-7a4 4 0 00-8 0" stroke="currentColor" stroke-width="1.2"/></svg>8</div></div>
           <div class="msg"><div class="msg-meta">Selin A. · 20 dk önce</div><div class="msg-text">Bali'yi düşünüyorum sonbahar için, kim gelir? Küçük grup olur, harika olur!</div><div class="msg-like"><svg viewBox="0 0 16 16" fill="none"><path d="M8 13s-5-3.5-5-7a4 4 0 018 0" stroke="currentColor" stroke-width="1.2"/><path d="M8 13s5-3.5 5-7a4 4 0 00-8 0" stroke="currentColor" stroke-width="1.2"/></svg>4</div></div>
+          <div class="poll-card" style="margin:0 0 8px 0;">
+            <div class="poll-label">📊 Anket · Selin tarafından</div>
+            <div class="poll-q">Sonbahar grubu için hangi şehir?</div>
+            <div class="poll-options" id="poll-ch">
+              <div class="poll-opt" onclick="votePoll('poll-ch',0,38)"><div class="poll-bar"></div><div class="poll-opt-inner"><span class="poll-opt-text">🇮🇩 Bali</span><span class="poll-opt-pct">38%</span></div></div>
+              <div class="poll-opt" onclick="votePoll('poll-ch',1,31)"><div class="poll-bar"></div><div class="poll-opt-inner"><span class="poll-opt-text">🇵🇹 Portekiz</span><span class="poll-opt-pct">31%</span></div></div>
+              <div class="poll-opt" onclick="votePoll('poll-ch',2,19)"><div class="poll-bar"></div><div class="poll-opt-inner"><span class="poll-opt-text">🇬🇷 Yunanistan</span><span class="poll-opt-pct">19%</span></div></div>
+              <div class="poll-opt" onclick="votePoll('poll-ch',3,12)"><div class="poll-bar"></div><div class="poll-opt-inner"><span class="poll-opt-text">🇯🇵 Japonya</span><span class="poll-opt-pct">12%</span></div></div>
+            </div>
+            <div class="poll-footer"><span id="poll-ch-count">32 oy · 2 gün kaldı</span><span>Oy ver →</span></div>
+          </div>
         </div>
         <div class="ch-input-row">
           <input class="ch-inp" placeholder="Düşünceni ekle...">
@@ -1506,24 +1794,45 @@ select.inp {
 
       <!-- ── BULUŞMALAR ── -->
       <div class="sc" id="sc-meet">
-        <div class="app-header"><span class="app-logo">childfree türkiye</span><svg style="width:20px;height:20px;color:rgba(240,232,220,0.7);" viewBox="0 0 22 22" fill="none"><path d="M11 2a6 6 0 00-6 6v4l-2 2v1h16v-1l-2-2V8a6 6 0 00-6-6zM9 18a2 2 0 004 0" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg></div>
+        <div class="app-header"><div class="app-logo"><span class="app-logo-main">childfree</span><span class="app-logo-sub">türkiye</span></div><svg style="width:20px;height:20px;color:rgba(240,232,220,0.7);" viewBox="0 0 22 22" fill="none"><path d="M11 2a6 6 0 00-6 6v4l-2 2v1h16v-1l-2-2V8a6 6 0 00-6-6zM9 18a2 2 0 004 0" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg></div>
         <div class="sc-inner">
           <div class="pg-title">Buluşmalar</div>
           <div class="pg-sub">Gerçek hayatta bağlan</div>
-          <div id="meet-lock" class="lock-banner"><div class="lock-banner-text">Buluşmaları görmek ve katılmak Premium özelliğidir.</div><button class="lock-banner-btn" onclick="setMode('prm')">Premium'a Geç</button></div>
+          <div id="meet-lock" style="margin:0 14px 10px;border-radius:14px;overflow:hidden;position:relative;">
+            <div style="filter:blur(3px);pointer-events:none;opacity:.4;">
+              <div class="meet-card" style="margin:0 0 8px 0;"><div class="mc-date">Paz · 13 Nis · 11:00</div><div class="mc-title">Brunch — Kadıköy</div><div class="mc-host">Beth · İstanbul</div><div class="mc-tags"><span class="mc-tag">Solo-Dostu</span><span class="mc-tag">4 kişi</span></div></div>
+              <div class="meet-card" style="margin:0;"><div class="mc-date">Cmt · 19 Nis · 19:00</div><div class="mc-title">Akşam yemeği & müzik</div><div class="mc-host">Ira · Beşiktaş</div><div class="mc-tags"><span class="mc-tag">Küçük Grup</span><span class="mc-tag">7 kişi</span></div></div>
+            </div>
+            <div style="position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;background:rgba(44,26,14,0.55);border-radius:14px;padding:20px;text-align:center;">
+              <div style="font-size:28px;margin-bottom:8px;">📅</div>
+              <div style="font-size:15px;color:#F0E8DC;font-weight:500;margin-bottom:5px;">Bu haftasonu 3 buluşma var</div>
+              <div style="font-size:12px;color:rgba(240,232,220,0.6);margin-bottom:14px;line-height:1.5;">Gerçek insanlarla buluşmak için<br>Premium'a geç.</div>
+              <button style="background:#C1491E;color:#fff;border:none;border-radius:10px;padding:11px 24px;font-size:13px;font-weight:500;cursor:pointer;font-family:'Montserrat', sans-serif;" onclick="setMode('prm')">Kilidi Aç — ₺89/ay</button>
+              <div style="font-size:10px;color:rgba(240,232,220,0.4);margin-top:8px;">İstediğin zaman iptal edebilirsin</div>
+            </div>
+          </div>
           <div id="meet-cards">
+            <div class="featured-meet" onclick="go('meetdetay')">
+              <div class="featured-ribbon">⭐ Öne Çıkan</div>
+              <div class="fm-label">Bu hafta öne çıkan</div>
+              <div class="fm-title">İstanbul Childfree Piknik</div>
+              <div class="fm-host">Ayşe K. tarafından düzenlendi</div>
+              <div class="fm-row"><svg viewBox="0 0 16 16" fill="none"><rect x="2" y="2" width="12" height="11" rx="1.5" stroke="currentColor" stroke-width="1.2"/><path d="M5 1v2M11 1v2M2 6h12" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></svg>Cumartesi, 20 Nisan · 12:00</div>
+              <div class="fm-row"><svg viewBox="0 0 16 16" fill="none"><path d="M8 1a5 5 0 015 5c0 3.5-5 9-5 9S3 9.5 3 6a5 5 0 015-5z" stroke="currentColor" stroke-width="1.2"/><circle cx="8" cy="6" r="1.5" stroke="currentColor" stroke-width="1.2"/></svg>Emirgan Korusu, İstanbul</div>
+              <div class="fm-tags"><span class="fm-tag">Açık Hava</span><span class="fm-tag">Solo-Dostu</span><span class="fm-tag">12 kişi</span></div>
+            </div>
             <div class="meet-card" onclick="go('meetdetay')"><div class="mc-date">Paz · 13 Nis · 11:00</div><div class="mc-title">Brunch — Kadıköy</div><div class="mc-host">Beth tarafından düzenlendi · İstanbul</div><div class="mc-tags"><span class="mc-tag">Solo-Dostu</span><span class="mc-tag">4 kişi</span></div></div>
             <div class="meet-card" onclick="go('meetdetay')"><div class="mc-date">Cmt · 19 Nis · 19:00</div><div class="mc-title">Akşam yemeği & müzik</div><div class="mc-host">Ira tarafından düzenlendi · Beşiktaş</div><div class="mc-tags"><span class="mc-tag">Küçük Grup</span><span class="mc-tag">7 kişi</span></div></div>
             <div class="meet-card"><div class="mc-date">Paz · 27 Nis · 14:00</div><div class="mc-title">Kitap okuma buluşması</div><div class="mc-host">Zeynep tarafından düzenlendi · Moda</div><div class="mc-tags"><span class="mc-tag">Kitapseverler</span><span class="mc-tag">3 kişi</span></div></div>
           </div>
           <div class="spacer"></div>
         </div>
-        <div class="bnav">
-          <div class="ni" onclick="go('library')"><svg viewBox="0 0 22 22" fill="none"><rect x="3" y="3" width="6" height="16" rx="1.5" stroke="currentColor" stroke-width="1.3"/><rect x="11" y="3" width="8" height="16" rx="1.5" stroke="currentColor" stroke-width="1.3"/></svg><span>Kütüphane</span></div>
-          <div class="ni" onclick="go('conn')"><svg viewBox="0 0 22 22" fill="none"><circle cx="8" cy="8" r="3.5" stroke="currentColor" stroke-width="1.3"/><path d="M2 19c0-3.3 2.7-6 6-6s6 2.7 6 6" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/><circle cx="16" cy="8" r="2.5" stroke="currentColor" stroke-width="1.2"/><path d="M16 13c2.2.5 4 2.3 4 6" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></svg><span>Bağlantılar</span></div>
-          <div class="ni" onclick="go('home')"><svg viewBox="0 0 22 22" fill="none"><path d="M3 11.5L11 4l8 7.5V18a1 1 0 01-1 1H4a1 1 0 01-1-1v-6.5z" stroke="currentColor" stroke-width="1.3"/></svg><span>Anasayfa</span></div>
-          <div class="ni on"><svg viewBox="0 0 22 22" fill="none"><rect x="3" y="4" width="16" height="14" rx="2" stroke="currentColor" stroke-width="1.3"/><path d="M8 2v3M14 2v3M3 9h16" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg><span>Buluşmalar</span></div>
-          <div class="ni" onclick="go('kesf')"><svg viewBox="0 0 22 22" fill="none"><path d="M11 2l2.7 5.5 6 .9-4.4 4.2 1 5.9L11 15.7l-5.3 2.8 1-5.9L2.3 8.4l6-.9z" stroke="currentColor" stroke-width="1.3" stroke-linejoin="round"/></svg><span>Keşfet</span></div>
+                <div class="bnav">
+          <div class="ni" onclick="go('library')"><svg viewBox="0 0 20 20" fill="none"><rect x="2" y="3" width="5" height="14" rx="1" stroke="currentColor" stroke-width="1.4"/><rect x="9" y="3" width="5" height="14" rx="1" stroke="currentColor" stroke-width="1.4"/><rect x="15" y="6" width="3" height="11" rx="1" stroke="currentColor" stroke-width="1.4"/></svg><span>Kütüphane</span></div>
+          <div class="ni" onclick="go('conn')"><svg viewBox="0 0 20 20" fill="none"><circle cx="7" cy="7" r="3" stroke="currentColor" stroke-width="1.4"/><circle cx="15" cy="13" r="3" stroke="currentColor" stroke-width="1.4"/><line x1="9.5" y1="9.5" x2="12.5" y2="10.5" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg><span>Bağlantılar</span></div>
+          <div class="ni" onclick="go('home')"><svg viewBox="0 0 20 20" fill="none"><path d="M3 9L10 3l7 6v8a1 1 0 01-1 1H4a1 1 0 01-1-1V9z" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/><rect x="7" y="12" width="6" height="6" rx="0.5" stroke="currentColor" stroke-width="1.3"/></svg><span>Anasayfa</span></div>
+          <div class="ni on"><svg viewBox="0 0 20 20" fill="none"><rect x="3" y="4" width="14" height="13" rx="2" stroke="currentColor" stroke-width="1.4"/><line x1="7" y1="2" x2="7" y2="6" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/><line x1="13" y1="2" x2="13" y2="6" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/><line x1="3" y1="9" x2="17" y2="9" stroke="currentColor" stroke-width="1.2"/></svg><span>Buluşmalar</span></div>
+          <div class="ni" onclick="go('profile')"><svg viewBox="0 0 20 20" fill="none"><circle cx="10" cy="7" r="3.5" stroke="currentColor" stroke-width="1.4"/><path d="M3 18c0-3.5 3.1-6 7-6s7 2.5 7 6" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg><span>Profil</span></div>
         </div>
       </div>
 
@@ -1546,14 +1855,38 @@ select.inp {
             <div class="md-att-label">4 katılımcı</div>
             <div class="att-row"><div class="att-av">BT</div><div class="att-av">AK</div><div class="att-av">MT</div><div class="att-av">SA</div></div>
             <button class="btn-accent" id="join-btn" onclick="toggleJoin(this)">Katıl</button>
+            <button class="feature-btn" id="feature-btn" onclick="showFeatureModal()">
+              <svg viewBox="0 0 16 16" fill="none"><path d="M8 1l2 4.5 5 .7-3.5 3.5.8 5L8 12.3 3.7 14.7l.8-5L1 6.2l5-.7z" stroke="currentColor" stroke-width="1.2" stroke-linejoin="round"/></svg>
+              Bu Buluşmayı Öne Çıkar
+            </button>
             <div style="text-align:center;font-size:11px;color:var(--app-text2);margin-top:8px;">Topluluk kurallarını kabul etmiş sayılırsın</div>
           </div>
         </div>
       </div>
 
+      <!-- Öne Çıkar Modal — phone-screen içinde sabit -->
+      <div class="feature-modal-bg" id="feature-modal" onclick="hideFeatureModal(event)">
+        <div class="feature-modal" onclick="event.stopPropagation()">
+          <div class="fm-modal-title">Buluşmayı Öne Çıkar</div>
+          <div class="fm-modal-sub">Buluşman tüm üyelerin ana sayfasında ve Buluşmalar listesinin en üstünde görünür.</div>
+          <div class="fm-price-row">
+            <div class="fm-price-opt sel" onclick="selectFmPlan(this)">
+              <div class="fm-price">₺30</div>
+              <div class="fm-duration">3 gün</div>
+            </div>
+            <div class="fm-price-opt" onclick="selectFmPlan(this)">
+              <div class="fm-price">₺50</div>
+              <div class="fm-duration">7 gün</div>
+            </div>
+          </div>
+          <button class="btn-accent" onclick="confirmFeature()">Ödemeye Geç →</button>
+          <button class="btn-outline" style="margin-top:8px;" onclick="hideFeatureModal(null)">Vazgeç</button>
+        </div>
+      </div>
+
       <!-- ── BAĞLANTILAR ── -->
       <div class="sc" id="sc-conn">
-        <div class="app-header"><span class="app-logo">childfree türkiye</span><svg style="width:20px;height:20px;color:rgba(240,232,220,0.7);" viewBox="0 0 22 22" fill="none"><path d="M11 2a6 6 0 00-6 6v4l-2 2v1h16v-1l-2-2V8a6 6 0 00-6-6zM9 18a2 2 0 004 0" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg></div>
+        <div class="app-header"><div class="app-logo"><span class="app-logo-main">childfree</span><span class="app-logo-sub">türkiye</span></div><svg style="width:20px;height:20px;color:rgba(240,232,220,0.7);" viewBox="0 0 22 22" fill="none"><path d="M11 2a6 6 0 00-6 6v4l-2 2v1h16v-1l-2-2V8a6 6 0 00-6-6zM9 18a2 2 0 004 0" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg></div>
         <div class="sc-inner">
           <div class="pg-title">Bağlantılar</div>
           <div class="pg-sub">Yakın olduğun insanlar burada.</div>
@@ -1569,12 +1902,12 @@ select.inp {
           </div>
           <div class="spacer"></div>
         </div>
-        <div class="bnav">
-          <div class="ni" onclick="go('library')"><svg viewBox="0 0 22 22" fill="none"><rect x="3" y="3" width="6" height="16" rx="1.5" stroke="currentColor" stroke-width="1.3"/><rect x="11" y="3" width="8" height="16" rx="1.5" stroke="currentColor" stroke-width="1.3"/></svg><span>Kütüphane</span></div>
-          <div class="ni on"><svg viewBox="0 0 22 22" fill="none"><circle cx="8" cy="8" r="3.5" stroke="currentColor" stroke-width="1.3"/><path d="M2 19c0-3.3 2.7-6 6-6s6 2.7 6 6" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/><circle cx="16" cy="8" r="2.5" stroke="currentColor" stroke-width="1.2"/><path d="M16 13c2.2.5 4 2.3 4 6" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></svg><span>Bağlantılar</span></div>
-          <div class="ni" onclick="go('home')"><svg viewBox="0 0 22 22" fill="none"><path d="M3 11.5L11 4l8 7.5V18a1 1 0 01-1 1H4a1 1 0 01-1-1v-6.5z" stroke="currentColor" stroke-width="1.3"/></svg><span>Anasayfa</span></div>
-          <div class="ni" onclick="go('meet')"><svg viewBox="0 0 22 22" fill="none"><rect x="3" y="4" width="16" height="14" rx="2" stroke="currentColor" stroke-width="1.3"/><path d="M8 2v3M14 2v3M3 9h16" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg><span>Buluşmalar</span></div>
-          <div class="ni" onclick="go('kesf')"><svg viewBox="0 0 22 22" fill="none"><path d="M11 2l2.7 5.5 6 .9-4.4 4.2 1 5.9L11 15.7l-5.3 2.8 1-5.9L2.3 8.4l6-.9z" stroke="currentColor" stroke-width="1.3" stroke-linejoin="round"/></svg><span>Keşfet</span></div>
+                <div class="bnav">
+          <div class="ni" onclick="go('library')"><svg viewBox="0 0 20 20" fill="none"><rect x="2" y="3" width="5" height="14" rx="1" stroke="currentColor" stroke-width="1.4"/><rect x="9" y="3" width="5" height="14" rx="1" stroke="currentColor" stroke-width="1.4"/><rect x="15" y="6" width="3" height="11" rx="1" stroke="currentColor" stroke-width="1.4"/></svg><span>Kütüphane</span></div>
+          <div class="ni on"><svg viewBox="0 0 20 20" fill="none"><circle cx="7" cy="7" r="3" stroke="currentColor" stroke-width="1.4"/><circle cx="15" cy="13" r="3" stroke="currentColor" stroke-width="1.4"/><line x1="9.5" y1="9.5" x2="12.5" y2="10.5" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg><span>Bağlantılar</span></div>
+          <div class="ni" onclick="go('home')"><svg viewBox="0 0 20 20" fill="none"><path d="M3 9L10 3l7 6v8a1 1 0 01-1 1H4a1 1 0 01-1-1V9z" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/><rect x="7" y="12" width="6" height="6" rx="0.5" stroke="currentColor" stroke-width="1.3"/></svg><span>Anasayfa</span></div>
+          <div class="ni" onclick="go('meet')"><svg viewBox="0 0 20 20" fill="none"><rect x="3" y="4" width="14" height="13" rx="2" stroke="currentColor" stroke-width="1.4"/><line x1="7" y1="2" x2="7" y2="6" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/><line x1="13" y1="2" x2="13" y2="6" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/><line x1="3" y1="9" x2="17" y2="9" stroke="currentColor" stroke-width="1.2"/></svg><span>Buluşmalar</span></div>
+          <div class="ni" onclick="go('profile')"><svg viewBox="0 0 20 20" fill="none"><circle cx="10" cy="7" r="3.5" stroke="currentColor" stroke-width="1.4"/><path d="M3 18c0-3.5 3.1-6 7-6s7 2.5 7 6" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg><span>Profil</span></div>
         </div>
       </div>
 
@@ -1593,12 +1926,12 @@ select.inp {
           <div class="prod-card"><div class="prod-img">🎒</div><div class="prod-body"><div class="prod-cat">Seyahat</div><div class="prod-name">Solo Seyahat Çantası 26L</div><div class="prod-price">₺890 · Fjällräven</div><div class="prod-note"><div class="pn-label">Admin notu</div><div class="pn-text">4 yıldır her seyahatimde bu çanta. Kabin bagajına giriyor, sırt ağrısı yapmıyor.</div></div><button class="prod-btn">Satın Al <svg viewBox="0 0 16 16" fill="none"><path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></button></div></div>
           <div class="spacer"></div>
         </div>
-        <div class="bnav">
-          <div class="ni" onclick="go('library')"><svg viewBox="0 0 22 22" fill="none"><rect x="3" y="3" width="6" height="16" rx="1.5" stroke="currentColor" stroke-width="1.3"/><rect x="11" y="3" width="8" height="16" rx="1.5" stroke="currentColor" stroke-width="1.3"/></svg><span>Kütüphane</span></div>
-          <div class="ni" onclick="go('conn')"><svg viewBox="0 0 22 22" fill="none"><circle cx="8" cy="8" r="3.5" stroke="currentColor" stroke-width="1.3"/><path d="M2 19c0-3.3 2.7-6 6-6s6 2.7 6 6" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/><circle cx="16" cy="8" r="2.5" stroke="currentColor" stroke-width="1.2"/><path d="M16 13c2.2.5 4 2.3 4 6" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></svg><span>Bağlantılar</span></div>
-          <div class="ni" onclick="go('home')"><svg viewBox="0 0 22 22" fill="none"><path d="M3 11.5L11 4l8 7.5V18a1 1 0 01-1 1H4a1 1 0 01-1-1v-6.5z" stroke="currentColor" stroke-width="1.3"/></svg><span>Anasayfa</span></div>
-          <div class="ni" onclick="go('meet')"><svg viewBox="0 0 22 22" fill="none"><rect x="3" y="4" width="16" height="14" rx="2" stroke="currentColor" stroke-width="1.3"/><path d="M8 2v3M14 2v3M3 9h16" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg><span>Buluşmalar</span></div>
-          <div class="ni on"><svg viewBox="0 0 22 22" fill="none"><path d="M11 2l2.7 5.5 6 .9-4.4 4.2 1 5.9L11 15.7l-5.3 2.8 1-5.9L2.3 8.4l6-.9z" stroke="currentColor" stroke-width="1.3" stroke-linejoin="round"/></svg><span>Keşfet</span></div>
+                <div class="bnav">
+          <div class="ni" onclick="go('library')"><svg viewBox="0 0 20 20" fill="none"><rect x="2" y="3" width="5" height="14" rx="1" stroke="currentColor" stroke-width="1.4"/><rect x="9" y="3" width="5" height="14" rx="1" stroke="currentColor" stroke-width="1.4"/><rect x="15" y="6" width="3" height="11" rx="1" stroke="currentColor" stroke-width="1.4"/></svg><span>Kütüphane</span></div>
+          <div class="ni" onclick="go('conn')"><svg viewBox="0 0 20 20" fill="none"><circle cx="7" cy="7" r="3" stroke="currentColor" stroke-width="1.4"/><circle cx="15" cy="13" r="3" stroke="currentColor" stroke-width="1.4"/><line x1="9.5" y1="9.5" x2="12.5" y2="10.5" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg><span>Bağlantılar</span></div>
+          <div class="ni on"><svg viewBox="0 0 20 20" fill="none"><path d="M3 9L10 3l7 6v8a1 1 0 01-1 1H4a1 1 0 01-1-1V9z" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/><rect x="7" y="12" width="6" height="6" rx="0.5" stroke="currentColor" stroke-width="1.3"/></svg><span>Anasayfa</span></div>
+          <div class="ni" onclick="go('meet')"><svg viewBox="0 0 20 20" fill="none"><rect x="3" y="4" width="14" height="13" rx="2" stroke="currentColor" stroke-width="1.4"/><line x1="7" y1="2" x2="7" y2="6" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/><line x1="13" y1="2" x2="13" y2="6" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/><line x1="3" y1="9" x2="17" y2="9" stroke="currentColor" stroke-width="1.2"/></svg><span>Buluşmalar</span></div>
+          <div class="ni" onclick="go('profile')"><svg viewBox="0 0 20 20" fill="none"><circle cx="10" cy="7" r="3.5" stroke="currentColor" stroke-width="1.4"/><path d="M3 18c0-3.5 3.1-6 7-6s7 2.5 7 6" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg><span>Profil</span></div>
         </div>
       </div>
 
@@ -1625,17 +1958,81 @@ select.inp {
             </div>
             <div class="p-sec">Menü</div>
             <div class="menu-item" onclick="go('hesabim')"><div class="mi-left"><div class="mi-icon">⚙️</div><div><div class="mi-title">Hesabım</div><div class="mi-sub">Abonelik, ödeme, ayarlar</div></div></div><span class="mi-arr">›</span></div>
+            <div class="menu-item" onclick="go('rozetler')"><div class="mi-left"><div class="mi-icon">🏅</div><div><div class="mi-title">Rozetlerim</div><div class="mi-sub">3 / 8 rozet kazanıldı</div></div></div><span class="mi-arr">›</span></div>
+            <div class="menu-item" onclick="go('kesf')"><div class="mi-left"><div class="mi-icon">✨</div><div><div class="mi-title">Keşfet</div><div class="mi-sub">Admin ürün önerileri</div></div></div><span class="mi-arr">›</span></div>
             <div class="menu-item"><div class="mi-left"><div class="mi-icon">✏️</div><div><div class="mi-title">Profili Düzenle</div><div class="mi-sub">Ad, fotoğraf, etiketler</div></div></div><span class="mi-arr">›</span></div>
             <div class="menu-item"><div class="mi-left"><div class="mi-icon">🔔</div><div><div class="mi-title">Bildirimler</div><div class="mi-sub">Push ve e-posta tercihleri</div></div></div><span class="mi-arr">›</span></div>
             <div class="spacer"></div>
           </div>
         </div>
-        <div class="bnav">
-          <div class="ni" onclick="go('library')"><svg viewBox="0 0 22 22" fill="none"><rect x="3" y="3" width="6" height="16" rx="1.5" stroke="currentColor" stroke-width="1.3"/><rect x="11" y="3" width="8" height="16" rx="1.5" stroke="currentColor" stroke-width="1.3"/></svg><span>Kütüphane</span></div>
-          <div class="ni" onclick="go('conn')"><svg viewBox="0 0 22 22" fill="none"><circle cx="8" cy="8" r="3.5" stroke="currentColor" stroke-width="1.3"/><path d="M2 19c0-3.3 2.7-6 6-6s6 2.7 6 6" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/><circle cx="16" cy="8" r="2.5" stroke="currentColor" stroke-width="1.2"/><path d="M16 13c2.2.5 4 2.3 4 6" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></svg><span>Bağlantılar</span></div>
-          <div class="ni" onclick="go('home')"><svg viewBox="0 0 22 22" fill="none"><path d="M3 11.5L11 4l8 7.5V18a1 1 0 01-1 1H4a1 1 0 01-1-1v-6.5z" stroke="currentColor" stroke-width="1.3"/></svg><span>Anasayfa</span></div>
-          <div class="ni" onclick="go('meet')"><svg viewBox="0 0 22 22" fill="none"><rect x="3" y="4" width="16" height="14" rx="2" stroke="currentColor" stroke-width="1.3"/><path d="M8 2v3M14 2v3M3 9h16" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg><span>Buluşmalar</span></div>
-          <div class="ni on"><svg viewBox="0 0 22 22" fill="none"><circle cx="11" cy="8" r="4" stroke="currentColor" stroke-width="1.3"/><path d="M3 20c0-4 3.6-7 8-7s8 3 8 7" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg><span>Profil</span></div>
+                <div class="bnav">
+          <div class="ni" onclick="go('library')"><svg viewBox="0 0 20 20" fill="none"><rect x="2" y="3" width="5" height="14" rx="1" stroke="currentColor" stroke-width="1.4"/><rect x="9" y="3" width="5" height="14" rx="1" stroke="currentColor" stroke-width="1.4"/><rect x="15" y="6" width="3" height="11" rx="1" stroke="currentColor" stroke-width="1.4"/></svg><span>Kütüphane</span></div>
+          <div class="ni" onclick="go('conn')"><svg viewBox="0 0 20 20" fill="none"><circle cx="7" cy="7" r="3" stroke="currentColor" stroke-width="1.4"/><circle cx="15" cy="13" r="3" stroke="currentColor" stroke-width="1.4"/><line x1="9.5" y1="9.5" x2="12.5" y2="10.5" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg><span>Bağlantılar</span></div>
+          <div class="ni" onclick="go('home')"><svg viewBox="0 0 20 20" fill="none"><path d="M3 9L10 3l7 6v8a1 1 0 01-1 1H4a1 1 0 01-1-1V9z" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/><rect x="7" y="12" width="6" height="6" rx="0.5" stroke="currentColor" stroke-width="1.3"/></svg><span>Anasayfa</span></div>
+          <div class="ni" onclick="go('meet')"><svg viewBox="0 0 20 20" fill="none"><rect x="3" y="4" width="14" height="13" rx="2" stroke="currentColor" stroke-width="1.4"/><line x1="7" y1="2" x2="7" y2="6" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/><line x1="13" y1="2" x2="13" y2="6" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/><line x1="3" y1="9" x2="17" y2="9" stroke="currentColor" stroke-width="1.2"/></svg><span>Buluşmalar</span></div>
+          <div class="ni on"><svg viewBox="0 0 20 20" fill="none"><circle cx="10" cy="7" r="3.5" stroke="currentColor" stroke-width="1.4"/><path d="M3 18c0-3.5 3.1-6 7-6s7 2.5 7 6" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg><span>Profil</span></div>
+        </div>
+      </div>
+
+      <!-- ── ROZETLERİM ── -->
+      <div class="sc" id="sc-rozetler">
+        <div class="back-header">
+          <button class="back-btn" onclick="go('profile')">←</button>
+          <span class="back-title">Rozetlerim</span>
+          <span style="font-size:11px;color:rgba(240,232,220,0.45);">3 / 8</span>
+        </div>
+        <div class="sc-inner">
+          <div style="padding:14px 16px 4px;">
+            <div style="background:var(--app-dark);border-radius:12px;padding:14px 16px;margin-bottom:16px;display:flex;align-items:center;gap:12px;">
+              <div style="font-size:32px;">🏅</div>
+              <div>
+                <div style="font-size:14px;color:#F0E8DC;font-weight:500;margin-bottom:2px;">3 rozet kazandın</div>
+                <div style="font-size:11px;color:rgba(240,232,220,0.5);">5 rozet daha var — topluluğa katılmaya devam et</div>
+              </div>
+            </div>
+          </div>
+          <div style="padding:0 16px 4px;font-size:10px;font-weight:500;color:var(--app-text2);text-transform:uppercase;letter-spacing:.5px;">Kazanılanlar</div>
+          <div style="padding:0 16px;display:flex;flex-direction:column;gap:8px;margin-bottom:16px;">
+            <div style="background:var(--app-light);border-radius:12px;padding:13px 14px;border:.5px solid var(--app-border);display:flex;align-items:center;gap:12px;" onclick="showRozet('İlk Adım','Topluluğa ilk kez katıldın 🎉')">
+              <div style="width:44px;height:44px;border-radius:14px;background:#FAECE7;border:1.5px solid #C1491E;display:flex;align-items:center;justify-content:center;font-size:22px;flex-shrink:0;">🌱</div>
+              <div><div style="font-size:13px;color:var(--app-text);font-weight:500;">İlk Adım</div><div style="font-size:11px;color:var(--app-text2);margin-top:2px;">Topluluğa ilk kez katıldın</div></div>
+              <div style="margin-left:auto;font-size:18px;color:var(--app-accent);">✓</div>
+            </div>
+            <div style="background:var(--app-light);border-radius:12px;padding:13px 14px;border:.5px solid var(--app-border);display:flex;align-items:center;gap:12px;">
+              <div style="width:44px;height:44px;border-radius:14px;background:#FAECE7;border:1.5px solid #C1491E;display:flex;align-items:center;justify-content:center;font-size:22px;flex-shrink:0;">💬</div>
+              <div><div style="font-size:13px;color:var(--app-text);font-weight:500;">Sohbetçi</div><div style="font-size:11px;color:var(--app-text2);margin-top:2px;">10 konuşmaya katıldın</div></div>
+              <div style="margin-left:auto;font-size:18px;color:var(--app-accent);">✓</div>
+            </div>
+            <div style="background:var(--app-light);border-radius:12px;padding:13px 14px;border:.5px solid var(--app-border);display:flex;align-items:center;gap:12px;">
+              <div style="width:44px;height:44px;border-radius:14px;background:#FAECE7;border:1.5px solid #C1491E;display:flex;align-items:center;justify-content:center;font-size:22px;flex-shrink:0;">🎟</div>
+              <div><div style="font-size:13px;color:var(--app-text);font-weight:500;">Davetçi</div><div style="font-size:11px;color:var(--app-text2);margin-top:2px;">3 kişiyi topluluğa davet ettin</div></div>
+              <div style="margin-left:auto;font-size:18px;color:var(--app-accent);">✓</div>
+            </div>
+          </div>
+          <div style="padding:0 16px 4px;font-size:10px;font-weight:500;color:var(--app-text2);text-transform:uppercase;letter-spacing:.5px;">Kilitli</div>
+          <div style="padding:0 16px;display:flex;flex-direction:column;gap:8px;margin-bottom:16px;">
+            <div style="background:var(--app-light);border-radius:12px;padding:13px 14px;border:.5px solid var(--app-border);display:flex;align-items:center;gap:12px;opacity:.45;">
+              <div style="width:44px;height:44px;border-radius:14px;background:var(--app-surface);border:.5px solid var(--app-border);display:flex;align-items:center;justify-content:center;font-size:22px;flex-shrink:0;filter:grayscale(1);">📅</div>
+              <div><div style="font-size:13px;color:var(--app-text);font-weight:500;">Gezgin</div><div style="font-size:11px;color:var(--app-text2);margin-top:2px;">İlk buluşmana katıl</div></div>
+            </div>
+            <div style="background:var(--app-light);border-radius:12px;padding:13px 14px;border:.5px solid var(--app-border);display:flex;align-items:center;gap:12px;opacity:.45;">
+              <div style="width:44px;height:44px;border-radius:14px;background:var(--app-surface);border:.5px solid var(--app-border);display:flex;align-items:center;justify-content:center;font-size:22px;flex-shrink:0;filter:grayscale(1);">⭐</div>
+              <div><div style="font-size:13px;color:var(--app-text);font-weight:500;">Ritüelci</div><div style="font-size:11px;color:var(--app-text2);margin-top:2px;">30 gün üst üste günün sorusunu yanıtla</div></div>
+            </div>
+            <div style="background:var(--app-light);border-radius:12px;padding:13px 14px;border:.5px solid var(--app-border);display:flex;align-items:center;gap:12px;opacity:.45;">
+              <div style="width:44px;height:44px;border-radius:14px;background:var(--app-surface);border:.5px solid var(--app-border);display:flex;align-items:center;justify-content:center;font-size:22px;flex-shrink:0;filter:grayscale(1);">🎪</div>
+              <div><div style="font-size:13px;color:var(--app-text);font-weight:500;">Organizatör</div><div style="font-size:11px;color:var(--app-text2);margin-top:2px;">Bir buluşma düzenle</div></div>
+            </div>
+            <div style="background:var(--app-light);border-radius:12px;padding:13px 14px;border:.5px solid var(--app-border);display:flex;align-items:center;gap:12px;opacity:.45;">
+              <div style="width:44px;height:44px;border-radius:14px;background:var(--app-surface);border:.5px solid var(--app-border);display:flex;align-items:center;justify-content:center;font-size:22px;flex-shrink:0;filter:grayscale(1);">🎂</div>
+              <div><div style="font-size:13px;color:var(--app-text);font-weight:500;">1 Yıl!</div><div style="font-size:11px;color:var(--app-text2);margin-top:2px;">1 yıllık üye ol</div></div>
+            </div>
+            <div style="background:var(--app-light);border-radius:12px;padding:13px 14px;border:.5px solid var(--app-border);display:flex;align-items:center;gap:12px;opacity:.45;">
+              <div style="width:44px;height:44px;border-radius:14px;background:var(--app-surface);border:.5px solid var(--app-border);display:flex;align-items:center;justify-content:center;font-size:22px;flex-shrink:0;filter:grayscale(1);">👑</div>
+              <div><div style="font-size:13px;color:var(--app-text);font-weight:500;">Efsane</div><div style="font-size:11px;color:var(--app-text2);margin-top:2px;">Tüm rozetleri kazan</div></div>
+            </div>
+          </div>
+          <div class="spacer"></div>
         </div>
       </div>
 
@@ -1662,7 +2059,7 @@ select.inp {
               </div>
               <div id="sub-cancel" class="hidden">
                 <div style="font-size:11px;color:rgba(240,232,220,0.4);margin-bottom:8px;">Sonraki ödeme: 13 Mayıs 2025 · ₺89</div>
-                <button style="width:100%;padding:10px;background:transparent;color:rgba(240,232,220,0.4);border:0.5px solid rgba(240,232,220,0.15);border-radius:9px;font-family:'DM Sans',sans-serif;font-size:12px;cursor:pointer;">Aboneliği İptal Et</button>
+                <button style="width:100%;padding:10px;background:transparent;color:rgba(240,232,220,0.4);border:0.5px solid rgba(240,232,220,0.15);border-radius:9px;font-family:'Montserrat', sans-serif;font-size:12px;cursor:pointer;">Aboneliği İptal Et</button>
               </div>
             </div>
 
@@ -1680,7 +2077,7 @@ select.inp {
             <div class="set-row"><div><div class="sr-title">Karanlık Mod</div><div class="sr-sub">Koyu renk tema</div></div><div class="sw" id="dark-sw" onclick="toggleDark()"></div></div>
 
             <div class="acc-sec">Hesap</div>
-            <div class="set-row"><div><div class="sr-title">E-posta</div><div class="sr-sub">zeynep@mail.com</div></div><span class="pc-edit">Değiştir</span></div>
+            <div class="set-row"><div><div class="sr-title">E-posta</div><div class="sr-sub"><a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="7f051a06111a0f3f121e1613511c1012">[email&#160;protected]</a></div></div><span class="pc-edit">Değiştir</span></div>
             <div class="set-row"><div><div class="sr-title">Şifre</div><div class="sr-sub">Son değişiklik: 3 ay önce</div></div><span class="pc-edit">Değiştir</span></div>
 
             <div class="acc-sec" style="color:#E24B4A;">Tehlikeli Alan</div>
@@ -1751,8 +2148,8 @@ function applyMode() {
   /* Anasayfa yakın üyeler */
   var ns = document.getElementById('nearby-sub');
   var nb = document.getElementById('nearby-badge');
-  if (ns) { ns.textContent = isPrem ? '4 kişi seninle aynı etikette!' : 'Ortak etiketli kişiler yakında.'; }
-  if (nb) { nb.textContent = isPrem ? 'Profilleri gör →' : 'Premium ile bağlan'; nb.className = 'badge ' + (isPrem ? 'red' : 'teal'); }
+  if (ns) { ns.textContent = isPrem ? '4 kişi seninle aynı etikette — bağlantı kur!' : 'Seninle aynı şehirde, benzer etiketlerde 4 kişi var.'; }
+  if (nb) { nb.textContent = isPrem ? 'Profilleri gör →' : 'Premium ile kim olduklarını gör →'; nb.className = 'badge ' + (isPrem ? 'red' : 'teal'); }
 
   /* Kanallar premium lock */
   ['ch-kariyer','ch-iliski'].forEach(id => {
@@ -1786,7 +2183,69 @@ function handlePremChannel() {
   if (!isPrem) { setMode('prm'); go('meet'); setTimeout(() => go('library'), 50); } else { go('channel'); }
 }
 
-/* ── JOIN BTN ── */
+/* ── ANKET ── */
+function votePoll(pollId, chosenIdx, pct) {
+  var container = document.getElementById(pollId);
+  if (!container || container.dataset.voted) return;
+  container.dataset.voted = '1';
+  var opts = container.querySelectorAll('.poll-opt');
+  var pcts = [];
+  opts.forEach(function(opt, i) {
+    var basePct = parseInt(opt.querySelector('.poll-opt-pct').textContent);
+    pcts.push(i === chosenIdx ? basePct + 1 : basePct);
+  });
+  var total = pcts.reduce(function(a,b){return a+b;}, 0);
+  var maxPct = Math.max.apply(null, pcts);
+  opts.forEach(function(opt, i) {
+    var normalized = Math.round(pcts[i] / total * 100);
+    opt.querySelector('.poll-opt-pct').textContent = normalized + '%';
+    opt.querySelector('.poll-bar').style.width = normalized + '%';
+    opt.classList.add('voted');
+    if (pcts[i] === maxPct) opt.classList.add('winner');
+  });
+  var countEl = document.getElementById(pollId + '-count');
+  if (countEl) {
+    var parts = countEl.textContent.split('·');
+    var oldCount = parseInt(parts[0]);
+    countEl.textContent = (oldCount + 1) + ' oy ·' + (parts[1] || '');
+  }
+}
+
+/* ── ROZET ── */
+var rozetTimer = null;
+function showRozet(name, desc) {
+  var tt = document.getElementById('rozet-tooltip');
+  if (!tt) return;
+  tt.textContent = name + ' — ' + desc;
+  tt.classList.add('show');
+  clearTimeout(rozetTimer);
+  rozetTimer = setTimeout(function(){ tt.classList.remove('show'); }, 2500);
+}
+
+/* ── ÖNE ÇIKAN BULUŞMA ── */
+function showFeatureModal() {
+  document.getElementById('feature-modal').classList.add('show');
+}
+
+function hideFeatureModal(e) {
+  if (!e || e.target === document.getElementById('feature-modal')) {
+    document.getElementById('feature-modal').classList.remove('show');
+  }
+}
+
+function selectFmPlan(el) {
+  el.closest('.fm-price-row').querySelectorAll('.fm-price-opt').forEach(function(o){ o.classList.remove('sel'); });
+  el.classList.add('sel');
+}
+
+function confirmFeature() {
+  document.getElementById('feature-modal').classList.remove('show');
+  var btn = document.getElementById('feature-btn');
+  if (btn) {
+    btn.classList.add('active');
+    btn.innerHTML = '<svg viewBox="0 0 16 16" fill="none"><path d="M8 1l2 4.5 5 .7-3.5 3.5.8 5L8 12.3 3.7 14.7l.8-5L1 6.2l5-.7z" fill="currentColor"/></svg> Öne Çıkarıldı!';
+  }
+}
 function toggleJoin(btn) {
   var joined = btn.dataset.joined === 'true';
   btn.dataset.joined = !joined;
