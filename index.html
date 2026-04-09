@@ -2306,16 +2306,18 @@ async function girisYap() {
 
   clearError();
   go('home');
+  kullaniciBilgisiYukle(data.user.id);
   if (btn) { btn.textContent = 'Giriş Yap →'; btn.disabled = false; }
 }
 
 /* ── OTURUM KONTROL ── */
-sb.auth.onAuthStateChange(function(event, session) {
+sb.auth.onAuthStateChange(async function(event, session) {
   if (session && session.user) {
     var currentSc = document.querySelector('.sc.show');
     var authScreens = ['sc-login','sc-giris-form','sc-reg1','sc-reg2'];
     var isOnAuth = currentSc && authScreens.includes(currentSc.id);
     if (isOnAuth) go('home');
+    kullaniciBilgisiYukle(session.user.id);
   }
 });
 
@@ -2324,7 +2326,7 @@ sb.auth.onAuthStateChange(function(event, session) {
   var { data: { session } } = await sb.auth.getSession();
   if (session && session.user) {
     go('home');
-    kullaniciBilgisiYukle(session.user.id);
+    await kullaniciBilgisiYukle(session.user.id);
   }
 })();
 
@@ -2559,7 +2561,7 @@ async function profilGuncelle() {
   }).eq('id', user.id);
 
   if (btn) { btn.textContent = 'Kaydet'; btn.disabled = false; }
-  kullaniciBilgisiYukle(user.id);
+  await kullaniciBilgisiYukle(user.id);
   navTo('profile');
 }
 
