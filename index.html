@@ -2678,7 +2678,7 @@ async function buslusmalariYukle() {
 
   var { data, error } = await sb
     .from('bulusmalar')
-    .select('*, profiles(ad)')
+    .select('*, olusturan:profiles!bulusmalar_olusturan_fkey(ad)')
     .order('tarih', { ascending: true });
 
   if (error) {
@@ -2708,7 +2708,7 @@ async function buslusmalariYukle() {
   }
 
   listEl.innerHTML = data.map(function(b) {
-    var host  = b.profiles ? (b.profiles.ad || 'Üye') : 'Üye';
+    var host  = b.olusturan ? (b.olusturan.ad || 'Üye') : 'Üye';
     var tarih = b.tarih ? new Date(b.tarih).toLocaleDateString('tr-TR', {weekday:'short', day:'numeric', month:'short', hour:'2-digit', minute:'2-digit'}) : '';
     var sayi  = katilimSayisi[b.id] || 0;
     var resim = b.resim_url ? '<img src="' + b.resim_url + '" style="width:100%;height:140px;object-fit:cover;border-radius:10px 10px 0 0;display:block;margin-bottom:12px;">' : '';
@@ -2749,13 +2749,13 @@ function bulusmaDetayAc(id) {
 async function bulusmaDetayYukle(id) {
   var { data: b } = await sb
     .from('bulusmalar')
-    .select('*, profiles(ad), bulusma_katilimcilar(kullanici_id, profiles(ad))')
+    .select('*, olusturan:profiles!bulusmalar_olusturan_fkey(ad), bulusma_katilimcilar(kullanici_id, katilimci:profiles!bulusma_katilimcilar_kullanici_id_fkey(ad))')
     .eq('id', id)
     .single();
 
   if (!b) return;
 
-  var host  = b.profiles ? (b.profiles.ad || 'Üye') : 'Üye';
+  var host  = b.olusturan ? (b.olusturan.ad || 'Üye') : 'Üye';
   var tarih = b.tarih ? new Date(b.tarih).toLocaleDateString('tr-TR', {weekday:'long', day:'numeric', month:'long', hour:'2-digit', minute:'2-digit'}) : '';
 
   var titleEl  = document.getElementById('detay-baslik');
@@ -2798,7 +2798,7 @@ async function bulusmaDetayYukle(id) {
   // Katılımcılar
   if (katEl && b.bulusma_katilimcilar) {
     katEl.innerHTML = b.bulusma_katilimcilar.map(function(k) {
-      var ad = k.profiles ? (k.profiles.ad || 'Üye') : 'Üye';
+      var ad = k.katilimci ? (k.katilimci.ad || 'Üye') : 'Üye';
       return '<div style="width:36px;height:36px;border-radius:50%;background:var(--surface);border:2px solid var(--light);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:600;color:var(--text2);margin-left:-6px;">' + ad.substring(0,2).toUpperCase() + '</div>';
     }).join('');
   }
