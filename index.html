@@ -1433,6 +1433,12 @@ select.inp {
           <button class="prem-banner-btn" onclick="setMode(&#39;prm&#39;)">₺89 / ay →</button>
         </div>
       </div>
+      <div style="padding:10px 12px;border-top:0.5px solid var(--border);">
+        <div class="nav-item" onclick="cikisYap()" style="color:#E24B4A;">
+          <svg viewBox="0 0 20 20" fill="none"><path d="M7 3H4a1 1 0 00-1 1v12a1 1 0 001 1h3M13 15l4-5-4-5M17 10H7" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          Çıkış Yap
+        </div>
+      </div>
     </div>
 
     <!-- MAIN AREA -->
@@ -1766,7 +1772,7 @@ select.inp {
           <div class="menu-item" onclick="navTo(&#39;hesabim&#39;)"><div class="mi-l"><div class="mi-ico">⚙️</div><div><div class="mi-t">Hesabım</div><div class="mi-s">Abonelik, ödeme, ayarlar</div></div></div><span class="mi-arr">›</span></div>
           <div class="menu-item" onclick="navTo(&#39;rozetler&#39;)"><div class="mi-l"><div class="mi-ico">🏅</div><div><div class="mi-t">Rozetlerim</div><div class="mi-s">3 / 8 rozet kazanıldı</div></div></div><span class="mi-arr">›</span></div>
           <div class="menu-item" onclick="navTo(&#39;kesf&#39;)"><div class="mi-l"><div class="mi-ico">✨</div><div><div class="mi-t">Keşfet</div><div class="mi-s">Admin ürün önerileri</div></div></div><span class="mi-arr">›</span></div>
-          <div class="menu-item"><div class="mi-l"><div class="mi-ico">✏️</div><div><div class="mi-t">Profili Düzenle</div><div class="mi-s">Ad, fotoğraf, etiketler</div></div></div><span class="mi-arr">›</span></div>
+          <div class="menu-item" onclick="profilDuzenleAc()"><div class="mi-l"><div class="mi-ico">✏️</div><div><div class="mi-t">Profili Düzenle</div><div class="mi-s">Ad, şehir, etiketler</div></div></div><span class="mi-arr">›</span></div>
           <div class="menu-item"><div class="mi-l"><div class="mi-ico">🔔</div><div><div class="mi-t">Bildirimler</div><div class="mi-s">Push ve e-posta tercihleri</div></div></div><span class="mi-arr">›</span></div>
 
         </div>
@@ -1866,6 +1872,49 @@ select.inp {
         </div>
       </div>
 
+      <!-- PROFİL DÜZENLE -->
+      <div class="sc" id="sc-profil-duzenle">
+        <div class="page-header" style="display:flex;align-items:center;gap:14px;">
+          <button onclick="navTo('profile')" style="background:none;border:none;cursor:pointer;font-size:20px;color:var(--text2);padding:0;">←</button>
+          <div class="page-title">Profili Düzenle</div>
+        </div>
+        <div class="page-body">
+          <div class="field"><label class="inp-label">Adın</label><input id="edit-ad" class="inp" placeholder="Adın"></div>
+          <div class="field"><label class="inp-label">Soyad</label><input id="edit-soyad" class="inp" placeholder="Soyadın (opsiyonel)"></div>
+          <div class="field">
+            <label class="inp-label">Şehrin</label>
+            <select id="edit-sehir" class="inp" style="appearance:none;">
+              <option value="">Şehir seç...</option>
+              <option>İstanbul</option><option>Ankara</option><option>İzmir</option>
+              <option>Bursa</option><option>Antalya</option><option>Eskişehir</option>
+              <option>Bodrum</option><option>Mersin</option><option>Diğer</option>
+            </select>
+          </div>
+          <div class="field">
+            <label class="inp-label" style="margin-bottom:10px;">Etiketlerin</label>
+            <div class="tag-cloud" id="edit-etiketler">
+              <span class="tag-chip" onclick="this.classList.toggle('sel')">Solo seyahat</span>
+              <span class="tag-chip" onclick="this.classList.toggle('sel')">Sakin yaşam</span>
+              <span class="tag-chip" onclick="this.classList.toggle('sel')">Kariyer</span>
+              <span class="tag-chip" onclick="this.classList.toggle('sel')">Kitap</span>
+              <span class="tag-chip" onclick="this.classList.toggle('sel')">Kahve</span>
+              <span class="tag-chip" onclick="this.classList.toggle('sel')">Doğa</span>
+              <span class="tag-chip" onclick="this.classList.toggle('sel')">Film & Dizi</span>
+              <span class="tag-chip" onclick="this.classList.toggle('sel')">Hayvanlar</span>
+              <span class="tag-chip" onclick="this.classList.toggle('sel')">Yemek & Mutfak</span>
+              <span class="tag-chip" onclick="this.classList.toggle('sel')">Fotoğraf</span>
+              <span class="tag-chip" onclick="this.classList.toggle('sel')">Müzik</span>
+              <span class="tag-chip" onclick="this.classList.toggle('sel')">Spor</span>
+            </div>
+          </div>
+          <div id="edit-error" style="display:none;background:#FAECE7;color:#993C1D;border:1px solid #f5c4b3;border-radius:10px;padding:12px 16px;margin-bottom:14px;font-size:13px;font-weight:500;"></div>
+          <button class="btn-accent" onclick="profilGuncelle()" id="edit-btn">Kaydet</button>
+          <div style="margin-top:20px;padding-top:20px;border-top:0.5px solid var(--border);">
+            <button onclick="cikisYap()" style="width:100%;padding:13px;background:transparent;color:#E24B4A;border:0.5px solid rgba(226,75,74,.3);border-radius:10px;font-family:'Montserrat',sans-serif;font-size:13px;font-weight:600;cursor:pointer;">Çıkış Yap</button>
+          </div>
+        </div>
+      </div>
+
     </div><!-- /main -->
   </div><!-- /app-body -->
 
@@ -1915,10 +1964,11 @@ var isDark = false;
 
 /* ── ROUTING ── */
 var AUTH_SCREENS = ['login','giris-form','reg1','reg2'];
-var APP_SCREENS  = ['home','bugun','library','channel','meet','meetdetay','conn','kesf','profile','rozetler','hesabim'];
+var APP_SCREENS  = ['home','bugun','library','channel','meet','meetdetay','conn','kesf','profile','rozetler','hesabim','profil-duzenle'];
 var NAV_MAP = { home:'nav-home', library:'nav-library', channel:'nav-library', meet:'nav-meet', meetdetay:'nav-meet', conn:'nav-conn', kesf:'nav-kesf', profile:'nav-profile', rozetler:'nav-rozetler', hesabim:'nav-hesabim' };
 
 var MOBILE_NAV_MAP = {
+  'profil-duzenle': 'mni-profile',
   home: 'mni-home',
   bugun: 'mni-home',
   library: 'mni-library',
@@ -1930,6 +1980,7 @@ var MOBILE_NAV_MAP = {
   profile: 'mni-profile',
   rozetler: 'mni-profile',
   hesabim: 'mni-profile',
+  'profil-duzenle': 'mni-profile',
 };
 
 function go(id) {
@@ -2439,8 +2490,65 @@ async function mesajGonder() {
 /* ── ÇIKIŞ YAP ── */
 async function cikisYap() {
   await sb.auth.signOut();
-  go('login');
+  location.reload();
 }
+
+/* ── PROFİL DÜZENLE AÇ ── */
+async function profilDuzenleAc() {
+  navTo('profil-duzenle');
+  var { data: { user } } = await sb.auth.getUser();
+  if (!user) return;
+  var { data } = await sb.from('profiles').select('*').eq('id', user.id).single();
+  if (!data) return;
+
+  var adEl    = document.getElementById('edit-ad');
+  var soyadEl = document.getElementById('edit-soyad');
+  var sehirEl = document.getElementById('edit-sehir');
+  if (adEl && data.ad)     adEl.value    = data.ad;
+  if (soyadEl && data.soyad) soyadEl.value = data.soyad;
+  if (sehirEl && data.sehir) sehirEl.value = data.sehir;
+
+  if (data.etiketler && data.etiketler.length) {
+    document.querySelectorAll('#edit-etiketler .tag-chip').forEach(function(chip) {
+      chip.classList.toggle('sel', data.etiketler.includes(chip.textContent.trim()));
+    });
+  }
+}
+
+/* ── PROFİL GÜNCELLE ── */
+async function profilGuncelle() {
+  var ad     = document.getElementById('edit-ad');
+  var soyad  = document.getElementById('edit-soyad');
+  var sehir  = document.getElementById('edit-sehir');
+  var errEl  = document.getElementById('edit-error');
+  var btn    = document.getElementById('edit-btn');
+
+  if (!ad.value.trim()) { errEl.textContent = 'Adın zorunlu.'; errEl.style.display = 'block'; return; }
+  if (!sehir.value)      { errEl.textContent = 'Şehir seçimi zorunlu.'; errEl.style.display = 'block'; return; }
+  errEl.style.display = 'none';
+
+  var etiketler = [];
+  document.querySelectorAll('#edit-etiketler .tag-chip.sel').forEach(function(t) {
+    etiketler.push(t.textContent.trim());
+  });
+
+  if (btn) { btn.textContent = 'Kaydediliyor...'; btn.disabled = true; }
+
+  var { data: { user } } = await sb.auth.getUser();
+  if (!user) return;
+
+  await sb.from('profiles').update({
+    ad: ad.value.trim(),
+    soyad: soyad.value.trim(),
+    sehir: sehir.value,
+    etiketler: etiketler
+  }).eq('id', user.id);
+
+  if (btn) { btn.textContent = 'Kaydet'; btn.disabled = false; }
+  kullaniciBilgisiYukle(user.id);
+  navTo('profile');
+}
+
 
 /* ── KÜTÜPHANE AÇILINCA KANALLARI YükLE ── */
 var _origNavTo = navTo;
