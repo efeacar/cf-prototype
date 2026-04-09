@@ -2307,6 +2307,7 @@ async function girisYap() {
   clearError();
   go('home');
   kullaniciBilgisiYukle(data.user.id);
+  gunuSorusunuYukle();
   if (btn) { btn.textContent = 'Giriş Yap →'; btn.disabled = false; }
 }
 
@@ -2318,6 +2319,7 @@ sb.auth.onAuthStateChange(async function(event, session) {
     var isOnAuth = currentSc && authScreens.includes(currentSc.id);
     if (isOnAuth) go('home');
     kullaniciBilgisiYukle(session.user.id);
+    gunuSorusunuYukle();
   }
 });
 
