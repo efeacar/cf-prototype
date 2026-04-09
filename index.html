@@ -1447,7 +1447,7 @@ select.inp {
       <!-- ANASAYFA -->
       <div class="sc show" id="sc-home">
         <div class="page-header">
-          <div class="page-title">Merhaba Zeynep 👋</div>
+          <div class="page-title home-greet">Merhaba 👋</div>
           <div class="page-sub">Bugün ne paylaşmak istersin?</div>
         </div>
         <div class="page-body">
@@ -1741,10 +1741,10 @@ select.inp {
         <div class="page-body">
 
           <div class="profile-hero">
-            <div class="prof-av">ZD</div>
+            <div class="prof-av" id="prof-av-el">ZD</div>
             <div>
-              <div class="prof-name">Zeynep Demir</div>
-              <div class="prof-loc">📍 İstanbul · 2025'ten beri üye</div>
+              <div class="prof-name" id="prof-name-el">Zeynep Demir</div>
+              <div class="prof-loc" id="prof-loc-el">📍 İstanbul · 2025'ten beri üye</div>
               <div id="prof-badge" style="display:none;"><div class="prof-badge">⭐ Premium Üye</div></div>
             </div>
           </div>
@@ -2329,21 +2329,32 @@ sb.auth.onAuthStateChange(function(event, session) {
 })();
 
 /* ── KULLANICI BİLGİSİ YükLE ── */
+var aktifKullanici = null;
+
 async function kullaniciBilgisiYukle(userId) {
   var { data } = await sb.from('profiles').select('*').eq('id', userId).single();
   if (!data) return;
+  aktifKullanici = data;
+  kullaniciBilgisiGoster(data);
+  davetKodlariniYukle(userId);
+}
 
-  var adEl = document.querySelector('.prof-name');
-  var locEl = document.querySelector('.prof-loc');
-  var avEl  = document.querySelector('.prof-av');
-  var topAv = document.querySelector('.topbar-avatar');
-  var greetEl = document.querySelector('.page-title');
+function kullaniciBilgisiGoster(data) {
+  if (!data) return;
+  var ad = (data.ad || '') + (data.soyad ? ' ' + data.soyad : '');
+  var initials = (data.ad || 'U').substring(0,2).toUpperCase();
 
-  if (adEl && data.ad) adEl.textContent = data.ad + ' ' + (data.soyad || '');
-  if (locEl && data.sehir) locEl.textContent = '📍 ' + data.sehir;
-  if (avEl && data.ad)  avEl.textContent = data.ad.substring(0,2).toUpperCase();
-  if (topAv && data.ad) topAv.textContent = data.ad.substring(0,2).toUpperCase();
-  if (greetEl) greetEl.textContent = 'Merhaba ' + (data.ad || '') + ' 👋';
+  var profAv   = document.getElementById('prof-av-el');
+  var profName = document.getElementById('prof-name-el');
+  var profLoc  = document.getElementById('prof-loc-el');
+  var topAv    = document.querySelector('.topbar-avatar');
+  var greets   = document.querySelectorAll('.home-greet');
+
+  if (profAv)   profAv.textContent   = initials;
+  if (profName) profName.textContent = ad;
+  if (profLoc && data.sehir) profLoc.textContent = '📍 ' + data.sehir;
+  if (topAv)    topAv.textContent    = initials;
+  greets.forEach(function(el) { el.textContent = 'Merhaba ' + (data.ad || '') + ' 👋'; });
 
   if (data.etiketler && data.etiketler.length) {
     var tagsEl = document.querySelector('.p-tags');
@@ -2353,8 +2364,6 @@ async function kullaniciBilgisiYukle(userId) {
       }).join('');
     }
   }
-
-  davetKodlariniYukle(userId);
 }
 
 /* ── DAVET KODLARINI YÜKLE ── */
@@ -2496,17 +2505,22 @@ async function cikisYap() {
 /* ── PROFİL DÜZENLE AÇ ── */
 async function profilDuzenleAc() {
   navTo('profil-duzenle');
-  var { data: { user } } = await sb.auth.getUser();
-  if (!user) return;
-  var { data } = await sb.from('profiles').select('*').eq('id', user.id).single();
+
+  var data = aktifKullanici;
+  if (!data) {
+    var { data: { user } } = await sb.auth.getUser();
+    if (!user) return;
+    var res = await sb.from('profiles').select('*').eq('id', user.id).single();
+    data = res.data;
+  }
   if (!data) return;
 
   var adEl    = document.getElementById('edit-ad');
   var soyadEl = document.getElementById('edit-soyad');
   var sehirEl = document.getElementById('edit-sehir');
-  if (adEl && data.ad)     adEl.value    = data.ad;
-  if (soyadEl && data.soyad) soyadEl.value = data.soyad;
-  if (sehirEl && data.sehir) sehirEl.value = data.sehir;
+  if (adEl)    adEl.value    = data.ad    || '';
+  if (soyadEl) soyadEl.value = data.soyad || '';
+  if (sehirEl) sehirEl.value = data.sehir || '';
 
   if (data.etiketler && data.etiketler.length) {
     document.querySelectorAll('#edit-etiketler .tag-chip').forEach(function(chip) {
