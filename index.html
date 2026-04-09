@@ -1894,6 +1894,9 @@ select.inp {
             <div>
               <div class="prof-name" id="prof-name-el">...</div>
               <div class="prof-loc" id="prof-loc-el"></div>
+              <div id="prof-referans" style="display:none;font-size:12px;color:rgba(240,232,220,.45);margin-top:4px;">
+                🔗 <span id="prof-referans-ad"></span> tarafından davet edildi
+              </div>
               <div id="prof-badge" style="display:none;"><div class="prof-badge">⭐ Premium Üye</div></div>
             </div>
           </div>
@@ -2500,6 +2503,17 @@ async function kullaniciBilgisiYukle(userId) {
   aktifKullanici = data;
   kullaniciBilgisiGoster(data);
   davetKodlariniYukle(userId);
+
+  // Referans bilgisi — kim davet etti?
+  if (data.davet_eden) {
+    var { data: refData } = await sb.from('profiles').select('ad, soyad').eq('id', data.davet_eden).single();
+    var refEl  = document.getElementById('prof-referans');
+    var refAdEl = document.getElementById('prof-referans-ad');
+    if (refEl && refAdEl && refData && refData.ad) {
+      refAdEl.textContent = refData.ad + (refData.soyad ? ' ' + refData.soyad.charAt(0) + '.' : '');
+      refEl.style.display = 'block';
+    }
+  }
 }
 
 function kullaniciBilgisiGoster(data) {
@@ -3211,12 +3225,12 @@ async function buslusmalariYukle() {
     var renk = renkler[(b.baslik.charCodeAt(0) || 0) % renkler.length];
     var kapakUrl = b.resim_url || (b.resimler && b.resimler.length > 0 ? b.resimler[0] : null);
     var thumbnail = kapakUrl
-      ? '<img src="' + kapakUrl + '" style="width:100%;height:140px;object-fit:cover;display:block;" onerror="this.parentElement.innerHTML=\'<div style=\"width:100%;height:100px;background:' + renk + ';display:flex;align-items:center;justify-content:center;\"><span style=\"font-size:28px;opacity:.25;\">📅</span></div>\';">'
-      : '<div style="width:100%;height:100px;background:' + renk + ';display:flex;align-items:center;justify-content:center;"><span style="font-size:28px;opacity:.25;">📅</span></div>';
+      ? '<div style="position:relative;aspect-ratio:4/3;overflow:hidden;"><img src="' + kapakUrl + '" style="width:100%;height:100%;object-fit:cover;display:block;"></div>'
+      : '<div style="width:100%;aspect-ratio:4/3;background:' + renk + ';display:flex;align-items:center;justify-content:center;"><span style="font-size:36px;opacity:.2;">📅</span></div>';
 
     if (b.one_cikan) {
       return '<div class="featured-card" onclick="bulusmaDetayAc(\'' + b.id + '\')">' +
-        (b.resim_url ? '<div style="margin:-20px -22px 16px;overflow:hidden;border-radius:14px 14px 0 0;"><img src="' + b.resim_url + '" style="width:100%;height:180px;object-fit:cover;display:block;"></div>' : '') +
+        (b.resim_url ? '<div style="margin:-20px -22px 16px;overflow:hidden;border-radius:14px 14px 0 0;aspect-ratio:4/3;"><img src="' + b.resim_url + '" style="width:100%;height:100%;object-fit:cover;display:block;"></div>' : '') +
         '<div class="fc-ribbon">⭐ Öne Çıkan</div>' +
         '<div class="fc-label">Öne çıkan buluşma</div>' +
         '<div class="fc-title">' + b.baslik + '</div>' +
