@@ -1719,6 +1719,18 @@ select.inp {
           <div class="page-title">Buluşmayı Düzenle</div>
         </div>
         <div class="page-body">
+
+          <!-- Mevcut ve yeni resimler -->
+          <div class="field">
+            <label class="inp-label">Fotoğraflar <span style="font-weight:400;color:var(--text2);">(birini kapak seç)</span></label>
+            <div id="d-resim-grid" style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:8px;"></div>
+            <div id="d-resim-ekle" onclick="document.getElementById('d-resim-input').click()" style="width:100%;height:80px;border-radius:10px;border:2px dashed var(--border);display:flex;align-items:center;justify-content:center;gap:6px;background:var(--surface);cursor:pointer;">
+              <svg width="20" height="20" viewBox="0 0 20 20" fill="none"><rect x="1" y="5" width="18" height="12" rx="2.5" stroke="currentColor" stroke-width="1.4"/><circle cx="10" cy="11" r="3" stroke="currentColor" stroke-width="1.4"/><path d="M7 5V4a1 1 0 011-1h4a1 1 0 011 1v1" stroke="currentColor" stroke-width="1.4"/><path d="M15 1v4M13 3h4" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg>
+              <span style="font-size:12px;color:var(--text2);">Fotoğraf ekle</span>
+            </div>
+            <input type="file" id="d-resim-input" accept="image/*" multiple style="display:none;" onchange="duzenleResimSec(this)">
+          </div>
+
           <div class="field"><label class="inp-label">Başlık</label><input id="d-baslik" class="inp" placeholder="Brunch, piknik, kahve..."></div>
           <div class="field"><label class="inp-label">Açıklama</label><textarea id="d-aciklama" class="inp" rows="3" style="resize:vertical;height:90px;"></textarea></div>
           <div class="two-col">
@@ -2863,10 +2875,14 @@ async function bulusmaResimleriniYukle(userId) {
 
   for (var i = 0; i < secilenResimler.length; i++) {
     var r = secilenResimler[i];
-    var dosya = userId + '_' + Date.now() + '_' + i + '.' + r.file.name.split('.').pop();
-    var { data: up } = await sb.storage.from('bulusma-resimleri').upload(dosya, r.file, { contentType: r.file.type });
+    var ext = (r.file.name.split('.').pop() || 'jpg').toLowerCase();
+    var dosya = 'b_' + userId.substring(0,8) + '_' + Date.now() + '_' + i + '.' + ext;
+    console.log('Resim yükleniyor:', dosya, r.file.type, r.file.size);
+    var { data: up, error: upErr } = await sb.storage.from('bulusma-resimleri').upload(dosya, r.file, { contentType: r.file.type, upsert: true });
+    if (upErr) { console.error('Yükleme hatası:', upErr.message, upErr); continue; }
     if (up) {
       var { data: urlData } = sb.storage.from('bulusma-resimleri').getPublicUrl(dosya);
+      console.log('Yüklendi, URL:', urlData.publicUrl);
       resimUrller.push(urlData.publicUrl);
       if (r.thumbnail) thumbnailUrl = urlData.publicUrl;
     }
@@ -2981,6 +2997,7 @@ var duzenleKonumTimeout = null;
 var duzenleKonumLat = null;
 var duzenleKonumLng = null;
 var duzenleKonumTam = null;
+var duzenleResimler = []; // {url, file?, thumbnail, silinecek?}
 
 function konumAraD(query) {
   clearTimeout(duzenleKonumTimeout);
@@ -3011,22 +3028,77 @@ function konumSecD(idx) {
   if (oneriler) oneriler.style.display = 'none';
 }
 
+function duzenleResimGridGuncelle() {
+  var grid = document.getElementById('d-resim-grid');
+  var ekleBtn = document.getElementById('d-resim-ekle');
+  if (!grid) return;
+  var aktifler = duzenleResimler.filter(function(r){ return !r.silinecek; });
+  grid.innerHTML = aktifler.map(function(r, i) {
+    return '<div style="position:relative;">' +
+      '<img src="' + (r.url) + '" style="width:100%;aspect-ratio:1;object-fit:cover;border-radius:10px;display:block;cursor:pointer;" onclick="dThumbnailSec(' + i + ')">' +
+      (r.thumbnail ? '<div style="position:absolute;top:4px;left:4px;background:var(--accent);color:#fff;font-size:9px;font-weight:600;padding:2px 7px;border-radius:6px;">KAPAK</div>' : '') +
+      '<button onclick="dResimSil(' + i + ')" style="position:absolute;top:4px;right:4px;background:rgba(0,0,0,.55);border:none;color:#fff;border-radius:50%;width:22px;height:22px;cursor:pointer;font-size:13px;line-height:1;">×</button>' +
+    '</div>';
+  }).join('');
+  if (ekleBtn) ekleBtn.style.display = aktifler.length >= 5 ? 'none' : 'flex';
+}
+
+function dThumbnailSec(idx) {
+  var aktifler = duzenleResimler.filter(function(r){ return !r.silinecek; });
+  duzenleResimler.forEach(function(r){ r.thumbnail = false; });
+  if (aktifler[idx]) aktifler[idx].thumbnail = true;
+  duzenleResimGridGuncelle();
+}
+
+function dResimSil(idx) {
+  var aktifler = duzenleResimler.filter(function(r){ return !r.silinecek; });
+  if (aktifler[idx]) aktifler[idx].silinecek = true;
+  var kalanlar = duzenleResimler.filter(function(r){ return !r.silinecek; });
+  if (kalanlar.length > 0 && !kalanlar.some(function(r){ return r.thumbnail; })) {
+    kalanlar[0].thumbnail = true;
+  }
+  duzenleResimGridGuncelle();
+}
+
+function duzenleResimSec(input) {
+  var files = Array.from(input.files);
+  var aktifSayi = duzenleResimler.filter(function(r){ return !r.silinecek; }).length;
+  var kalan = 5 - aktifSayi;
+  files = files.slice(0, kalan);
+  files.forEach(function(file) {
+    var reader = new FileReader();
+    reader.onload = function(e) {
+      var ilkThumbnail = duzenleResimler.filter(function(r){ return !r.silinecek && r.thumbnail; }).length === 0;
+      duzenleResimler.push({ url: e.target.result, localUrl: e.target.result, file: file, thumbnail: ilkThumbnail, silinecek: false, yeni: true });
+      duzenleResimGridGuncelle();
+    };
+    reader.readAsDataURL(file);
+  });
+  input.value = '';
+}
+
 async function bulusmaDuzenleAc() {
   if (!aktifBulusmaId) return;
   navTo('bulusma-duzenle');
   var { data: b } = await sb.from('bulusmalar').select('*').eq('id', aktifBulusmaId).single();
   if (!b) return;
+
   var tarihObj = b.tarih ? new Date(b.tarih) : null;
-  var tarihStr = tarihObj ? tarihObj.toISOString().split('T')[0] : '';
-  var saatStr  = tarihObj ? tarihObj.toTimeString().slice(0,5) : '';
   document.getElementById('d-baslik').value   = b.baslik   || '';
   document.getElementById('d-aciklama').value = b.aciklama || '';
-  document.getElementById('d-tarih').value    = tarihStr;
-  document.getElementById('d-saat').value     = saatStr;
+  document.getElementById('d-tarih').value    = tarihObj ? tarihObj.toISOString().split('T')[0] : '';
+  document.getElementById('d-saat').value     = tarihObj ? tarihObj.toTimeString().slice(0,5) : '';
   document.getElementById('d-konum').value    = b.konum_tam ? b.konum_tam.split(',').slice(0,2).join(',').trim() : (b.konum || '');
   duzenleKonumLat = b.konum_lat;
   duzenleKonumLng = b.konum_lng;
   duzenleKonumTam = b.konum_tam;
+
+  // Mevcut resimleri yükle
+  var tumResimler = b.resimler && b.resimler.length ? b.resimler : (b.resim_url ? [b.resim_url] : []);
+  duzenleResimler = tumResimler.map(function(url, i) {
+    return { url: url, thumbnail: (url === b.resim_url || i === 0), silinecek: false, yeni: false };
+  });
+  duzenleResimGridGuncelle();
 }
 
 async function bulusmayiGuncelle() {
@@ -3038,10 +3110,32 @@ async function bulusmayiGuncelle() {
   var konum    = document.getElementById('d-konum');
   var errEl    = document.getElementById('d-error');
   var btn      = document.getElementById('d-btn');
+
   errEl.style.display = 'none';
   if (!baslik.value.trim()) { errEl.textContent = 'Başlık zorunlu.'; errEl.style.display='block'; return; }
   btn.textContent = 'Kaydediliyor...'; btn.disabled = true;
-  var tarihZaman = tarih.value ? tarih.value + (saat.value ? 'T' + saat.value : 'T12:00') + ':00' : null;
+
+  var { data: { user } } = await sb.auth.getUser();
+
+  // Yeni resimleri yükle
+  var aktifler = duzenleResimler.filter(function(r){ return !r.silinecek; });
+  for (var i = 0; i < aktifler.length; i++) {
+    var r = aktifler[i];
+    if (r.yeni && r.file) {
+      var ext = r.file.name.split('.').pop();
+      var dosya = 'b_' + user.id.substring(0,8) + '_' + Date.now() + '_' + i + '.' + ext;
+      var { data: up, error: upErr } = await sb.storage.from('bulusma-resimleri').upload(dosya, r.file, { contentType: r.file.type, upsert: true });
+      if (!upErr && up) {
+        var { data: urlData } = sb.storage.from('bulusma-resimleri').getPublicUrl(dosya);
+        r.url = urlData.publicUrl;
+      }
+    }
+  }
+
+  var yeniResimler = aktifler.map(function(r){ return r.url; });
+  var yeniKapak    = (aktifler.find(function(r){ return r.thumbnail; }) || aktifler[0] || {}).url || null;
+  var tarihZaman   = tarih.value ? tarih.value + (saat.value ? 'T' + saat.value : 'T12:00') + ':00' : null;
+
   var { error } = await sb.from('bulusmalar').update({
     baslik:    baslik.value.trim(),
     aciklama:  aciklama.value.trim(),
@@ -3049,8 +3143,11 @@ async function bulusmayiGuncelle() {
     konum:     konum.value.trim(),
     konum_tam: duzenleKonumTam,
     konum_lat: duzenleKonumLat,
-    konum_lng: duzenleKonumLng
+    konum_lng: duzenleKonumLng,
+    resimler:  yeniResimler,
+    resim_url: yeniKapak
   }).eq('id', aktifBulusmaId);
+
   btn.textContent = 'Değişiklikleri Kaydet'; btn.disabled = false;
   if (error) { errEl.textContent = 'Hata: ' + error.message; errEl.style.display='block'; return; }
   navTo('meetdetay');
