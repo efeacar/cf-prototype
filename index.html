@@ -1377,7 +1377,7 @@ select.inp {
       <svg viewBox="0 0 22 22" fill="none"><path d="M11 2a6 6 0 00-6 6v4l-2 2v1h16v-1l-2-2V8a6 6 0 00-6-6zM9 18a2 2 0 004 0" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"></path></svg>
       <div class="notif-dot"></div>
     </div>
-    <div class="topbar-avatar" onclick="navTo(&#39;profile&#39;)">ZD</div>
+    <div class="topbar-avatar" onclick="navTo('profile')" id="topbar-av">...</div>
   </div>
 
   <!-- APP BODY -->
@@ -1613,7 +1613,7 @@ select.inp {
             </div>
             <div class="meet-card" onclick="navTo(&#39;meetdetay&#39;)"><div class="mc-date">Paz · 13 Nis · 11:00</div><div class="mc-title">Brunch — Kadıköy</div><div class="mc-host">Beth tarafından · İstanbul</div><div class="mc-tags"><span class="mc-tag">Solo-Dostu</span><span class="mc-tag">4 kişi</span></div></div>
             <div class="meet-card" onclick="navTo(&#39;meetdetay&#39;)"><div class="mc-date">Cmt · 19 Nis · 19:00</div><div class="mc-title">Akşam yemeği &amp; müzik</div><div class="mc-host">Ira tarafından · Beşiktaş</div><div class="mc-tags"><span class="mc-tag">Küçük Grup</span><span class="mc-tag">7 kişi</span></div></div>
-            <div class="meet-card"><div class="mc-date">Paz · 27 Nis · 14:00</div><div class="mc-title">Kitap okuma buluşması</div><div class="mc-host">Zeynep tarafından · Moda</div><div class="mc-tags"><span class="mc-tag">Kitapseverler</span><span class="mc-tag">3 kişi</span></div></div>
+            <div class="meet-card"><div class="mc-date">Paz · 27 Nis · 14:00</div><div class="mc-title">Kitap okuma buluşması</div><div class="mc-host">Örnek Üye tarafından · Moda</div><div class="mc-tags"><span class="mc-tag">Kitapseverler</span><span class="mc-tag">3 kişi</span></div></div>
           </div>
 
         </div>
@@ -1741,10 +1741,10 @@ select.inp {
         <div class="page-body">
 
           <div class="profile-hero">
-            <div class="prof-av" id="prof-av-el">ZD</div>
+            <div class="prof-av" id="prof-av-el"></div>
             <div>
-              <div class="prof-name" id="prof-name-el">Zeynep Demir</div>
-              <div class="prof-loc" id="prof-loc-el">📍 İstanbul · 2025'ten beri üye</div>
+              <div class="prof-name" id="prof-name-el">...</div>
+              <div class="prof-loc" id="prof-loc-el"></div>
               <div id="prof-badge" style="display:none;"><div class="prof-badge">⭐ Premium Üye</div></div>
             </div>
           </div>
@@ -2347,7 +2347,7 @@ function kullaniciBilgisiGoster(data) {
   var profAv   = document.getElementById('prof-av-el');
   var profName = document.getElementById('prof-name-el');
   var profLoc  = document.getElementById('prof-loc-el');
-  var topAv    = document.querySelector('.topbar-avatar');
+  var topAv    = document.getElementById('topbar-av');
   var greets   = document.querySelectorAll('.home-greet');
 
   if (profAv)   profAv.textContent   = initials;
