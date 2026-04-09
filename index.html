@@ -2031,6 +2031,22 @@ select.inp {
           <div class="page-title">Profili Düzenle</div>
         </div>
         <div class="page-body">
+
+          <!-- Profil Fotoğrafı -->
+          <div class="field" style="display:flex;flex-direction:column;align-items:center;gap:12px;padding:16px 0 8px;">
+            <div id="edit-av-wrap" style="position:relative;cursor:pointer;" onclick="document.getElementById('edit-foto-input').click()">
+              <div id="edit-av" style="width:80px;height:80px;border-radius:50%;background:var(--surface);border:3px solid var(--accent);display:flex;align-items:center;justify-content:center;font-size:28px;font-weight:700;color:var(--mid);overflow:hidden;">
+                <span id="edit-av-initials">?</span>
+                <img id="edit-av-img" src="" style="display:none;width:100%;height:100%;object-fit:cover;">
+              </div>
+              <div style="position:absolute;bottom:0;right:0;width:26px;height:26px;background:var(--accent);border-radius:50%;display:flex;align-items:center;justify-content:center;border:2px solid var(--light);">
+                <svg width="13" height="13" viewBox="0 0 13 13" fill="none"><path d="M9 2L11 4L4.5 10.5H2.5V8.5L9 2Z" stroke="#fff" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              </div>
+            </div>
+            <span style="font-size:12px;color:var(--text2);">Fotoğrafı değiştir</span>
+            <input type="file" id="edit-foto-input" accept="image/*" style="display:none;" onchange="editFotoSec(this)">
+          </div>
+
           <div class="field"><label class="inp-label">Adın</label><input id="edit-ad" class="inp" placeholder="Adın"></div>
           <div class="field"><label class="inp-label">Soyad</label><input id="edit-soyad" class="inp" placeholder="Soyadın (opsiyonel)"></div>
           <div class="field">
@@ -2413,12 +2429,20 @@ async function profilKaydet() {
   var davetKoduId = localStorage.getItem('davet_kodu_id');
 
   if (userId) {
+    // Davet kodunun sahibini bul
+    var davetEden = null;
+    if (davetKoduId) {
+      var { data: kodData } = await sb.from('davet_kodlari').select('olusturan').eq('id', davetKoduId).single();
+      if (kodData) davetEden = kodData.olusturan;
+    }
+
     await sb.from('profiles').upsert({
       id: userId,
       ad: ad.value.trim(),
       sehir: sehir.value,
       etiketler: seciliEtiketler,
-      premium: false
+      premium: false,
+      davet_eden: davetEden
     });
 
     if (davetKoduId) {
@@ -2527,10 +2551,25 @@ function kullaniciBilgisiGoster(data) {
   var topAv    = document.getElementById('topbar-av');
   var greets   = document.querySelectorAll('.home-greet');
 
-  if (profAv)   profAv.textContent   = initials;
+  // Avatar — fotoğraf varsa göster, yoksa initials
+  if (profAv) {
+    if (data.avatar_url) {
+      profAv.innerHTML = '<img src="' + data.avatar_url + '" style="width:100%;height:100%;object-fit:cover;border-radius:50%;">';
+    } else {
+      profAv.textContent = initials;
+    }
+  }
+  if (topAv) {
+    if (data.avatar_url) {
+      topAv.innerHTML = '<img src="' + data.avatar_url + '" style="width:100%;height:100%;object-fit:cover;border-radius:50%;">';
+      topAv.style.padding = '0';
+    } else {
+      topAv.textContent = initials;
+    }
+  }
+
   if (profName) profName.textContent = ad;
   if (profLoc && data.sehir) profLoc.textContent = '📍 ' + data.sehir;
-  if (topAv)    topAv.textContent    = initials;
   greets.forEach(function(el) { el.textContent = 'Merhaba ' + (data.ad || '') + ' 👋'; });
 
   if (data.etiketler && data.etiketler.length) {
@@ -3548,8 +3587,37 @@ async function cikisYap() {
 }
 
 /* ── PROFİL DÜZENLE AÇ ── */
+/* ── PROFİL FOTOĞRAFI ── */
+var editFotoFile = null;
+
+function editFotoSec(input) {
+  var file = input.files[0];
+  if (!file) return;
+  editFotoFile = file;
+  var reader = new FileReader();
+  reader.onload = function(e) {
+    var initials = document.getElementById('edit-av-initials');
+    var img      = document.getElementById('edit-av-img');
+    if (initials) initials.style.display = 'none';
+    if (img) { img.src = e.target.result; img.style.display = 'block'; }
+  };
+  reader.readAsDataURL(file);
+  input.value = '';
+}
+
+async function profilFotoYukle(userId) {
+  if (!editFotoFile) return null;
+  var ext  = editFotoFile.name.split('.').pop();
+  var dosya = 'avatar_' + userId + '.' + ext;
+  var { data: up, error } = await sb.storage.from('profil-fotograflari').upload(dosya, editFotoFile, { contentType: editFotoFile.type, upsert: true });
+  if (error) { console.error('Foto yüklenemedi:', error.message); return null; }
+  var { data: urlData } = sb.storage.from('profil-fotograflari').getPublicUrl(dosya);
+  return urlData.publicUrl + '?t=' + Date.now();
+}
+
 async function profilDuzenleAc() {
   navTo('profil-duzenle');
+  editFotoFile = null;
 
   var data = aktifKullanici;
   if (!data) {
@@ -3566,6 +3634,16 @@ async function profilDuzenleAc() {
   if (adEl)    adEl.value    = data.ad    || '';
   if (soyadEl) soyadEl.value = data.soyad || '';
   if (sehirEl) sehirEl.value = data.sehir || '';
+
+  var initials = document.getElementById('edit-av-initials');
+  var img      = document.getElementById('edit-av-img');
+  if (data.avatar_url && img) {
+    img.src = data.avatar_url; img.style.display = 'block';
+    if (initials) initials.style.display = 'none';
+  } else {
+    if (img) img.style.display = 'none';
+    if (initials) { initials.style.display = 'block'; initials.textContent = (data.ad || 'U').substring(0,2).toUpperCase(); }
+  }
 
   if (data.etiketler && data.etiketler.length) {
     document.querySelectorAll('#edit-etiketler .tag-chip').forEach(function(chip) {
@@ -3596,13 +3674,18 @@ async function profilGuncelle() {
   var { data: { user } } = await sb.auth.getUser();
   if (!user) return;
 
+  var avatarUrl = aktifKullanici ? aktifKullanici.avatar_url : null;
+  if (editFotoFile) {
+    var yeniUrl = await profilFotoYukle(user.id);
+    if (yeniUrl) avatarUrl = yeniUrl;
+  }
+
   await sb.from('profiles').update({
-    ad: ad.value.trim(),
-    soyad: soyad.value.trim(),
-    sehir: sehir.value,
-    etiketler: etiketler
+    ad: ad.value.trim(), soyad: soyad.value.trim(),
+    sehir: sehir.value, etiketler: etiketler, avatar_url: avatarUrl
   }).eq('id', user.id);
 
+  editFotoFile = null;
   if (btn) { btn.textContent = 'Kaydet'; btn.disabled = false; }
   await kullaniciBilgisiYukle(user.id);
   navTo('profile');
