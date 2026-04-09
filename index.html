@@ -1,10 +1,10 @@
 <!DOCTYPE html>
-<!-- saved from url=(0057)file:///C:/Users/Efe.Acar/Downloads/childfree-webapp.html -->
+<!-- saved from url=(0048)file:///C:/Users/Efe.Acar/Downloads/index_4.html -->
 <html lang="tr"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>childfree türkiye</title>
-<link href="./childfreev2_files/css2" rel="stylesheet">
+<script src="file:///C:/Users/Efe.Acar/Downloads/childfree%20t%C3%BCrkiye_files/supabase-js@2"></script>
+<link href="file:///C:/Users/Efe.Acar/Downloads/childfree%20t%C3%BCrkiye_files/css2" rel="stylesheet">
 <style>
 :root {
   --dark:    #2C1A0E;
@@ -1274,8 +1274,8 @@ select.inp {
     <div class="auth-card">
       <div class="auth-title">Davet kodunu gir</div>
       <div class="auth-sub">Bu topluluk davetiye ile büyür. Bir üyeden aldığın kodu yaz.</div>
-      <input class="code-input" maxlength="8" placeholder="_ _ _ _ _ _ _ _" oninput="this.value=this.value.toUpperCase()">
-      <button class="btn-accent" onclick="go(&#39;reg1&#39;)">Devam Et →</button>
+      <input id="davet-kodu-input" class="code-input" maxlength="8" placeholder="_ _ _ _ _ _ _ _" oninput="this.value=this.value.toUpperCase()">
+      <button class="btn-accent" onclick="davetKoduKontrol()">Devam Et →</button>
       <div class="divider"></div>
       <div class="link-text">Hesabın var mı? <a onclick="go(&#39;giris-form&#39;)">Giriş yap</a></div>
     </div>
@@ -1292,10 +1292,10 @@ select.inp {
     <div class="auth-card">
       <div class="auth-title">Giriş yap</div>
       <div class="auth-sub">E-posta ve şifrenle devam et.</div>
-      <div class="field"><label class="inp-label">E-posta</label><input class="inp" type="email" placeholder="ornek [at] mail.com"></div>
-      <div class="field"><label class="inp-label">Şifre</label><input class="inp" type="password" placeholder="Şifren"></div>
+      <div class="field"><label class="inp-label">E-posta</label><input id="giris-email" class="inp" type="email" placeholder="ornek [at] mail.com"></div>
+      <div class="field"><label class="inp-label">Şifre</label><input id="giris-sifre" class="inp" type="password" placeholder="Şifren"></div>
       <div style="text-align:right;margin-bottom:14px;"><a style="font-size:12px;color:var(--accent);cursor:pointer;font-weight:600;">Şifremi unuttum</a></div>
-      <button class="btn-accent" onclick="go(&#39;home&#39;)">Giriş Yap →</button>
+      <button class="btn-accent" onclick="girisYap()">Giriş Yap →</button>
       <div class="divider"></div>
       <div class="link-text">Hesabın yok mu? <a onclick="go(&#39;login&#39;)">Davet koduyla kayıt ol</a></div>
     </div>
@@ -1313,10 +1313,10 @@ select.inp {
       <div class="auth-title">Hesap oluştur</div>
       <div class="auth-sub">Adım 1 / 2</div>
       <div class="step-bar"><div class="step-dot done"></div><div class="step-dot"></div></div>
-      <div class="field"><label class="inp-label">E-posta</label><input class="inp" type="email" placeholder="ornek [at] mail.com"></div>
-      <div class="field"><label class="inp-label">Şifre</label><input class="inp" type="password" placeholder="En az 8 karakter"></div>
-      <div class="field"><label class="inp-label">Şifre tekrar</label><input class="inp" type="password" placeholder="Şifreyi tekrar gir"></div>
-      <button class="btn-accent" onclick="go(&#39;reg2&#39;)">Devam Et →</button>
+      <div class="field"><label class="inp-label">E-posta</label><input id="kayit-email" class="inp" type="email" placeholder="ornek [at] mail.com"></div>
+      <div class="field"><label class="inp-label">Şifre</label><input id="kayit-sifre" class="inp" type="password" placeholder="En az 8 karakter"></div>
+      <div class="field"><label class="inp-label">Şifre tekrar</label><input id="kayit-sifre2" class="inp" type="password" placeholder="Şifreyi tekrar gir"></div>
+      <button class="btn-accent" onclick="kayitOl()">Devam Et →</button>
       <div class="link-text" style="margin-top:12px;"><a onclick="go(&#39;login&#39;)">← Geri dön</a></div>
     </div>
   </div>
@@ -1334,12 +1334,12 @@ select.inp {
       <div class="auth-sub">Adım 2 / 2 — Bu bilgiler seni doğru insanlarla buluşturur.</div>
       <div class="step-bar"><div class="step-dot done"></div><div class="step-dot done"></div></div>
       <div class="two-col">
-        <div class="field"><label class="inp-label">Adın</label><input class="inp" placeholder="Adın"></div>
+        <div class="field"><label class="inp-label">Adın</label><input id="profil-ad" class="inp" placeholder="Adın"></div>
         <div class="field"><label class="inp-label">Soyad</label><input class="inp" placeholder="Opsiyonel"></div>
       </div>
       <div class="field">
         <label class="inp-label">Şehrin</label>
-        <select class="inp" style="appearance:none;">
+        <select id="profil-sehir" class="inp" style="appearance:none;">
           <option>Şehir seç...</option>
           <option>İstanbul</option><option>Ankara</option><option>İzmir</option>
           <option>Bursa</option><option>Antalya</option><option>Eskişehir</option><option>Diğer</option>
@@ -1358,7 +1358,7 @@ select.inp {
           <span class="tag-chip" onclick="this.classList.toggle(&#39;sel&#39;)">Hayvanlar</span>
         </div>
       </div>
-      <button class="btn-accent" onclick="go(&#39;home&#39;)">Topluluğa Katıl 🎉</button>
+      <button class="btn-accent" onclick="profilKaydet()">Topluluğa Katıl 🎉</button>
     </div>
   </div>
 </div>
@@ -1570,8 +1570,8 @@ select.inp {
                 <div class="msg"><div class="msg-meta">Selin A. · 20 dk önce</div><div class="msg-text">Bali'yi düşünüyorum sonbahar için, kim gelir? Küçük grup olur harika!</div><div class="msg-like"><svg viewBox="0 0 16 16" fill="none"><path d="M8 13s-5-3.5-5-7a4 4 0 018 0" stroke="currentColor" stroke-width="1.2"></path><path d="M8 13s5-3.5 5-7a4 4 0 00-8 0" stroke="currentColor" stroke-width="1.2"></path></svg>4</div></div>
               </div>
               <div class="ch-input-row">
-                <input class="ch-inp" placeholder="Düşünceni ekle...">
-                <button class="ch-send"><svg viewBox="0 0 18 18" fill="none"><path d="M2 9l14-6-6 14-2-6-6-2z" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"></path></svg></button>
+                <input class="ch-inp" placeholder="Düşünceni ekle..." onkeydown="if(event.key===&#39;Enter&#39;)mesajGonder()">
+                <button class="ch-send" onclick="mesajGonder()"><svg viewBox="0 0 18 18" fill="none"><path d="M2 9l14-6-6 14-2-6-6-2z" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"></path></svg></button>
               </div>
             </div>
           </div>
@@ -2090,6 +2090,365 @@ function copyCode(btn, code) {
 function updateClock() {}
 
 applyMode();
+
+/* ── SUPABASE BAĞLANTISI ── */
+const SUPABASE_URL = 'https://qkjegdocknktffqqywdi.supabase.co';
+const SUPABASE_KEY = 'sb_publishable_4z_jcwYTVLjHKBDBQ-7hyQ_voAk1JTM';
+const sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+console.log('Supabase bağlandı ✓');
+
+/* ── HATA MESAJI ── */
+function showError(msg) {
+  var el = document.getElementById('auth-error');
+  if (!el) {
+    el = document.createElement('div');
+    el.id = 'auth-error';
+    el.style.cssText = 'background:#FAECE7;color:#993C1D;border:1px solid #f5c4b3;border-radius:10px;padding:12px 16px;margin-bottom:14px;font-size:13px;font-weight:500;';
+    var card = document.querySelector('.sc.show .auth-card');
+    if (card) card.insertBefore(el, card.firstChild);
+  }
+  el.textContent = msg;
+  el.style.display = 'block';
+}
+
+function clearError() {
+  var el = document.getElementById('auth-error');
+  if (el) el.style.display = 'none';
+}
+
+/* ── DAVETİYE KODU KONTROL ── */
+async function davetKoduKontrol() {
+  var kod = document.getElementById('davet-kodu-input');
+  if (!kod) return;
+  var kodVal = kod.value.trim().toUpperCase();
+  if (!kodVal || kodVal.length < 4) { showError('Lütfen davet kodunu gir.'); return; }
+
+  var btn = document.querySelector('#sc-login .btn-accent');
+  if (btn) { btn.textContent = 'Kontrol ediliyor...'; btn.disabled = true; }
+
+  try {
+    var { data, error } = await sb
+      .from('davet_kodlari')
+      .select('*')
+      .eq('kod', kodVal)
+      .eq('kullanildi', false)
+      .single();
+
+    if (error || !data) {
+      showError('Bu kod geçersiz veya daha önce kullanılmış.');
+      if (btn) { btn.textContent = 'Devam Et →'; btn.disabled = false; }
+      return;
+    }
+
+    localStorage.setItem('davet_kodu', kodVal);
+    localStorage.setItem('davet_kodu_id', data.id);
+    clearError();
+    go('reg1');
+  } catch(e) {
+    showError('Bir hata oluştu, tekrar dene.');
+  }
+  if (btn) { btn.textContent = 'Devam Et →'; btn.disabled = false; }
+}
+
+/* ── KAYIT ── */
+async function kayitOl() {
+  var email = document.getElementById('kayit-email');
+  var sifre = document.getElementById('kayit-sifre');
+  var sifre2 = document.getElementById('kayit-sifre2');
+  if (!email || !sifre || !sifre2) return;
+
+  clearError();
+  if (!email.value || !sifre.value) { showError('E-posta ve şifre zorunlu.'); return; }
+  if (sifre.value.length < 8) { showError('Şifre en az 8 karakter olmalı.'); return; }
+  if (sifre.value !== sifre2.value) { showError('Şifreler eşleşmiyor.'); return; }
+
+  var btn = document.querySelector('#sc-reg1 .btn-accent');
+  if (btn) { btn.textContent = 'Kaydediliyor...'; btn.disabled = true; }
+
+  var { data, error } = await sb.auth.signUp({ email: email.value, password: sifre.value });
+
+  if (error) {
+    showError(error.message === 'User already registered' ? 'Bu e-posta zaten kayıtlı.' : 'Kayıt başarısız: ' + error.message);
+    if (btn) { btn.textContent = 'Devam Et →'; btn.disabled = false; }
+    return;
+  }
+
+  localStorage.setItem('kayit_user_id', data.user.id);
+  clearError();
+  go('reg2');
+  if (btn) { btn.textContent = 'Devam Et →'; btn.disabled = false; }
+}
+
+/* ── PROFİL KAYDET ── */
+async function profilKaydet() {
+  var ad     = document.getElementById('profil-ad');
+  var sehir  = document.getElementById('profil-sehir');
+  if (!ad || !sehir) { go('home'); return; }
+  if (!ad.value.trim()) { showError('Adın zorunlu.'); return; }
+  if (!sehir.value)     { showError('Şehir seçimi zorunlu.'); return; }
+
+  var seciliEtiketler = [];
+  document.querySelectorAll('#sc-reg2 .tag-chip.sel').forEach(function(t){ seciliEtiketler.push(t.textContent.trim()); });
+  if (seciliEtiketler.length < 2) { showError('En az 2 etiket seç.'); return; }
+
+  var btn = document.querySelector('#sc-reg2 .btn-accent');
+  if (btn) { btn.textContent = 'Kaydediliyor...'; btn.disabled = true; }
+
+  var userId = localStorage.getItem('kayit_user_id');
+  if (!userId) {
+    var { data: { user } } = await sb.auth.getUser();
+    if (user) userId = user.id;
+  }
+
+  var davetKoduId = localStorage.getItem('davet_kodu_id');
+
+  if (userId) {
+    await sb.from('profiles').upsert({
+      id: userId,
+      ad: ad.value.trim(),
+      sehir: sehir.value,
+      etiketler: seciliEtiketler,
+      premium: false
+    });
+
+    if (davetKoduId) {
+      await sb.from('davet_kodlari').update({ kullanildi: true, kullanan: userId }).eq('id', davetKoduId);
+    }
+
+    var { data: { user } } = await sb.auth.getUser();
+    if (user) {
+      await sb.from('davet_kodlari').insert([
+        { kod: 'CFT-' + Math.random().toString(36).substring(2,6).toUpperCase(), olusturan: userId },
+        { kod: 'CFT-' + Math.random().toString(36).substring(2,6).toUpperCase(), olusturan: userId },
+        { kod: 'CFT-' + Math.random().toString(36).substring(2,6).toUpperCase(), olusturan: userId }
+      ]);
+    }
+  }
+
+  clearError();
+  localStorage.removeItem('davet_kodu');
+  localStorage.removeItem('davet_kodu_id');
+  localStorage.removeItem('kayit_user_id');
+
+  go('home');
+  if (btn) { btn.textContent = 'Topluluğa Katıl 🎉'; btn.disabled = false; }
+}
+
+/* ── GİRİŞ YAP ── */
+async function girisYap() {
+  var email = document.getElementById('giris-email');
+  var sifre = document.getElementById('giris-sifre');
+  if (!email || !sifre) return;
+
+  clearError();
+  if (!email.value || !sifre.value) { showError('E-posta ve şifre zorunlu.'); return; }
+
+  var btn = document.querySelector('#sc-giris-form .btn-accent');
+  if (btn) { btn.textContent = 'Giriş yapılıyor...'; btn.disabled = true; }
+
+  var { data, error } = await sb.auth.signInWithPassword({ email: email.value, password: sifre.value });
+
+  if (error) {
+    showError('E-posta veya şifre hatalı.');
+    if (btn) { btn.textContent = 'Giriş Yap →'; btn.disabled = false; }
+    return;
+  }
+
+  clearError();
+  go('home');
+  if (btn) { btn.textContent = 'Giriş Yap →'; btn.disabled = false; }
+}
+
+/* ── OTURUM KONTROL ── */
+sb.auth.onAuthStateChange(function(event, session) {
+  if (session && session.user) {
+    var currentSc = document.querySelector('.sc.show');
+    var authScreens = ['sc-login','sc-giris-form','sc-reg1','sc-reg2'];
+    var isOnAuth = currentSc && authScreens.includes(currentSc.id);
+    if (isOnAuth) go('home');
+  }
+});
+
+/* ── SAYFA AÇILIŞINDA OTURUM KONTROL ── */
+(async function() {
+  var { data: { session } } = await sb.auth.getSession();
+  if (session && session.user) {
+    go('home');
+    kullaniciBilgisiYukle(session.user.id);
+  }
+})();
+
+/* ── KULLANICI BİLGİSİ YükLE ── */
+async function kullaniciBilgisiYukle(userId) {
+  var { data } = await sb.from('profiles').select('*').eq('id', userId).single();
+  if (!data) return;
+
+  var adEl = document.querySelector('.prof-name');
+  var locEl = document.querySelector('.prof-loc');
+  var avEl  = document.querySelector('.prof-av');
+  var topAv = document.querySelector('.topbar-avatar');
+  var greetEl = document.querySelector('.page-title');
+
+  if (adEl && data.ad) adEl.textContent = data.ad + ' ' + (data.soyad || '');
+  if (locEl && data.sehir) locEl.textContent = '📍 ' + data.sehir;
+  if (avEl && data.ad)  avEl.textContent = data.ad.substring(0,2).toUpperCase();
+  if (topAv && data.ad) topAv.textContent = data.ad.substring(0,2).toUpperCase();
+  if (greetEl) greetEl.textContent = 'Merhaba ' + (data.ad || '') + ' 👋';
+
+  if (data.etiketler && data.etiketler.length) {
+    var tagsEl = document.querySelector('.p-tags');
+    if (tagsEl) {
+      tagsEl.innerHTML = data.etiketler.map(function(t){
+        return '<span class="p-tag">' + t + '</span>';
+      }).join('');
+    }
+  }
+
+  davetKodlariniYukle(userId);
+}
+
+/* ── DAVET KODLARINI YÜKLE ── */
+async function davetKodlariniYukle(userId) {
+  var { data } = await sb.from('davet_kodlari')
+    .select('*')
+    .eq('olusturan', userId);
+  if (!data) return;
+
+  var codesEl = document.querySelector('.inv-codes');
+  if (!codesEl) return;
+
+  codesEl.innerHTML = data.map(function(k) {
+    if (k.kullanildi) {
+      return '<div class="inv-code inv-used"><span>' + k.kod + '</span><span style="font-size:11px;color:var(--text2);">Kullanıldı</span></div>';
+    }
+    return '<div class="inv-code"><span>' + k.kod + '</span><button class="inv-copy" onclick="copyCode(this,\'' + k.kod + '\')">Kopyala</button></div>';
+  }).join('');
+
+  var invTitle = document.querySelector('.inv-title');
+  if (invTitle) {
+    var kalan = data.filter(function(k){ return !k.kullanildi; }).length;
+    invTitle.textContent = kalan + ' davet hakkın var';
+  }
+}
+
+/* ── KANALLARI YÜKLE ── */
+async function kanallariYukle() {
+  var { data } = await sb.from('kanallar').select('*').order('premium_gerekli');
+  if (!data) return;
+
+  var listEl = document.querySelector('.channel-list');
+  if (!listEl) return;
+
+  var header = listEl.querySelector('.cl-header');
+  listEl.innerHTML = '';
+  if (header) listEl.appendChild(header);
+
+  data.forEach(function(k, i) {
+    var isPremKanal = k.premium_gerekli && !isPrem;
+    var div = document.createElement('div');
+    div.className = 'cl-item' + (i === 0 ? ' active' : '');
+    div.onclick = function() {
+      if (isPremKanal) { setMode('prm'); return; }
+      document.querySelectorAll('.cl-item').forEach(function(el){ el.classList.remove('active'); });
+      div.classList.add('active');
+      mesajlariYukle(k.id, k.ad, k.emoji);
+    };
+    div.innerHTML = '<div class="cli-emoji">' + (k.emoji || '💬') + '</div>' +
+      '<div><div class="cli-name">' + k.ad + '</div>' +
+      '<div class="cli-sub" >' + (isPremKanal ? '🔒 Premium' : (k.aciklama || '')) + '</div></div>';
+    listEl.appendChild(div);
+  });
+
+  if (data.length > 0 && !data[0].premium_gerekli) {
+    mesajlariYukle(data[0].id, data[0].ad, data[0].emoji);
+  }
+}
+
+/* ── MESAJLARI YÜKLE ── */
+var aktifKanalId = null;
+var mesajSubscription = null;
+
+async function mesajlariYukle(kanalId, kanalAd, kanalEmoji) {
+  aktifKanalId = kanalId;
+
+  var topEl = document.querySelector('.ch-top-title');
+  var subEl = document.querySelector('.ch-top-sub');
+  if (topEl) topEl.textContent = (kanalEmoji || '') + ' ' + kanalAd;
+
+  var msgsEl = document.querySelector('.ch-msgs');
+  if (msgsEl) msgsEl.innerHTML = '<div style="color:var(--text2);font-size:13px;padding:20px;">Yükleniyor...</div>';
+
+  var { data } = await sb.from('mesajlar')
+    .select('*, profiles(ad, soyad)')
+    .eq('kanal_id', kanalId)
+    .order('created_at', { ascending: true })
+    .limit(50);
+
+  if (msgsEl) {
+    if (!data || data.length === 0) {
+      msgsEl.innerHTML = '<div style="color:var(--text2);font-size:13px;padding:20px;">Henüz mesaj yok. İlk mesajı sen at!</div>';
+    } else {
+      msgsEl.innerHTML = data.map(function(m) {
+        var ad = m.profiles ? (m.profiles.ad || 'Üye') : 'Üye';
+        var zaman = new Date(m.created_at).toLocaleTimeString('tr-TR', {hour:'2-digit', minute:'2-digit'});
+        return '<div class="msg">' +
+          '<div class="msg-meta">' + ad + ' · ' + zaman + '</div>' +
+          '<div class="msg-text">' + m.icerik + '</div>' +
+          '<div class="msg-like"><svg viewBox="0 0 16 16" fill="none"><path d="M8 13s-5-3.5-5-7a4 4 0 018 0" stroke="currentColor" stroke-width="1.2"/><path d="M8 13s5-3.5 5-7a4 4 0 00-8 0" stroke="currentColor" stroke-width="1.2"/></svg>' + m.begeni_sayisi + '</div>' +
+        '</div>';
+      }).join('');
+      msgsEl.scrollTop = msgsEl.scrollHeight;
+    }
+  }
+
+  if (subEl) subEl.textContent = (data ? data.length : 0) + ' mesaj';
+
+  if (mesajSubscription) mesajSubscription.unsubscribe();
+  mesajSubscription = sb.channel('mesajlar-' + kanalId)
+    .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'mesajlar', filter: 'kanal_id=eq.' + kanalId },
+      function(payload) {
+        var m = payload.new;
+        if (msgsEl) {
+          var div = document.createElement('div');
+          div.className = 'msg';
+          div.innerHTML = '<div class="msg-meta">Üye · şimdi</div><div class="msg-text">' + m.icerik + '</div><div class="msg-like"><svg viewBox="0 0 16 16" fill="none"><path d="M8 13s-5-3.5-5-7a4 4 0 018 0" stroke="currentColor" stroke-width="1.2"/><path d="M8 13s5-3.5 5-7a4 4 0 00-8 0" stroke="currentColor" stroke-width="1.2"/></svg>0</div>';
+          msgsEl.appendChild(div);
+          msgsEl.scrollTop = msgsEl.scrollHeight;
+        }
+      }
+    ).subscribe();
+}
+
+/* ── MESAJ GÖNDER ── */
+async function mesajGonder() {
+  var inp = document.querySelector('.ch-inp');
+  if (!inp || !inp.value.trim() || !aktifKanalId) return;
+
+  var { data: { user } } = await sb.auth.getUser();
+  if (!user) { alert('Giriş yapman gerekiyor.'); return; }
+
+  var icerik = inp.value.trim();
+  inp.value = '';
+
+  await sb.from('mesajlar').insert({
+    kanal_id: aktifKanalId,
+    kullanici_id: user.id,
+    icerik: icerik
+  });
+}
+
+/* ── ÇIKIŞ YAP ── */
+async function cikisYap() {
+  await sb.auth.signOut();
+  go('login');
+}
+
+/* ── KÜTÜPHANE AÇILINCA KANALLARI YükLE ── */
+var _origNavTo = navTo;
+navTo = function(id) {
+  _origNavTo(id);
+  if (id === 'library') kanallariYukle();
+};
 </script>
 
 
