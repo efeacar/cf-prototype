@@ -1620,6 +1620,18 @@ select.inp {
           <div class="page-title">Buluşma Oluştur</div>
         </div>
         <div class="page-body">
+
+          <!-- Kapak Resmi -->
+          <div class="field">
+            <label class="inp-label">Kapak Resmi (opsiyonel)</label>
+            <div id="resim-preview" style="width:100%;height:160px;border-radius:12px;border:2px dashed var(--border);display:flex;flex-direction:column;align-items:center;justify-content:center;cursor:pointer;gap:8px;background:var(--surface);margin-bottom:4px;" onclick="document.getElementById('resim-input').click()">
+              <svg width="28" height="28" viewBox="0 0 28 28" fill="none"><rect x="2" y="6" width="24" height="18" rx="3" stroke="currentColor" stroke-width="1.5"/><circle cx="9" cy="12" r="2" stroke="currentColor" stroke-width="1.4"/><path d="M2 20l6-5 4 4 4-4 8 7" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              <span style="font-size:13px;color:var(--text2);font-weight:500;">Fotoğraf seç veya tıkla</span>
+              <span style="font-size:11px;color:var(--text2);opacity:.6;">JPG, PNG · Maks 5MB</span>
+            </div>
+            <input type="file" id="resim-input" accept="image/*" style="display:none;" onchange="resimOnizle(this)">
+          </div>
+
           <div class="field">
             <label class="inp-label">Başlık</label>
             <input id="b-baslik" class="inp" placeholder="Brunch, piknik, kahve...">
@@ -1638,10 +1650,25 @@ select.inp {
               <input id="b-saat" class="inp" type="time">
             </div>
           </div>
+
+          <!-- Konum — Google Maps arama -->
           <div class="field">
             <label class="inp-label">Konum</label>
-            <input id="b-konum" class="inp" placeholder="Kafe adı, park, adres...">
+            <div style="position:relative;">
+              <input id="b-konum" class="inp" placeholder="Kafe adı, park, adres ara..." autocomplete="off" oninput="konumAra(this.value)">
+              <div id="konum-oneriler" style="display:none;position:absolute;top:100%;left:0;right:0;background:var(--light);border:0.5px solid var(--border);border-radius:10px;box-shadow:0 4px 20px rgba(44,26,14,.12);z-index:50;max-height:220px;overflow-y:auto;margin-top:4px;"></div>
+            </div>
+            <div id="konum-secilen" style="display:none;margin-top:8px;background:var(--teal);border-radius:10px;padding:12px 14px;display:flex;align-items:center;gap:10px;">
+              <svg width="18" height="18" viewBox="0 0 18 18" fill="none"><path d="M9 2a5 5 0 015 5c0 4-5 9-5 9S4 11 4 7a5 5 0 015-5z" stroke="currentColor" stroke-width="1.3"/><circle cx="9" cy="7" r="1.5" stroke="currentColor" stroke-width="1.3"/></svg>
+              <span id="konum-secilen-text" style="font-size:13px;color:var(--text);font-weight:500;"></span>
+              <button onclick="konumSifirla()" style="margin-left:auto;background:none;border:none;cursor:pointer;color:var(--text2);font-size:16px;">×</button>
+            </div>
+            <!-- Google Harita Önizleme -->
+            <div id="harita-onizleme" style="display:none;margin-top:8px;border-radius:10px;overflow:hidden;height:180px;">
+              <iframe id="harita-iframe" width="100%" height="180" frameborder="0" style="border:none;border-radius:10px;" allowfullscreen></iframe>
+            </div>
           </div>
+
           <div class="field">
             <label class="inp-label">Şehir</label>
             <select id="b-sehir" class="inp" style="appearance:none;">
@@ -1651,6 +1678,7 @@ select.inp {
               <option>Bodrum</option><option>Mersin</option><option>Diğer</option>
             </select>
           </div>
+
           <div id="b-error" style="display:none;background:#FAECE7;color:#993C1D;border:1px solid #f5c4b3;border-radius:10px;padding:12px 16px;margin-bottom:14px;font-size:13px;font-weight:500;"></div>
           <button class="btn-accent" onclick="bulusmayiKaydet()" id="b-btn">Buluşmayı Oluştur</button>
         </div>
@@ -1665,27 +1693,37 @@ select.inp {
             <div class="page-sub" id="detay-host"></div>
           </div>
         </div>
-        <div class="page-body">
-          <div style="background:var(--dark);border-radius:14px;padding:20px 22px;margin-bottom:20px;">
-            <div style="font-size:24px;color:#F0E8DC;font-weight:800;letter-spacing:-.5px;margin-bottom:4px;" id="detay-baslik2">...</div>
-            <div style="font-size:13px;color:rgba(240,232,220,.5);" id="detay-host2"></div>
+        <div class="page-body" style="padding-top:0;">
+          <!-- Kapak resmi -->
+          <div id="detay-kapak" style="display:none;margin:0 -32px 20px;max-height:260px;overflow:hidden;">
+            <img id="detay-kapak-img" src="" style="width:100%;height:260px;object-fit:cover;display:block;">
           </div>
-          <div style="display:flex;flex-direction:column;gap:10px;margin-bottom:16px;">
-            <div style="display:flex;align-items:center;gap:10px;font-size:14px;color:var(--text);">
-              <svg width="18" height="18" viewBox="0 0 18 18" fill="none"><rect x="2" y="3" width="14" height="12" rx="2" stroke="currentColor" stroke-width="1.3"/><path d="M6 1v3M12 1v3M2 8h14" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg>
-              <span id="detay-tarih">...</span>
+          <div style="padding-top:20px;">
+            <div style="background:var(--dark);border-radius:14px;padding:20px 22px;margin-bottom:16px;">
+              <div style="font-size:24px;color:#F0E8DC;font-weight:800;letter-spacing:-.5px;margin-bottom:4px;" id="detay-baslik2">...</div>
+              <div style="font-size:13px;color:rgba(240,232,220,.5);" id="detay-host2"></div>
             </div>
-            <div style="display:flex;align-items:center;gap:10px;font-size:14px;color:var(--text);">
-              <svg width="18" height="18" viewBox="0 0 18 18" fill="none"><path d="M9 2a5 5 0 015 5c0 4-5 9-5 9S4 11 4 7a5 5 0 015-5z" stroke="currentColor" stroke-width="1.3"/><circle cx="9" cy="7" r="1.5" stroke="currentColor" stroke-width="1.3"/></svg>
-              <span id="detay-konum">...</span>
+            <div style="display:flex;flex-direction:column;gap:10px;margin-bottom:16px;">
+              <div style="display:flex;align-items:center;gap:10px;font-size:14px;color:var(--text);">
+                <svg width="18" height="18" viewBox="0 0 18 18" fill="none"><rect x="2" y="3" width="14" height="12" rx="2" stroke="currentColor" stroke-width="1.3"/><path d="M6 1v3M12 1v3M2 8h14" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg>
+                <span id="detay-tarih">...</span>
+              </div>
+              <div style="display:flex;align-items:flex-start;gap:10px;font-size:14px;color:var(--text);">
+                <svg width="18" height="18" viewBox="0 0 18 18" fill="none" style="flex-shrink:0;margin-top:2px;"><path d="M9 2a5 5 0 015 5c0 4-5 9-5 9S4 11 4 7a5 5 0 015-5z" stroke="currentColor" stroke-width="1.3"/><circle cx="9" cy="7" r="1.5" stroke="currentColor" stroke-width="1.3"/></svg>
+                <span id="detay-konum">...</span>
+              </div>
             </div>
+            <!-- Gömülü harita -->
+            <div id="detay-harita" style="display:none;border-radius:12px;overflow:hidden;margin-bottom:16px;">
+              <iframe id="detay-harita-frame" width="100%" height="200" frameborder="0" style="border:none;" allowfullscreen></iframe>
+            </div>
+            <div id="detay-aciklama" style="background:var(--surface);border-radius:10px;padding:14px 16px;margin-bottom:16px;font-size:14px;color:var(--text);line-height:1.6;"></div>
+            <div style="font-size:12px;color:var(--text2);font-weight:600;margin-bottom:8px;">Katılımcılar</div>
+            <div id="detay-katilimcilar" style="display:flex;flex-wrap:wrap;gap:4px;margin-bottom:20px;"></div>
+            <button class="btn-accent" id="join-btn" onclick="katilToggle()" style="max-width:280px;">Katıl</button>
+            <button onclick="showFeatureModal()" style="margin-top:10px;max-width:280px;display:block;width:100%;padding:12px;background:transparent;color:var(--accent);border:1.5px solid var(--accent);border-radius:10px;font-family:'Montserrat',sans-serif;font-size:13px;font-weight:600;cursor:pointer;" id="feature-btn">⭐ Bu Buluşmayı Öne Çıkar</button>
+            <div style="font-size:12px;color:var(--text2);margin-top:10px;">Topluluk kurallarını kabul etmiş sayılırsın</div>
           </div>
-          <div id="detay-aciklama" style="background:var(--surface);border-radius:10px;padding:14px 16px;margin-bottom:16px;font-size:14px;color:var(--text);line-height:1.6;"></div>
-          <div style="font-size:12px;color:var(--text2);font-weight:600;margin-bottom:8px;">Katılımcılar</div>
-          <div id="detay-katilimcilar" style="display:flex;flex-wrap:wrap;gap:4px;margin-bottom:20px;"></div>
-          <button class="btn-accent" id="join-btn" onclick="katilToggle()" style="max-width:280px;">Katıl</button>
-          <button onclick="showFeatureModal()" style="margin-top:10px;max-width:280px;display:block;width:100%;padding:12px;background:transparent;color:var(--accent);border:1.5px solid var(--accent);border-radius:10px;font-family:'Montserrat',sans-serif;font-size:13px;font-weight:600;cursor:pointer;" id="feature-btn">⭐ Bu Buluşmayı Öne Çıkar</button>
-          <div style="font-size:12px;color:var(--text2);margin-top:10px;">Topluluk kurallarını kabul etmiş sayılırsın</div>
         </div>
       </div>
 
@@ -2540,7 +2578,97 @@ async function mesajGonder() {
   });
 }
 
-/* ── BULUŞMALAR ── */
+/* ── RESİM ÖNİZLE ── */
+var secilenResimBase64 = null;
+var secilenResimFile   = null;
+var secilenKonumTam    = null;
+var secilenKonumLat    = null;
+var secilenKonumLng    = null;
+
+function resimOnizle(input) {
+  var file = input.files[0];
+  if (!file) return;
+  if (file.size > 5 * 1024 * 1024) { alert('Dosya 5MB\'dan küçük olmalı.'); return; }
+  secilenResimFile = file;
+  var reader = new FileReader();
+  reader.onload = function(e) {
+    secilenResimBase64 = e.target.result;
+    var prev = document.getElementById('resim-preview');
+    if (prev) {
+      prev.innerHTML = '<img src="' + e.target.result + '" style="width:100%;height:100%;object-fit:cover;border-radius:10px;">';
+      prev.style.border = 'none';
+      prev.style.padding = '0';
+    }
+  };
+  reader.readAsDataURL(file);
+}
+
+/* ── KONUM ARA (Nominatim — ücretsiz, API key gerektirmez) ── */
+var konumAraTimeout = null;
+var secilenKonumNesnesi = null;
+
+function konumAra(query) {
+  clearTimeout(konumAraTimeout);
+  var onerilerEl = document.getElementById('konum-oneriler');
+  if (!query || query.length < 3) { if (onerilerEl) onerilerEl.style.display='none'; return; }
+
+  konumAraTimeout = setTimeout(async function() {
+    try {
+      var res = await fetch('https://nominatim.openstreetmap.org/search?format=json&q=' + encodeURIComponent(query) + '&countrycodes=tr&limit=5&accept-language=tr');
+      var results = await res.json();
+      if (!onerilerEl) return;
+      if (!results.length) { onerilerEl.style.display='none'; return; }
+
+      onerilerEl.innerHTML = results.map(function(r, i) {
+        var ad = r.display_name.split(',').slice(0,3).join(',');
+        return '<div onclick="konumSec(' + i + ')" data-lat="' + r.lat + '" data-lng="' + r.lon + '" data-ad="' + encodeURIComponent(r.display_name) + '" style="padding:12px 14px;cursor:pointer;font-size:13px;color:var(--text);border-bottom:0.5px solid var(--border);transition:background .12s;" onmouseover="this.style.background=\'var(--surface)\'" onmouseout="this.style.background=\'\'">📍 ' + ad + '</div>';
+      }).join('');
+      onerilerEl.style.display = 'block';
+      window._konumSonuclari = results;
+    } catch(e) { console.error('Konum arama hatası:', e); }
+  }, 400);
+}
+
+function konumSec(idx) {
+  var r = window._konumSonuclari[idx];
+  if (!r) return;
+
+  secilenKonumLat    = parseFloat(r.lat);
+  secilenKonumLng    = parseFloat(r.lon);
+  secilenKonumTam    = r.display_name;
+
+  var kisaAd = r.display_name.split(',').slice(0,3).join(',');
+  var konumInp = document.getElementById('b-konum');
+  var oneriler = document.getElementById('konum-oneriler');
+  var secilen  = document.getElementById('konum-secilen');
+  var secilenText = document.getElementById('konum-secilen-text');
+  var haritaDiv   = document.getElementById('harita-onizleme');
+  var haritaFrame = document.getElementById('harita-iframe');
+
+  if (konumInp) konumInp.value = kisaAd;
+  if (oneriler) oneriler.style.display = 'none';
+  if (secilen)  secilen.style.display  = 'flex';
+  if (secilenText) secilenText.textContent = kisaAd;
+
+  // Google Maps embed (API key gerektirmez — embed/place modu)
+  if (haritaFrame && haritaDiv) {
+    var mapSrc = 'https://maps.google.com/maps?q=' + r.lat + ',' + r.lon + '&z=16&output=embed';
+    haritaFrame.src = mapSrc;
+    haritaDiv.style.display = 'block';
+  }
+}
+
+function konumSifirla() {
+  secilenKonumLat = null; secilenKonumLng = null; secilenKonumTam = null;
+  var konumInp  = document.getElementById('b-konum');
+  var secilen   = document.getElementById('konum-secilen');
+  var haritaDiv = document.getElementById('harita-onizleme');
+  if (konumInp)  konumInp.value = '';
+  if (secilen)   secilen.style.display = 'none';
+  if (haritaDiv) haritaDiv.style.display = 'none';
+}
+
+
 var aktifBulusmaId = null;
 
 async function buslusmalariYukle() {
@@ -2548,10 +2676,16 @@ async function buslusmalariYukle() {
   if (!listEl) return;
   listEl.innerHTML = '<div style="color:var(--text2);font-size:13px;padding:12px 0;">Yükleniyor...</div>';
 
-  var { data } = await sb
+  var { data, error } = await sb
     .from('bulusmalar')
-    .select('*, profiles(ad), bulusma_katilimcilar(count)')
+    .select('*, profiles(ad)')
     .order('tarih', { ascending: true });
+
+  if (error) {
+    console.error('Buluşmalar hatası:', error);
+    listEl.innerHTML = '<div style="color:var(--text2);font-size:13px;padding:20px 0;">Yüklenemedi: ' + error.message + '</div>';
+    return;
+  }
 
   if (!data || data.length === 0) {
     listEl.innerHTML = '<div style="color:var(--text2);font-size:13px;padding:20px 0;text-align:center;">Henüz buluşma yok.<br>İlk buluşmayı sen oluştur!</div>';
@@ -2561,29 +2695,47 @@ async function buslusmalariYukle() {
   var calSvg = '<svg viewBox="0 0 16 16" fill="none"><rect x="2" y="2" width="12" height="11" rx="1.5" stroke="currentColor" stroke-width="1.2"/><path d="M5 1v2M11 1v2M2 6h12" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></svg>';
   var pinSvg = '<svg viewBox="0 0 16 16" fill="none"><path d="M8 1a5 5 0 015 5c0 3.5-5 9-5 9S3 9.5 3 6a5 5 0 015-5z" stroke="currentColor" stroke-width="1.2"/><circle cx="8" cy="6" r="1.5" stroke="currentColor" stroke-width="1.2"/></svg>';
 
+  // Katılımcı sayılarını ayrı çek
+  var { data: katilimlar } = await sb
+    .from('bulusma_katilimcilar')
+    .select('bulusma_id');
+
+  var katilimSayisi = {};
+  if (katilimlar) {
+    katilimlar.forEach(function(k) {
+      katilimSayisi[k.bulusma_id] = (katilimSayisi[k.bulusma_id] || 0) + 1;
+    });
+  }
+
   listEl.innerHTML = data.map(function(b) {
     var host  = b.profiles ? (b.profiles.ad || 'Üye') : 'Üye';
     var tarih = b.tarih ? new Date(b.tarih).toLocaleDateString('tr-TR', {weekday:'short', day:'numeric', month:'short', hour:'2-digit', minute:'2-digit'}) : '';
-    var katilimci = b.bulusma_katilimcilar ? b.bulusma_katilimcilar.length : 0;
-    var featured  = b.one_cikan;
+    var sayi  = katilimSayisi[b.id] || 0;
+    var resim = b.resim_url ? '<img src="' + b.resim_url + '" style="width:100%;height:140px;object-fit:cover;border-radius:10px 10px 0 0;display:block;margin-bottom:12px;">' : '';
 
-    if (featured) {
+    if (b.one_cikan) {
       return '<div class="featured-card" onclick="bulusmaDetayAc(\'' + b.id + '\')">' +
+        (resim ? '<div style="margin:-20px -22px 16px;overflow:hidden;border-radius:14px 14px 0 0;"><img src="' + b.resim_url + '" style="width:100%;height:160px;object-fit:cover;display:block;"></div>' : '') +
         '<div class="fc-ribbon">⭐ Öne Çıkan</div>' +
         '<div class="fc-label">Öne çıkan buluşma</div>' +
         '<div class="fc-title">' + b.baslik + '</div>' +
         '<div class="fc-host">' + host + ' tarafından</div>' +
         '<div class="fc-row">' + calSvg + tarih + '</div>' +
-        '<div class="fc-row">' + pinSvg + (b.konum || '') + ', ' + (b.sehir || '') + '</div>' +
-        '<div class="fc-tags"><span class="fc-tag">' + katilimci + ' katılımcı</span></div>' +
+        '<div class="fc-row">' + pinSvg + (b.konum || '') + (b.sehir ? ', ' + b.sehir : '') + '</div>' +
+        '<div class="fc-tags"><span class="fc-tag">' + sayi + ' katılımcı</span></div>' +
       '</div>';
     }
 
-    return '<div class="meet-card" onclick="bulusmaDetayAc(\'' + b.id + '\')">' +
-      '<div class="mc-date">' + tarih + '</div>' +
-      '<div class="mc-title">' + b.baslik + '</div>' +
-      '<div class="mc-host">' + host + ' tarafından · ' + (b.sehir || '') + '</div>' +
-      '<div class="mc-tags"><span class="mc-tag">' + katilimci + ' katılımcı</span></div>' +
+    return '<div class="meet-card" style="overflow:hidden;padding:0;" onclick="bulusmaDetayAc(\'' + b.id + '\')">' +
+      (b.resim_url ? '<img src="' + b.resim_url + '" style="width:100%;height:120px;object-fit:cover;display:block;">' : '') +
+      '<div style="padding:14px 16px;">' +
+        '<div class="mc-date">' + tarih + '</div>' +
+        '<div class="mc-title">' + b.baslik + '</div>' +
+        '<div class="mc-host">' + host + ' tarafından · ' + (b.sehir || '') + '</div>' +
+        '<div class="mc-tags"><span class="mc-tag">' + sayi + ' katılımcı</span>' +
+          (b.konum ? '<span class="mc-tag">📍 ' + b.konum + '</span>' : '') +
+        '</div>' +
+      '</div>' +
     '</div>';
   }).join('');
 }
@@ -2606,49 +2758,73 @@ async function bulusmaDetayYukle(id) {
   var host  = b.profiles ? (b.profiles.ad || 'Üye') : 'Üye';
   var tarih = b.tarih ? new Date(b.tarih).toLocaleDateString('tr-TR', {weekday:'long', day:'numeric', month:'long', hour:'2-digit', minute:'2-digit'}) : '';
 
-  var titleEl = document.getElementById('detay-baslik');
-  var hostEl  = document.getElementById('detay-host');
-  var tarihEl = document.getElementById('detay-tarih');
-  var konumEl = document.getElementById('detay-konum');
-  var acikEl  = document.getElementById('detay-aciklama');
-  var katEl   = document.getElementById('detay-katilimcilar');
+  var titleEl  = document.getElementById('detay-baslik');
+  var title2El = document.getElementById('detay-baslik2');
+  var hostEl   = document.getElementById('detay-host');
+  var host2El  = document.getElementById('detay-host2');
+  var tarihEl  = document.getElementById('detay-tarih');
+  var konumEl  = document.getElementById('detay-konum');
+  var acikEl   = document.getElementById('detay-aciklama');
+  var katEl    = document.getElementById('detay-katilimcilar');
+  var kapakDiv = document.getElementById('detay-kapak');
+  var kapakImg = document.getElementById('detay-kapak-img');
+  var haritaDiv= document.getElementById('detay-harita');
+  var haritaFrm= document.getElementById('detay-harita-frame');
 
-  if (titleEl) titleEl.textContent = b.baslik;
-  if (hostEl)  hostEl.textContent  = host + ' tarafından düzenlendi';
-  if (tarihEl) tarihEl.textContent = tarih;
-  if (konumEl) konumEl.textContent = (b.konum || '') + (b.sehir ? ', ' + b.sehir : '');
-  if (acikEl)  acikEl.textContent  = b.aciklama || '';
+  if (titleEl)  titleEl.textContent  = b.baslik;
+  if (title2El) title2El.textContent = b.baslik;
+  if (hostEl)   hostEl.textContent   = host + ' tarafından düzenlendi';
+  if (host2El)  host2El.textContent  = host + ' tarafından düzenlendi';
+  if (tarihEl)  tarihEl.textContent  = tarih;
+  if (konumEl)  konumEl.textContent  = b.konum_tam ? b.konum_tam.split(',').slice(0,3).join(',') : (b.konum || '');
+  if (acikEl)   acikEl.textContent   = b.aciklama || '';
 
+  // Kapak resmi
+  if (kapakDiv && kapakImg && b.resim_url) {
+    kapakImg.src = b.resim_url;
+    kapakDiv.style.display = 'block';
+  } else if (kapakDiv) {
+    kapakDiv.style.display = 'none';
+  }
+
+  // Google Maps harita
+  if (haritaDiv && haritaFrm && b.konum_lat && b.konum_lng) {
+    haritaFrm.src = 'https://maps.google.com/maps?q=' + b.konum_lat + ',' + b.konum_lng + '&z=16&output=embed';
+    haritaDiv.style.display = 'block';
+  } else if (haritaDiv) {
+    haritaDiv.style.display = 'none';
+  }
+
+  // Katılımcılar
   if (katEl && b.bulusma_katilimcilar) {
-    var katilimcilar = b.bulusma_katilimcilar;
-    katEl.innerHTML = katilimcilar.map(function(k) {
+    katEl.innerHTML = b.bulusma_katilimcilar.map(function(k) {
       var ad = k.profiles ? (k.profiles.ad || 'Üye') : 'Üye';
       return '<div style="width:36px;height:36px;border-radius:50%;background:var(--surface);border:2px solid var(--light);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:600;color:var(--text2);margin-left:-6px;">' + ad.substring(0,2).toUpperCase() + '</div>';
     }).join('');
   }
 
-  // Katılma durumunu kontrol et
+  // Katılma durumu
   var { data: { user } } = await sb.auth.getUser();
   if (user && b.bulusma_katilimcilar) {
     var katildi = b.bulusma_katilimcilar.some(function(k){ return k.kullanici_id === user.id; });
     var joinBtn = document.getElementById('join-btn');
     if (joinBtn) {
-      joinBtn.textContent = katildi ? '✓ Katıldım' : 'Katıl';
-      joinBtn.dataset.joined = katildi ? 'true' : 'false';
+      joinBtn.textContent   = katildi ? '✓ Katıldım' : 'Katıl';
+      joinBtn.dataset.joined= katildi ? 'true' : 'false';
       joinBtn.style.background = katildi ? 'var(--mid)' : 'var(--accent)';
     }
   }
 }
 
 async function bulusmayiKaydet() {
-  var baslik  = document.getElementById('b-baslik');
+  var baslik   = document.getElementById('b-baslik');
   var aciklama = document.getElementById('b-aciklama');
-  var tarih   = document.getElementById('b-tarih');
-  var saat    = document.getElementById('b-saat');
-  var konum   = document.getElementById('b-konum');
-  var sehir   = document.getElementById('b-sehir');
-  var errEl   = document.getElementById('b-error');
-  var btn     = document.getElementById('b-btn');
+  var tarih    = document.getElementById('b-tarih');
+  var saat     = document.getElementById('b-saat');
+  var konum    = document.getElementById('b-konum');
+  var sehir    = document.getElementById('b-sehir');
+  var errEl    = document.getElementById('b-error');
+  var btn      = document.getElementById('b-btn');
 
   errEl.style.display = 'none';
   if (!baslik.value.trim()) { errEl.textContent = 'Başlık zorunlu.'; errEl.style.display='block'; return; }
@@ -2660,32 +2836,55 @@ async function bulusmayiKaydet() {
   var { data: { user } } = await sb.auth.getUser();
   if (!user) return;
 
+  // Resim yükle — Supabase Storage
+  var resimUrl = null;
+  if (secilenResimFile) {
+    try {
+      var dosyaAdi = user.id + '_' + Date.now() + '_' + secilenResimFile.name.replace(/[^a-zA-Z0-9.]/g,'_');
+      var { data: upData, error: upErr } = await sb.storage
+        .from('bulusma-resimleri')
+        .upload(dosyaAdi, secilenResimFile, { contentType: secilenResimFile.type, upsert: false });
+      if (!upErr && upData) {
+        var { data: urlData } = sb.storage.from('bulusma-resimleri').getPublicUrl(dosyaAdi);
+        resimUrl = urlData.publicUrl;
+      }
+    } catch(e) { console.error('Resim yüklenemedi:', e); }
+  }
+
   var tarihZaman = tarih.value + (saat.value ? 'T' + saat.value : 'T12:00') + ':00';
 
   var { data, error } = await sb.from('bulusmalar').insert({
-    baslik:    baslik.value.trim(),
-    aciklama:  aciklama.value.trim(),
-    tarih:     tarihZaman,
-    konum:     konum.value.trim(),
-    sehir:     sehir.value,
-    olusturan: user.id,
-    one_cikan: false
+    baslik:      baslik.value.trim(),
+    aciklama:    aciklama.value.trim(),
+    tarih:       tarihZaman,
+    konum:       konum.value.trim(),
+    konum_tam:   secilenKonumTam,
+    konum_lat:   secilenKonumLat,
+    konum_lng:   secilenKonumLng,
+    sehir:       sehir.value,
+    olusturan:   user.id,
+    one_cikan:   false,
+    resim_url:   resimUrl
   }).select().single();
 
   if (error) {
-    errEl.textContent = 'Bir hata oluştu, tekrar dene.';
+    errEl.textContent = 'Bir hata oluştu: ' + error.message;
     errEl.style.display = 'block';
     btn.textContent = 'Buluşmayı Oluştur'; btn.disabled = false;
     return;
   }
 
-  // Otomatik katıl
+  // Oluşturan otomatik katılsın
   await sb.from('bulusma_katilimcilar').insert({ bulusma_id: data.id, kullanici_id: user.id });
 
-  // Formu temizle
+  // Formu sıfırla
   baslik.value=''; aciklama.value=''; tarih.value=''; saat.value=''; konum.value=''; sehir.value='';
-  btn.textContent = 'Buluşmayı Oluştur'; btn.disabled = false;
+  secilenResimFile = null; secilenResimBase64 = null;
+  var prev = document.getElementById('resim-preview');
+  if (prev) prev.innerHTML = '<svg width="28" height="28" viewBox="0 0 28 28" fill="none"><rect x="2" y="6" width="24" height="18" rx="3" stroke="currentColor" stroke-width="1.5"/><circle cx="9" cy="12" r="2" stroke="currentColor" stroke-width="1.4"/><path d="M2 20l6-5 4 4 4-4 8 7" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg><span style="font-size:13px;color:var(--text2);font-weight:500;">Fotoğraf seç veya tıkla</span>';
+  konumSifirla();
 
+  btn.textContent = 'Buluşmayı Oluştur'; btn.disabled = false;
   navTo('meet');
   buslusmalariYukle();
 }
