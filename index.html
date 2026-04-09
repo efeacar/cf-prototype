@@ -786,7 +786,13 @@ body {
 
 .prof-name  { font-size: 22px; font-weight: 800; color: #F0E8DC; letter-spacing: -.5px; margin-bottom: 3px; }
 .prof-loc   { font-size: 13px; color: rgba(240,232,220,.5); margin-bottom: 6px; }
-.prof-badge { display: inline-block; font-size: 11px; padding: 3px 10px; border-radius: 8px; background: rgba(232,200,74,.2); color: var(--gold); }
+.prof-badge { display: inline-block; font-size: 11px; padding: 4px 11px; border-radius: 8px; font-weight: 600; margin-right: 5px; }
+.rank-yeni    { background: rgba(156,163,175,.15); color: #9CA3AF; }
+.rank-uye     { background: rgba(29,158,117,.15); color: #1D9E75; }
+.rank-koklu   { background: rgba(122,92,66,.2);   color: #7A5C42; }
+.rank-cinar   { background: rgba(193,73,30,.18);  color: #C1491E; }
+.rank-efsane  { background: rgba(232,200,74,.2);  color: #BA7517; }
+.prem-badge   { background: rgba(232,200,74,.2);  color: #BA7517; }
 
 .p-sec { font-size: 10px; font-weight: 600; color: var(--text2); text-transform: uppercase; letter-spacing: .8px; margin: 20px 0 8px; }
 .p-sec:first-child { margin-top: 0; }
@@ -1897,7 +1903,10 @@ select.inp {
               <div id="prof-referans" style="display:none;font-size:12px;color:rgba(240,232,220,.45);margin-top:4px;">
                 🔗 <span id="prof-referans-ad"></span> tarafından davet edildi
               </div>
-              <div id="prof-badge" style="display:none;"><div class="prof-badge">⭐ Premium Üye</div></div>
+              <div style="display:flex;flex-wrap:wrap;gap:5px;margin-top:6px;">
+                <div id="prof-rank-badge" style="display:none;"></div>
+                <div id="prof-badge" style="display:none;"><div class="prof-badge prem-badge">⭐ Premium</div></div>
+              </div>
             </div>
           </div>
 
@@ -1933,10 +1942,18 @@ select.inp {
       <!-- ROZETLERİM -->
       <div class="sc" id="sc-rozetler">
         <div class="page-header" style="display:flex;align-items:center;gap:14px;">
-          <button onclick="navTo(&#39;profile&#39;)" style="background:none;border:none;cursor:pointer;font-size:20px;color:var(--text2);padding:0;">←</button>
-          <div><div class="page-title">Rozetlerim</div><div class="page-sub">3 / 8 rozet kazanıldı</div></div>
+          <button onclick="navTo('profile')" style="background:none;border:none;cursor:pointer;font-size:20px;color:var(--text2);padding:0;">←</button>
+          <div><div class="page-title">Rozetlerim</div><div class="page-sub">Rütbe & Başarılar</div></div>
         </div>
         <div class="page-body">
+
+          <!-- RÜTBE BÖLÜMÜ -->
+          <div class="sec-head">Rütbem</div>
+          <div id="rozet-rutbe" style="margin-bottom:24px;">
+            <div style="background:var(--surface);border-radius:14px;padding:20px;color:var(--text2);font-size:13px;">Yükleniyor...</div>
+          </div>
+
+          <!-- ROZET ÖZETI -->
           <div style="background:var(--dark);border-radius:14px;padding:20px 22px;margin-bottom:24px;display:flex;align-items:center;gap:16px;">
             <div style="font-size:40px;">🏅</div>
             <div>
@@ -2527,6 +2544,7 @@ async function kullaniciBilgisiYukle(userId) {
   aktifKullanici = data;
   kullaniciBilgisiGoster(data);
   davetKodlariniYukle(userId);
+  rutbeGoster(data.created_at);
 
   // Referans bilgisi — kim davet etti?
   if (data.davet_eden) {
@@ -3478,6 +3496,59 @@ async function katilToggle() {
 }
 
 
+/* ── RÜTBE SİSTEMİ ── */
+var RUTBELER = [
+  { min: 0,   max: 1,   id: 'yeni',   label: '🌱 Filiz',  cls: 'rank-yeni',   aciklama: 'Topluluğa yeni katıldın' },
+  { min: 1,   max: 6,   id: 'uye',    label: '🌿 Üye',    cls: 'rank-uye',    aciklama: 'Topluluğun bir parçasısın' },
+  { min: 6,   max: 12,  id: 'koklu',  label: '🌳 Köklü',  cls: 'rank-koklu',  aciklama: '6 ayı aştın, kökleri saldın' },
+  { min: 12,  max: 24,  id: 'cinar',  label: '🏔 Çınar',  cls: 'rank-cinar',  aciklama: '1 yılı geçtin, güçlü duraklısın' },
+  { min: 24,  max: 999, id: 'efsane', label: '✦ Efsane',  cls: 'rank-efsane', aciklama: '2+ yıl — gerçek bir childfree efsanesi' }
+];
+
+function rutbeHesapla(createdAt) {
+  if (!createdAt) return RUTBELER[0];
+  var ay = (Date.now() - new Date(createdAt).getTime()) / (1000 * 60 * 60 * 24 * 30);
+  return RUTBELER.find(function(r) { return ay >= r.min && ay < r.max; }) || RUTBELER[0];
+}
+
+function rutbeGoster(createdAt) {
+  var rutbe = rutbeHesapla(createdAt);
+  var el = document.getElementById('prof-rank-badge');
+  if (!el) return;
+  el.innerHTML = '<div class="prof-badge ' + rutbe.cls + '">' + rutbe.label + '</div>';
+  el.style.display = 'inline-block';
+
+  // Rozet sayfasındaki rütbe bölümü
+  var rutbeEl = document.getElementById('rozet-rutbe');
+  if (!rutbeEl) return;
+  var idx = RUTBELER.indexOf(rutbe);
+  rutbeEl.innerHTML =
+    '<div style="background:var(--dark);border-radius:14px;padding:20px 22px;margin-bottom:16px;display:flex;align-items:center;gap:16px;">' +
+      '<div style="font-size:40px;">' + rutbe.label.split(' ')[0] + '</div>' +
+      '<div>' +
+        '<div style="font-size:16px;color:#F0E8DC;font-weight:700;margin-bottom:3px;">' + rutbe.label + '</div>' +
+        '<div style="font-size:12px;color:rgba(240,232,220,.5);">' + rutbe.aciklama + '</div>' +
+        (idx < RUTBELER.length - 1 ? '<div style="font-size:11px;color:rgba(240,232,220,.3);margin-top:5px;">Sonraki rütbe: ' + RUTBELER[idx+1].label + ' (' + RUTBELER[idx+1].min + '. ayda)</div>' : '<div style="font-size:11px;color:rgba(232,200,74,.6);margin-top:5px;">En yüksek rütbeye ulaştın 🎉</div>') +
+      '</div>' +
+    '</div>' +
+    '<div style="display:flex;gap:6px;flex-wrap:wrap;">' +
+      RUTBELER.map(function(r, i) {
+        var aktif = r.id === rutbe.id;
+        var gecmis = i < idx;
+        return '<div style="flex:1;min-width:80px;padding:10px 6px;border-radius:10px;text-align:center;' +
+          'background:' + (aktif ? 'var(--accent)' : gecmis ? 'var(--surface)' : 'var(--bg)') + ';' +
+          'border:0.5px solid ' + (aktif ? 'var(--accent)' : 'var(--border)') + ';' +
+          'opacity:' + (i > idx ? '.4' : '1') + ';">' +
+          '<div style="font-size:22px;margin-bottom:4px;">' + r.label.split(' ')[0] + '</div>' +
+          '<div style="font-size:10px;font-weight:600;color:' + (aktif ? '#fff' : 'var(--text)') + ';">' + r.label.split(' ').slice(1).join(' ') + '</div>' +
+          '<div style="font-size:9px;color:' + (aktif ? 'rgba(255,255,255,.6)' : 'var(--text2)') + ';margin-top:2px;">' +
+            (r.min === 0 ? '0-1. ay' : r.max === 999 ? r.min + '+. ay' : r.min + '-' + r.max + '. ay') +
+          '</div>' +
+        '</div>';
+      }).join('') +
+    '</div>';
+}
+
 var aktifSoruId = null;
 
 async function gunuSorusunuYukle() {
@@ -3699,6 +3770,7 @@ navTo = function(id) {
   if (id === 'library') kanallariYukle();
   if (id === 'bugun')   gunuSorusunuYukle();
   if (id === 'meet')    { if (isPrem) buslusmalariYukle(); }
+  if (id === 'rozetler' && aktifKullanici) rutbeGoster(aktifKullanici.created_at);
 };
 </script>
 
