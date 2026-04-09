@@ -1542,6 +1542,7 @@ select.inp {
                 <div class="cl-title">Kanallar</div>
                 <div class="cl-sub">Katıldıkların · Tümü</div>
               </div>
+              <div class="cl-item" id="cl-anlik" onclick="anlikGoster()"><div class="cli-emoji">📸</div><div><div class="cli-name">Anlık</div><div class="cli-sub">Sadece fotoğraf</div></div></div>
               <div class="cl-item active" onclick="navTo(&#39;channel&#39;)"><div class="cli-emoji">✈️</div><div><div class="cli-name">Seyahat</div><div class="cli-sub">127 üye</div></div><span class="cli-new">2</span></div>
               <div class="cl-item" onclick="navTo(&#39;channel&#39;)"><div class="cli-emoji">🎬</div><div><div class="cli-name">Film &amp; Dizi</div><div class="cli-sub">94 üye</div></div></div>
               <div class="cl-item" onclick="navTo(&#39;channel&#39;)"><div class="cli-emoji">☕</div><div><div class="cli-name">Kahve</div><div class="cli-sub">82 üye</div></div></div>
@@ -1550,6 +1551,22 @@ select.inp {
               <div class="cl-item" style="opacity:.45;" onclick="handlePremChannel()"><div class="cli-emoji">💕</div><div><div class="cli-name">İlişki</div><div class="cli-sub" id="cl-iliski">🔒 Premium</div></div></div>
             </div>
             <div class="channel-main" id="channel-main">
+              <div id="anlik-panel" style="display:none;flex-direction:column;height:100%;">
+                <div class="ch-top">
+                  <div><div class="ch-top-title">📸 Anlık</div><div class="ch-top-sub">Fotoğraf paylaş</div></div>
+                </div>
+                <div id="anlik-grid" style="flex:1;overflow-y:auto;padding:16px;display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:8px;">
+                  <div style="color:var(--text2);font-size:13px;grid-column:1/-1;">Yükleniyor...</div>
+                </div>
+                <div style="padding:12px;border-top:0.5px solid var(--border);">
+                  <input type="file" id="anlik-input" accept="image/*" capture="environment" style="display:none;" onchange="anlikFotoGonder(this)">
+                  <button onclick="document.getElementById('anlik-input').click()" style="width:100%;padding:14px;background:var(--accent);color:#fff;border:none;border-radius:12px;font-family:'Montserrat',sans-serif;font-size:14px;font-weight:600;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;">
+                    <svg width="20" height="20" viewBox="0 0 20 20" fill="none"><rect x="1" y="5" width="18" height="12" rx="2.5" stroke="currentColor" stroke-width="1.4"/><circle cx="10" cy="11" r="3" stroke="currentColor" stroke-width="1.4"/><path d="M7 5V4a1 1 0 011-1h4a1 1 0 011 1v1" stroke="currentColor" stroke-width="1.4"/></svg>
+                    Fotoğraf Çek veya Seç
+                  </button>
+                </div>
+              </div>
+              <div id="kanal-panel" style="display:flex;flex-direction:column;height:100%;">
               <div class="ch-top">
                 <div>
                   <div class="ch-top-title">✈️ Seyahat</div>
@@ -1574,9 +1591,19 @@ select.inp {
 
                 <div class="msg"><div class="msg-meta">Selin A. · 20 dk önce</div><div class="msg-text">Bali'yi düşünüyorum sonbahar için, kim gelir? Küçük grup olur harika!</div><div class="msg-like"><svg viewBox="0 0 16 16" fill="none"><path d="M8 13s-5-3.5-5-7a4 4 0 018 0" stroke="currentColor" stroke-width="1.2"></path><path d="M8 13s5-3.5 5-7a4 4 0 00-8 0" stroke="currentColor" stroke-width="1.2"></path></svg>4</div></div>
               </div>
-              <div class="ch-input-row">
-                <input class="ch-inp" placeholder="Düşünceni ekle..." onkeydown="if(event.key==='Enter')mesajGonder()">
-                <button class="ch-send" onclick="mesajGonder()"><svg viewBox="0 0 18 18" fill="none"><path d="M2 9l14-6-6 14-2-6-6-2z" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"></path></svg></button>
+              <div class="ch-input-row" style="flex-direction:column;gap:0;padding:8px 12px 12px;">
+                <div id="msg-img-preview" style="display:none;margin-bottom:8px;position:relative;">
+                  <img id="msg-img-prev-img" style="max-height:120px;border-radius:10px;max-width:100%;object-fit:cover;">
+                  <button onclick="mesajResimIptal()" style="position:absolute;top:4px;right:4px;background:rgba(0,0,0,.5);border:none;color:#fff;border-radius:50%;width:24px;height:24px;cursor:pointer;font-size:14px;line-height:1;">×</button>
+                </div>
+                <div style="display:flex;gap:8px;align-items:center;">
+                  <button onclick="document.getElementById('msg-img-input').click()" title="Fotoğraf ekle" style="background:var(--surface);border:0.5px solid var(--border);border-radius:10px;padding:10px;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:background .15s;" onmouseover="this.style.background='var(--bg)'" onmouseout="this.style.background='var(--surface)'">
+                    <svg width="18" height="18" viewBox="0 0 18 18" fill="none"><rect x="1" y="4" width="16" height="11" rx="2" stroke="currentColor" stroke-width="1.3"/><circle cx="9" cy="9.5" r="2.5" stroke="currentColor" stroke-width="1.3"/><path d="M6 4V3a1 1 0 011-1h4a1 1 0 011 1v1" stroke="currentColor" stroke-width="1.3"/></svg>
+                  </button>
+                  <input type="file" id="msg-img-input" accept="image/*" capture="environment" style="display:none;" onchange="mesajResimSec(this)">
+                  <input class="ch-inp" id="ch-inp-main" placeholder="Düşünceni paylaş..." onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();mesajGonder();}" style="flex:1;">
+                  <button class="ch-send" onclick="mesajGonder()" style="flex-shrink:0;"><svg viewBox="0 0 18 18" fill="none"><path d="M2 9l14-6-6 14-2-6-6-2z" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/></svg></button>
+                </div>
               </div>
             </div>
           </div>
@@ -1621,15 +1648,15 @@ select.inp {
         </div>
         <div class="page-body">
 
-          <!-- Kapak Resmi -->
+          <!-- Buluşma Resimleri - max 5 -->
           <div class="field">
-            <label class="inp-label">Kapak Resmi (opsiyonel)</label>
-            <div id="resim-preview" style="width:100%;height:160px;border-radius:12px;border:2px dashed var(--border);display:flex;flex-direction:column;align-items:center;justify-content:center;cursor:pointer;gap:8px;background:var(--surface);margin-bottom:4px;" onclick="document.getElementById('resim-input').click()">
-              <svg width="28" height="28" viewBox="0 0 28 28" fill="none"><rect x="2" y="6" width="24" height="18" rx="3" stroke="currentColor" stroke-width="1.5"/><circle cx="9" cy="12" r="2" stroke="currentColor" stroke-width="1.4"/><path d="M2 20l6-5 4 4 4-4 8 7" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
-              <span style="font-size:13px;color:var(--text2);font-weight:500;">Fotoğraf seç veya tıkla</span>
-              <span style="font-size:11px;color:var(--text2);opacity:.6;">JPG, PNG · Maks 5MB</span>
+            <label class="inp-label">Fotoğraflar <span style="font-weight:400;color:var(--text2);">(maks 5 · birini kapak seç)</span></label>
+            <div id="b-resim-grid" style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:8px;"></div>
+            <div id="b-resim-ekle" onclick="document.getElementById('resim-input').click()" style="width:100%;height:90px;border-radius:10px;border:2px dashed var(--border);display:flex;flex-direction:column;align-items:center;justify-content:center;cursor:pointer;gap:5px;background:var(--surface);">
+              <svg width="22" height="22" viewBox="0 0 22 22" fill="none"><rect x="1" y="4" width="20" height="15" rx="2.5" stroke="currentColor" stroke-width="1.4"/><circle cx="8" cy="11" r="2.5" stroke="currentColor" stroke-width="1.3"/><path d="M1 17l5-4 3.5 4 4-5 7.5 8" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/><path d="M15 1v6M12 4h6" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg>
+              <span style="font-size:12px;color:var(--text2);">Fotoğraf ekle</span>
             </div>
-            <input type="file" id="resim-input" accept="image/*" style="display:none;" onchange="resimOnizle(this)">
+            <input type="file" id="resim-input" accept="image/*" multiple style="display:none;" onchange="cokluResimSec(this)">
           </div>
 
           <div class="field">
@@ -1724,6 +1751,8 @@ select.inp {
               </a>
             </div>
             <div id="detay-aciklama" style="background:var(--surface);border-radius:10px;padding:14px 16px;margin-bottom:16px;font-size:14px;color:var(--text);line-height:1.6;"></div>
+            <!-- Fotoğraf galerisi -->
+            <div id="detay-galeri" style="display:none;grid-template-columns:repeat(3,1fr);gap:6px;margin-bottom:16px;"></div>
             <div style="font-size:12px;color:var(--text2);font-weight:600;margin-bottom:8px;">Katılımcılar</div>
             <div id="detay-katilimcilar" style="display:flex;flex-wrap:wrap;gap:4px;margin-bottom:20px;"></div>
             <button class="btn-accent" id="join-btn" onclick="katilToggle()" style="max-width:280px;">Katıl</button>
@@ -2078,6 +2107,7 @@ function go(id) {
     if (el) el.classList.add('show');
     updateNav(id);
     updateMobileNav(id);
+    sessionStorage.setItem('aktifSayfa', id);
   }
   window.scrollTo(0, 0);
 }
@@ -2410,7 +2440,8 @@ sb.auth.onAuthStateChange(async function(event, session) {
 (async function() {
   var { data: { session } } = await sb.auth.getSession();
   if (session && session.user) {
-    go('home');
+    var sonSayfa = sessionStorage.getItem('aktifSayfa') || 'home';
+    go(sonSayfa);
     await kullaniciBilgisiYukle(session.user.id);
     gunuSorusunuYukle();
   }
@@ -2536,11 +2567,18 @@ async function mesajlariYukle(kanalId, kanalAd, kanalEmoji) {
       msgsEl.innerHTML = '<div style="color:var(--text2);font-size:13px;padding:20px;">Henüz mesaj yok. İlk mesajı sen at!</div>';
     } else {
       msgsEl.innerHTML = data.map(function(m) {
-        var ad = m.profiles ? (m.profiles.ad || 'Üye') : 'Üye';
+        var ad    = m.profiles ? (m.profiles.ad || 'Üye') : 'Üye';
+        var uid   = m.kullanici_id || '';
         var zaman = new Date(m.created_at).toLocaleTimeString('tr-TR', {hour:'2-digit', minute:'2-digit'});
+        var imgHtml = m.resim_url ? '<img src="' + m.resim_url + '" style="max-width:100%;max-height:280px;border-radius:10px;margin-top:8px;display:block;cursor:pointer;object-fit:cover;" onclick="window.open(\'' + m.resim_url + '\')">': '';
+        var metin = (m.icerik && m.icerik.trim() !== ' ') ? '<div class="msg-text">' + m.icerik + '</div>' : '';
         return '<div class="msg">' +
-          '<div class="msg-meta">' + ad + ' · ' + zaman + '</div>' +
-          '<div class="msg-text">' + m.icerik + '</div>' +
+          '<div class="msg-meta" onclick="profilGor(\'' + uid + '\')" style="cursor:pointer;display:flex;align-items:center;gap:6px;">' +
+            '<div style="width:24px;height:24px;border-radius:50%;background:var(--surface);display:inline-flex;align-items:center;justify-content:center;font-size:9px;font-weight:600;color:var(--text2);flex-shrink:0;">' + ad.substring(0,2).toUpperCase() + '</div>' +
+            '<span style="font-weight:600;color:var(--text);">' + ad + '</span>' +
+            '<span style="color:var(--text2);font-weight:400;">· ' + zaman + '</span>' +
+          '</div>' +
+          metin + imgHtml +
           '<div class="msg-like"><svg viewBox="0 0 16 16" fill="none"><path d="M8 13s-5-3.5-5-7a4 4 0 018 0" stroke="currentColor" stroke-width="1.2"/><path d="M8 13s5-3.5 5-7a4 4 0 00-8 0" stroke="currentColor" stroke-width="1.2"/></svg>' + m.begeni_sayisi + '</div>' +
         '</div>';
       }).join('');
@@ -2558,7 +2596,8 @@ async function mesajlariYukle(kanalId, kanalAd, kanalEmoji) {
         if (msgsEl) {
           var div = document.createElement('div');
           div.className = 'msg';
-          div.innerHTML = '<div class="msg-meta">Üye · şimdi</div><div class="msg-text">' + m.icerik + '</div><div class="msg-like"><svg viewBox="0 0 16 16" fill="none"><path d="M8 13s-5-3.5-5-7a4 4 0 018 0" stroke="currentColor" stroke-width="1.2"/><path d="M8 13s5-3.5 5-7a4 4 0 00-8 0" stroke="currentColor" stroke-width="1.2"/></svg>0</div>';
+          var imgHtml = m.resim_url ? '<img src="' + m.resim_url + '" style="max-width:100%;border-radius:8px;margin-top:8px;display:block;cursor:pointer;" onclick="window.open(\'' + m.resim_url + '\')">' : '';
+          div.innerHTML = '<div class="msg-meta" style="cursor:pointer;">Üye · şimdi</div><div class="msg-text">' + (m.icerik && m.icerik.trim() !== ' ' ? m.icerik : '') + '</div>' + imgHtml + '<div class="msg-like"><svg viewBox="0 0 16 16" fill="none"><path d="M8 13s-5-3.5-5-7a4 4 0 018 0" stroke="currentColor" stroke-width="1.2"/><path d="M8 13s5-3.5 5-7a4 4 0 00-8 0" stroke="currentColor" stroke-width="1.2"/></svg>0</div>';
           msgsEl.appendChild(div);
           msgsEl.scrollTop = msgsEl.scrollHeight;
         }
@@ -2566,27 +2605,245 @@ async function mesajlariYukle(kanalId, kanalAd, kanalEmoji) {
     ).subscribe();
 }
 
+/* ── MESAJ RESİM ── */
+var mesajResimFile = null;
+
+function mesajResimSec(input) {
+  var file = input.files[0];
+  if (!file) return;
+  mesajResimFile = file;
+  var reader = new FileReader();
+  reader.onload = function(e) {
+    var prev = document.getElementById('msg-img-preview');
+    var img  = document.getElementById('msg-img-prev-img');
+    if (prev && img) { img.src = e.target.result; prev.style.display = 'block'; }
+  };
+  reader.readAsDataURL(file);
+  input.value = '';
+}
+
+function mesajResimIptal() {
+  mesajResimFile = null;
+  var prev = document.getElementById('msg-img-preview');
+  if (prev) prev.style.display = 'none';
+}
+
 /* ── MESAJ GÖNDER ── */
 async function mesajGonder() {
-  var inp = document.querySelector('.ch-inp');
-  if (!inp || !inp.value.trim() || !aktifKanalId) return;
+  var inp = document.getElementById('ch-inp-main') || document.querySelector('.ch-inp');
+  if (!inp || (!inp.value.trim() && !mesajResimFile) || !aktifKanalId) return;
 
   var { data: { user } } = await sb.auth.getUser();
   if (!user) { alert('Giriş yapman gerekiyor.'); return; }
 
-  var icerik = inp.value.trim();
-  inp.value = '';
+  var icerik  = inp.value.trim();
+  var resimUrl = null;
+  inp.value   = '';
+
+  if (mesajResimFile) {
+    try {
+      var dosya = user.id + '_' + Date.now() + '.' + mesajResimFile.name.split('.').pop();
+      var { data: up } = await sb.storage.from('mesaj-resimleri').upload(dosya, mesajResimFile, { contentType: mesajResimFile.type });
+      if (up) {
+        var { data: urlData } = sb.storage.from('mesaj-resimleri').getPublicUrl(dosya);
+        resimUrl = urlData.publicUrl;
+      }
+    } catch(e) { console.error('Resim yüklenemedi:', e); }
+    mesajResimIptal();
+  }
 
   await sb.from('mesajlar').insert({
-    kanal_id: aktifKanalId,
+    kanal_id:    aktifKanalId,
     kullanici_id: user.id,
-    icerik: icerik
+    icerik:      icerik || ' ',
+    resim_url:   resimUrl
   });
 }
 
-/* ── RESİM ÖNİZLE ── */
-var secilenResimBase64 = null;
-var secilenResimFile   = null;
+/* ── PROFİL GÖR ── */
+async function profilGor(userId) {
+  if (!userId) return;
+  var { data } = await sb.from('profiles').select('*').eq('id', userId).single();
+  if (!data) return;
+
+  var { data: { user } } = await sb.auth.getUser();
+  var benimId = user ? user.id : null;
+
+  // Basit modal göster
+  var mevcut = document.getElementById('profil-modal');
+  if (mevcut) mevcut.remove();
+
+  // Arkadaşlık durumu kontrol
+  var arkadas = false;
+  if (benimId && benimId !== userId) {
+    var { data: arkData } = await sb.from('arkadasliklar')
+      .select('id').eq('gonderen_id', benimId).eq('alan_id', userId).single();
+    arkadas = !!arkData;
+  }
+
+  var isim = (data.ad || '') + ' ' + (data.soyad || '');
+  var initials = (data.ad || 'U').substring(0,2).toUpperCase();
+  var etiketHtml = (data.etiketler || []).map(function(t){
+    return '<span style="font-size:11px;padding:4px 10px;border-radius:16px;background:var(--surface);color:var(--text);border:0.5px solid var(--border);">' + t + '</span>';
+  }).join('');
+
+  var modal = document.createElement('div');
+  modal.id = 'profil-modal';
+  modal.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:300;display:flex;align-items:flex-end;justify-content:center;';
+  modal.innerHTML = '<div style="background:var(--light);border-radius:20px 20px 0 0;padding:24px;width:100%;max-width:480px;max-height:80vh;overflow-y:auto;">' +
+    '<div style="display:flex;align-items:center;gap:14px;margin-bottom:16px;">' +
+      '<div style="width:56px;height:56px;border-radius:50%;background:var(--surface);border:2px solid var(--accent);display:flex;align-items:center;justify-content:center;font-size:20px;font-weight:700;color:var(--mid);">' + initials + '</div>' +
+      '<div><div style="font-size:18px;font-weight:700;color:var(--text);">' + isim + '</div>' +
+        (data.sehir ? '<div style="font-size:13px;color:var(--text2);">📍 ' + data.sehir + '</div>' : '') +
+      '</div>' +
+      '<button onclick="this.closest(\'#profil-modal\').remove()" style="margin-left:auto;background:none;border:none;font-size:22px;color:var(--text2);cursor:pointer;">×</button>' +
+    '</div>' +
+    (etiketHtml ? '<div style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:16px;">' + etiketHtml + '</div>' : '') +
+    (benimId && benimId !== userId ? '<button onclick="arkadasEkle(\'' + userId + '\', this)" style="width:100%;padding:12px;background:' + (arkadas ? 'var(--surface)' : 'var(--accent)') + ';color:' + (arkadas ? 'var(--text)' : '#fff') + ';border:0.5px solid var(--border);border-radius:10px;font-family:\'Montserrat\',sans-serif;font-size:13px;font-weight:600;cursor:pointer;">' + (arkadas ? '✓ Bağlantı kuruldu' : '+ Bağlantı Kur') + '</button>' : '') +
+  '</div>';
+  modal.onclick = function(e) { if (e.target === modal) modal.remove(); };
+  document.body.appendChild(modal);
+}
+
+async function arkadasEkle(userId, btn) {
+  var { data: { user } } = await sb.auth.getUser();
+  if (!user) return;
+  var { error } = await sb.from('arkadasliklar').insert({ gonderen_id: user.id, alan_id: userId });
+  if (!error && btn) {
+    btn.textContent = '✓ Bağlantı kuruldu';
+    btn.style.background = 'var(--surface)';
+    btn.style.color = 'var(--text)';
+  }
+}
+
+/* ── ANLIK FOTO KANAL ── */
+var ANLIK_KANAL_ID = null;
+
+function anlikGoster() {
+  document.querySelectorAll('.cl-item').forEach(el => el.classList.remove('active'));
+  document.getElementById('cl-anlik').classList.add('active');
+  document.getElementById('anlik-panel').style.display = 'flex';
+  document.getElementById('kanal-panel').style.display = 'none';
+  anlikFeedYukle();
+}
+
+async function anlikFeedYukle() {
+  var grid = document.getElementById('anlik-grid');
+  if (!grid) return;
+
+  // Anlık kanalın id'sini bul veya oluştur
+  if (!ANLIK_KANAL_ID) {
+    var { data: k } = await sb.from('kanallar').select('id').eq('ad', 'Anlık').single();
+    if (k) { ANLIK_KANAL_ID = k.id; }
+    else {
+      var { data: yeni } = await sb.from('kanallar').insert({ ad: 'Anlık', emoji: '📸', aciklama: 'Sadece fotoğraf', premium_gerekli: false }).select().single();
+      if (yeni) ANLIK_KANAL_ID = yeni.id;
+    }
+  }
+
+  if (!ANLIK_KANAL_ID) { grid.innerHTML = '<div style="color:var(--text2);font-size:13px;">Yüklenemedi.</div>'; return; }
+
+  var { data } = await sb.from('mesajlar').select('*, profiles(ad)').eq('kanal_id', ANLIK_KANAL_ID).not('resim_url', 'is', null).order('created_at', { ascending: false }).limit(30);
+
+  if (!data || !data.length) { grid.innerHTML = '<div style="color:var(--text2);font-size:13px;grid-column:1/-1;">Henüz fotoğraf yok. İlk fotoğrafı sen paylaş!</div>'; return; }
+
+  grid.innerHTML = data.map(function(m) {
+    return '<div style="position:relative;cursor:pointer;" onclick="window.open(\'' + m.resim_url + '\')">' +
+      '<img src="' + m.resim_url + '" style="width:100%;aspect-ratio:1;object-fit:cover;border-radius:10px;display:block;">' +
+      '<div style="position:absolute;bottom:5px;left:5px;background:rgba(0,0,0,.5);color:#fff;font-size:9px;padding:2px 6px;border-radius:6px;">' + (m.profiles ? m.profiles.ad : 'Üye') + '</div>' +
+    '</div>';
+  }).join('');
+}
+
+async function anlikFotoGonder(input) {
+  var file = input.files[0];
+  if (!file) return;
+
+  var { data: { user } } = await sb.auth.getUser();
+  if (!user) return;
+
+  if (!ANLIK_KANAL_ID) { await anlikFeedYukle(); }
+  if (!ANLIK_KANAL_ID) return;
+
+  var dosya = user.id + '_' + Date.now() + '.' + file.name.split('.').pop();
+  var { data: up } = await sb.storage.from('mesaj-resimleri').upload(dosya, file, { contentType: file.type });
+  if (!up) return;
+  var { data: urlData } = sb.storage.from('mesaj-resimleri').getPublicUrl(dosya);
+
+  await sb.from('mesajlar').insert({ kanal_id: ANLIK_KANAL_ID, kullanici_id: user.id, icerik: ' ', resim_url: urlData.publicUrl });
+  input.value = '';
+  anlikFeedYukle();
+}
+
+/* ── ÇOKLU RESİM SEÇME (Buluşma) ── */
+var secilenResimler = []; // [{file, url, thumbnail: bool}]
+
+function cokluResimSec(input) {
+  var files = Array.from(input.files);
+  var kalan = 5 - secilenResimler.length;
+  if (kalan <= 0) { alert('En fazla 5 fotoğraf ekleyebilirsin.'); return; }
+  files = files.slice(0, kalan);
+
+  files.forEach(function(file) {
+    var reader = new FileReader();
+    reader.onload = function(e) {
+      secilenResimler.push({ file: file, url: e.target.result, thumbnail: secilenResimler.length === 0 });
+      resimGridGuncelle();
+    };
+    reader.readAsDataURL(file);
+  });
+  input.value = '';
+}
+
+function resimGridGuncelle() {
+  var grid = document.getElementById('b-resim-grid');
+  var ekleBtn = document.getElementById('b-resim-ekle');
+  if (!grid) return;
+
+  grid.innerHTML = secilenResimler.map(function(r, i) {
+    return '<div style="position:relative;cursor:pointer;" onclick="thumbnailSec(' + i + ')">' +
+      '<img src="' + r.url + '" style="width:100%;aspect-ratio:1;object-fit:cover;border-radius:10px;display:block;">' +
+      (r.thumbnail ? '<div style="position:absolute;top:4px;left:4px;background:var(--accent);color:#fff;font-size:9px;font-weight:600;padding:2px 7px;border-radius:6px;">KAPAK</div>' : '') +
+      '<button onclick="event.stopPropagation();resimSil(' + i + ')" style="position:absolute;top:4px;right:4px;background:rgba(0,0,0,.5);border:none;color:#fff;border-radius:50%;width:20px;height:20px;cursor:pointer;font-size:12px;line-height:1;">×</button>' +
+    '</div>';
+  }).join('');
+
+  if (ekleBtn) ekleBtn.style.display = secilenResimler.length >= 5 ? 'none' : 'flex';
+}
+
+function thumbnailSec(idx) {
+  secilenResimler.forEach(function(r, i) { r.thumbnail = (i === idx); });
+  resimGridGuncelle();
+}
+
+function resimSil(idx) {
+  secilenResimler.splice(idx, 1);
+  if (secilenResimler.length > 0 && !secilenResimler.some(function(r){ return r.thumbnail; })) {
+    secilenResimler[0].thumbnail = true;
+  }
+  resimGridGuncelle();
+}
+
+/* ── BULUŞMA RESİMLERİNİ YÜKLE ── */
+async function bulusmaResimleriniYukle(userId) {
+  var resimUrller = [];
+  var thumbnailUrl = null;
+
+  for (var i = 0; i < secilenResimler.length; i++) {
+    var r = secilenResimler[i];
+    var dosya = userId + '_' + Date.now() + '_' + i + '.' + r.file.name.split('.').pop();
+    var { data: up } = await sb.storage.from('bulusma-resimleri').upload(dosya, r.file, { contentType: r.file.type });
+    if (up) {
+      var { data: urlData } = sb.storage.from('bulusma-resimleri').getPublicUrl(dosya);
+      resimUrller.push(urlData.publicUrl);
+      if (r.thumbnail) thumbnailUrl = urlData.publicUrl;
+    }
+  }
+
+  return { resimUrller, thumbnailUrl };
+}
+
+
 var secilenKonumTam    = null;
 var secilenKonumLat    = null;
 var secilenKonumLng    = null;
@@ -2801,6 +3058,19 @@ async function bulusmaDetayYukle(id) {
   if (konumEl)  konumEl.textContent  = b.konum_tam ? b.konum_tam.split(',').slice(0,3).join(',') : (b.konum || '');
   if (acikEl)   acikEl.textContent   = b.aciklama || '';
 
+  // Galeri
+  var galeriDiv = document.getElementById('detay-galeri');
+  if (galeriDiv) {
+    if (b.resimler && b.resimler.length > 1) {
+      galeriDiv.style.display = 'grid';
+      galeriDiv.innerHTML = b.resimler.map(function(url) {
+        return '<img src="' + url + '" style="width:100%;aspect-ratio:1;object-fit:cover;border-radius:10px;cursor:pointer;display:block;" onclick="window.open(\'' + url + '\')">';
+      }).join('');
+    } else {
+      galeriDiv.style.display = 'none';
+    }
+  }
+
   // Kapak resmi
   if (kapakDiv && kapakImg && b.resim_url) {
     kapakImg.src = b.resim_url;
@@ -2864,19 +3134,14 @@ async function bulusmayiKaydet() {
   var { data: { user } } = await sb.auth.getUser();
   if (!user) return;
 
-  // Resim yükle — Supabase Storage
+  // Çoklu resim yükle
   var resimUrl = null;
-  if (secilenResimFile) {
-    try {
-      var dosyaAdi = user.id + '_' + Date.now() + '_' + secilenResimFile.name.replace(/[^a-zA-Z0-9.]/g,'_');
-      var { data: upData, error: upErr } = await sb.storage
-        .from('bulusma-resimleri')
-        .upload(dosyaAdi, secilenResimFile, { contentType: secilenResimFile.type, upsert: false });
-      if (!upErr && upData) {
-        var { data: urlData } = sb.storage.from('bulusma-resimleri').getPublicUrl(dosyaAdi);
-        resimUrl = urlData.publicUrl;
-      }
-    } catch(e) { console.error('Resim yüklenemedi:', e); }
+  var tumResimler = [];
+  if (secilenResimler.length > 0) {
+    btn.textContent = 'Fotoğraflar yükleniyor...';
+    var yuklemeSonucu = await bulusmaResimleriniYukle(user.id);
+    resimUrl    = yuklemeSonucu.thumbnailUrl;
+    tumResimler = yuklemeSonucu.resimUrller;
   }
 
   var tarihZaman = tarih.value + (saat.value ? 'T' + saat.value : 'T12:00') + ':00';
@@ -2892,7 +3157,8 @@ async function bulusmayiKaydet() {
     sehir:       sehir.value,
     olusturan:   user.id,
     one_cikan:   false,
-    resim_url:   resimUrl
+    resim_url:   resimUrl,
+    resimler:    tumResimler
   }).select().single();
 
   if (error) {
@@ -2907,9 +3173,8 @@ async function bulusmayiKaydet() {
 
   // Formu sıfırla
   baslik.value=''; aciklama.value=''; tarih.value=''; saat.value=''; konum.value=''; sehir.value='';
-  secilenResimFile = null; secilenResimBase64 = null;
-  var prev = document.getElementById('resim-preview');
-  if (prev) prev.innerHTML = '<svg width="28" height="28" viewBox="0 0 28 28" fill="none"><rect x="2" y="6" width="24" height="18" rx="3" stroke="currentColor" stroke-width="1.5"/><circle cx="9" cy="12" r="2" stroke="currentColor" stroke-width="1.4"/><path d="M2 20l6-5 4 4 4-4 8 7" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg><span style="font-size:13px;color:var(--text2);font-weight:500;">Fotoğraf seç veya tıkla</span>';
+  secilenResimler = [];
+  resimGridGuncelle();
   konumSifirla();
 
   btn.textContent = 'Buluşmayı Oluştur'; btn.disabled = false;
