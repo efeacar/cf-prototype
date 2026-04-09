@@ -1954,40 +1954,16 @@ select.inp {
           </div>
 
           <!-- ROZET ÖZETI -->
-          <div style="background:var(--dark);border-radius:14px;padding:20px 22px;margin-bottom:24px;display:flex;align-items:center;gap:16px;">
+          <div id="rozet-ozet" style="background:var(--dark);border-radius:14px;padding:20px 22px;margin-bottom:24px;display:flex;align-items:center;gap:16px;">
             <div style="font-size:40px;">🏅</div>
             <div>
-              <div style="font-size:16px;color:#F0E8DC;font-weight:700;margin-bottom:4px;">3 rozet kazandın</div>
-              <div style="font-size:13px;color:rgba(240,232,220,.5);line-height:1.4;">5 rozet daha var — topluluğa katılmaya devam et.</div>
+              <div id="rozet-sayi-text" style="font-size:16px;color:#F0E8DC;font-weight:700;margin-bottom:4px;">Yükleniyor...</div>
+              <div style="font-size:13px;color:rgba(240,232,220,.5);line-height:1.4;">Topluluğa katkıda bulun, rozet kazan.</div>
             </div>
           </div>
 
-          <div class="sec-head">Kazanılanlar</div>
-          <div class="rozet-grid" style="margin-bottom:24px;">
-            <div class="rozet-item earned" onclick="alert(&#39;İlk Adım — Topluluğa ilk kez katıldın 🎉&#39;)">
-              <div class="rozet-icon">🌱<div class="rozet-check"><svg viewBox="0 0 10 10" fill="none"><path d="M2 5l2.5 2.5 3.5-4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path></svg></div></div>
-              <div class="rozet-name">İlk Adım</div>
-              <div class="rozet-desc">Topluluğa katıldın</div>
-            </div>
-            <div class="rozet-item earned" onclick="alert(&#39;Sohbetçi — 10 konuşmaya katıldın 💬&#39;)">
-              <div class="rozet-icon">💬<div class="rozet-check"><svg viewBox="0 0 10 10" fill="none"><path d="M2 5l2.5 2.5 3.5-4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path></svg></div></div>
-              <div class="rozet-name">Sohbetçi</div>
-              <div class="rozet-desc">10 konuşmaya katıldın</div>
-            </div>
-            <div class="rozet-item earned" onclick="alert(&#39;Davetçi — 3 kişiyi davet ettin 🎟&#39;)">
-              <div class="rozet-icon">🎟<div class="rozet-check"><svg viewBox="0 0 10 10" fill="none"><path d="M2 5l2.5 2.5 3.5-4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path></svg></div></div>
-              <div class="rozet-name">Davetçi</div>
-              <div class="rozet-desc">3 kişiyi davet ettin</div>
-            </div>
-          </div>
-
-          <div class="sec-head">Kilitli</div>
-          <div class="rozet-grid">
-            <div class="rozet-item locked"><div class="rozet-icon">📅</div><div class="rozet-name">Gezgin</div><div class="rozet-desc">İlk buluşmana katıl</div></div>
-            <div class="rozet-item locked"><div class="rozet-icon">⭐</div><div class="rozet-name">Ritüelci</div><div class="rozet-desc">30 gün üst üste cevap ver</div></div>
-            <div class="rozet-item locked"><div class="rozet-icon">🎪</div><div class="rozet-name">Organizatör</div><div class="rozet-desc">Bir buluşma düzenle</div></div>
-            <div class="rozet-item locked"><div class="rozet-icon">🎂</div><div class="rozet-name">1 Yıl!</div><div class="rozet-desc">1 yıllık üye ol</div></div>
-            <div class="rozet-item locked"><div class="rozet-icon">👑</div><div class="rozet-name">Efsane</div><div class="rozet-desc">Tüm rozetleri kazan</div></div>
+          <div id="rozet-gercek-grid">
+            <div style="color:var(--text2);font-size:13px;">Rozetler yükleniyor...</div>
           </div>
         </div>
       </div>
@@ -2469,9 +2445,9 @@ async function profilKaydet() {
     var { data: { user } } = await sb.auth.getUser();
     if (user) {
       await sb.from('davet_kodlari').insert([
-        { kod: 'CFT-' + Math.random().toString(36).substring(2,6).toUpperCase(), olusturan: userId },
-        { kod: 'CFT-' + Math.random().toString(36).substring(2,6).toUpperCase(), olusturan: userId },
-        { kod: 'CFT-' + Math.random().toString(36).substring(2,6).toUpperCase(), olusturan: userId }
+        { kod: gucluKodUret(), olusturan: userId, kullanildi: false },
+        { kod: gucluKodUret(), olusturan: userId, kullanildi: false },
+        { kod: gucluKodUret(), olusturan: userId, kullanildi: false }
       ]);
     }
   }
@@ -2601,26 +2577,64 @@ function kullaniciBilgisiGoster(data) {
 }
 
 /* ── DAVET KODLARINI YÜKLE ── */
+/* ── GÜÇLÜ DAVET KODU ÜRET ── */
+function gucluKodUret() {
+  var chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789'; // karışık harfler/rakamlar
+  var kod = '';
+  for (var i = 0; i < 12; i++) {
+    if (i === 4 || i === 8) kod += '-';
+    kod += chars.charAt(Math.floor(Math.random() * chars.length));
+  }
+  return 'CF-' + kod; // örn: CF-X7KM-4NQP-R3VW
+}
+
 async function davetKodlariniYukle(userId) {
   var { data } = await sb.from('davet_kodlari')
-    .select('*')
-    .eq('olusturan', userId);
+    .select('*, kullanan_profil:profiles!davet_kodlari_kullanan_fkey(ad, soyad)')
+    .eq('olusturan', userId)
+    .order('created_at', { ascending: true });
+
   if (!data) return;
 
   var codesEl = document.querySelector('.inv-codes');
   if (!codesEl) return;
 
+  // Yeni güçlü kodlar yoksa oluştur
+  var mevcutlar = data.length;
+  if (mevcutlar < 3) {
+    var yeniKodlar = [];
+    for (var i = mevcutlar; i < 3; i++) {
+      yeniKodlar.push({ kod: gucluKodUret(), olusturan: userId, kullanildi: false });
+    }
+    if (yeniKodlar.length > 0) {
+      var { data: yeni } = await sb.from('davet_kodlari').insert(yeniKodlar).select(
+        '*, kullanan_profil:profiles!davet_kodlari_kullanan_fkey(ad, soyad)'
+      );
+      if (yeni) data = data.concat(yeni);
+    }
+  }
+
   codesEl.innerHTML = data.map(function(k) {
     if (k.kullanildi) {
-      return '<div class="inv-code inv-used"><span>' + k.kod + '</span><span style="font-size:11px;color:var(--text2);">Kullanıldı</span></div>';
+      var kullanad = k.kullanan_profil ? (k.kullanan_profil.ad || 'Üye') : 'Üye';
+      return '<div class="inv-code inv-used">' +
+        '<div>' +
+          '<span style="font-size:13px;color:rgba(240,232,220,.4);letter-spacing:1px;">' + k.kod + '</span>' +
+          '<div style="font-size:11px;color:rgba(240,232,220,.3);margin-top:3px;">👤 ' + kullanad + ' kullandı</div>' +
+        '</div>' +
+        '<span style="font-size:10px;color:rgba(240,232,220,.3);font-weight:500;">✓ Kullanıldı</span>' +
+      '</div>';
     }
-    return '<div class="inv-code"><span>' + k.kod + '</span><button class="inv-copy" onclick="copyCode(this,\'' + k.kod + '\')">Kopyala</button></div>';
+    return '<div class="inv-code">' +
+      '<span>' + k.kod + '</span>' +
+      '<button class="inv-copy" onclick="copyCode(this,\'' + k.kod + '\')">Kopyala</button>' +
+    '</div>';
   }).join('');
 
   var invTitle = document.querySelector('.inv-title');
   if (invTitle) {
     var kalan = data.filter(function(k){ return !k.kullanildi; }).length;
-    invTitle.textContent = kalan + ' davet hakkın var';
+    invTitle.textContent = kalan + ' davet kodun var';
   }
 }
 
@@ -2778,17 +2792,28 @@ async function mesajGonder() {
 /* ── PROFİL GÖR ── */
 async function profilGor(userId) {
   if (!userId) return;
-  var { data } = await sb.from('profiles').select('*').eq('id', userId).single();
-  if (!data) return;
 
-  var { data: { user } } = await sb.auth.getUser();
-  var benimId = user ? user.id : null;
-
-  // Basit modal göster
   var mevcut = document.getElementById('profil-modal');
   if (mevcut) mevcut.remove();
 
-  // Arkadaşlık durumu kontrol
+  // Loading modal
+  var modal = document.createElement('div');
+  modal.id = 'profil-modal';
+  modal.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:300;display:flex;align-items:center;justify-content:center;padding:20px;';
+  modal.innerHTML = '<div style="background:var(--light);border-radius:20px;padding:24px;width:100%;max-width:400px;text-align:center;"><span style="color:var(--text2);font-size:13px;">Yükleniyor...</span></div>';
+  modal.onclick = function(e) { if (e.target === modal) modal.remove(); };
+  document.body.appendChild(modal);
+
+  // Veri çek
+  var [profRes, userRes] = await Promise.all([
+    sb.from('profiles').select('*').eq('id', userId).single(),
+    sb.auth.getUser()
+  ]);
+  var data   = profRes.data;
+  var benimId = userRes.data.user ? userRes.data.user.id : null;
+  if (!data) { modal.remove(); return; }
+
+  // Arkadaşlık durumu
   var arkadas = false;
   if (benimId && benimId !== userId) {
     var { data: arkData } = await sb.from('arkadasliklar')
@@ -2796,28 +2821,68 @@ async function profilGor(userId) {
     arkadas = !!arkData;
   }
 
-  var isim = (data.ad || '') + ' ' + (data.soyad || '');
+  // Rozet & rütbe
+  var rutbe = rutbeHesapla(data.created_at);
+  var isim  = (data.ad || '') + (data.soyad ? ' ' + data.soyad : '');
   var initials = (data.ad || 'U').substring(0,2).toUpperCase();
+
+  // Kullanıcının rozetlerini hesapla
+  var { data: msgSayisi } = await sb.from('mesajlar').select('id', { count: 'exact', head: true }).eq('kullanici_id', userId);
+  var { data: bulusmaSayisi } = await sb.from('bulusma_katilimcilar').select('bulusma_id', { count: 'exact', head: true }).eq('kullanici_id', userId);
+  var { data: davetSayisi } = await sb.from('davet_kodlari').select('id', { count: 'exact', head: true }).eq('olusturan', userId).eq('kullanildi', true);
+
+  var kazanilanRozetler = [];
+  if (data.created_at) kazanilanRozetler.push({ icon:'🌱', ad:'İlk Adım' });
+  if (msgSayisi && msgSayisi.length >= 10) kazanilanRozetler.push({ icon:'💬', ad:'Sohbetçi' });
+  if (davetSayisi && davetSayisi.length >= 3) kazanilanRozetler.push({ icon:'🎟', ad:'Davetçi' });
+  if (bulusmaSayisi && bulusmaSayisi.length >= 1) kazanilanRozetler.push({ icon:'📅', ad:'Gezgin' });
+
+  var avatarHtml = data.avatar_url
+    ? '<img src="' + data.avatar_url + '" style="width:72px;height:72px;border-radius:50%;object-fit:cover;border:3px solid var(--accent);">'
+    : '<div style="width:72px;height:72px;border-radius:50%;background:var(--surface);border:3px solid var(--accent);display:flex;align-items:center;justify-content:center;font-size:24px;font-weight:700;color:var(--mid);">' + initials + '</div>';
+
   var etiketHtml = (data.etiketler || []).map(function(t){
     return '<span style="font-size:11px;padding:4px 10px;border-radius:16px;background:var(--surface);color:var(--text);border:0.5px solid var(--border);">' + t + '</span>';
   }).join('');
 
-  var modal = document.createElement('div');
-  modal.id = 'profil-modal';
-  modal.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:300;display:flex;align-items:flex-end;justify-content:center;';
-  modal.innerHTML = '<div style="background:var(--light);border-radius:20px 20px 0 0;padding:24px;width:100%;max-width:480px;max-height:80vh;overflow-y:auto;">' +
-    '<div style="display:flex;align-items:center;gap:14px;margin-bottom:16px;">' +
-      '<div style="width:56px;height:56px;border-radius:50%;background:var(--surface);border:2px solid var(--accent);display:flex;align-items:center;justify-content:center;font-size:20px;font-weight:700;color:var(--mid);">' + initials + '</div>' +
-      '<div><div style="font-size:18px;font-weight:700;color:var(--text);">' + isim + '</div>' +
-        (data.sehir ? '<div style="font-size:13px;color:var(--text2);">📍 ' + data.sehir + '</div>' : '') +
+  var rozetHtml = kazanilanRozetler.map(function(r){
+    return '<span style="font-size:11px;padding:4px 10px;border-radius:16px;background:#FAECE7;color:#993C1D;border:0.5px solid rgba(193,73,30,.2);">' + r.icon + ' ' + r.ad + '</span>';
+  }).join('');
+
+  var icerik = '<div style="background:var(--light);border-radius:20px;width:100%;max-width:400px;overflow:hidden;">' +
+    // Header
+    '<div style="background:var(--dark);padding:24px 20px 20px;text-align:center;position:relative;">' +
+      '<button onclick="document.getElementById(\'profil-modal\').remove()" style="position:absolute;top:14px;right:14px;background:rgba(255,255,255,.1);border:none;color:#F0E8DC;border-radius:50%;width:28px;height:28px;cursor:pointer;font-size:16px;line-height:1;">×</button>' +
+      '<div style="display:flex;justify-content:center;margin-bottom:12px;">' + avatarHtml + '</div>' +
+      '<div style="font-size:18px;font-weight:700;color:#F0E8DC;margin-bottom:4px;">' + isim + '</div>' +
+      (data.sehir ? '<div style="font-size:12px;color:rgba(240,232,220,.5);margin-bottom:8px;">📍 ' + data.sehir + '</div>' : '') +
+      // Badges
+      '<div style="display:flex;justify-content:center;gap:6px;flex-wrap:wrap;">' +
+        '<span class="prof-badge ' + rutbe.cls + '">' + rutbe.label + '</span>' +
+        (data.premium ? '<span class="prof-badge prem-badge">⭐ Premium</span>' : '') +
       '</div>' +
-      '<button onclick="this.closest(\'#profil-modal\').remove()" style="margin-left:auto;background:none;border:none;font-size:22px;color:var(--text2);cursor:pointer;">×</button>' +
     '</div>' +
-    (etiketHtml ? '<div style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:16px;">' + etiketHtml + '</div>' : '') +
-    (benimId && benimId !== userId ? '<button onclick="arkadasEkle(\'' + userId + '\', this)" style="width:100%;padding:12px;background:' + (arkadas ? 'var(--surface)' : 'var(--accent)') + ';color:' + (arkadas ? 'var(--text)' : '#fff') + ';border:0.5px solid var(--border);border-radius:10px;font-family:\'Montserrat\',sans-serif;font-size:13px;font-weight:600;cursor:pointer;">' + (arkadas ? '✓ Bağlantı kuruldu' : '+ Bağlantı Kur') + '</button>' : '') +
+    // Body
+    '<div style="padding:18px 20px 20px;">' +
+      // Etiketler
+      (etiketHtml ? '<div style="font-size:10px;font-weight:600;color:var(--text2);text-transform:uppercase;letter-spacing:.5px;margin-bottom:8px;">Etiketler</div>' +
+        '<div style="display:flex;flex-wrap:wrap;gap:5px;margin-bottom:14px;">' + etiketHtml + '</div>' : '') +
+      // Rozetler
+      (rozetHtml ? '<div style="font-size:10px;font-weight:600;color:var(--text2);text-transform:uppercase;letter-spacing:.5px;margin-bottom:8px;">Rozetler</div>' +
+        '<div style="display:flex;flex-wrap:wrap;gap:5px;margin-bottom:16px;">' + rozetHtml + '</div>' : '') +
+      // Üyelik süresi
+      '<div style="font-size:12px;color:var(--text2);margin-bottom:16px;">📅 ' +
+        (data.created_at ? Math.floor((Date.now() - new Date(data.created_at).getTime()) / (1000*60*60*24)) + ' gündür üye' : 'Yeni üye') +
+      '</div>' +
+      // Buton
+      (benimId && benimId !== userId ?
+        '<button id="arkadas-btn-' + userId + '" onclick="arkadasEkle(\'' + userId + '\', this)" style="width:100%;padding:12px;background:' + (arkadas ? 'var(--surface)' : 'var(--accent)') + ';color:' + (arkadas ? 'var(--text)' : '#fff') + ';border:0.5px solid var(--border);border-radius:10px;font-family:\'Montserrat\',sans-serif;font-size:13px;font-weight:600;cursor:pointer;">' +
+          (arkadas ? '✓ Bağlantı kuruldu' : '+ Bağlantı Kur') +
+        '</button>' : '') +
+    '</div>' +
   '</div>';
-  modal.onclick = function(e) { if (e.target === modal) modal.remove(); };
-  document.body.appendChild(modal);
+
+  modal.innerHTML = icerik;
 }
 
 async function arkadasEkle(userId, btn) {
@@ -3496,7 +3561,77 @@ async function katilToggle() {
 }
 
 
-/* ── RÜTBE SİSTEMİ ── */
+/* ── GERÇEK ROZET SİSTEMİ ── */
+var TUM_ROZETLER = [
+  { id:'ilk-adim',   icon:'🌱', ad:'İlk Adım',    aciklama:'Topluluğa katıldın',           kosul: function(s){ return true; } },
+  { id:'sohbetci',   icon:'💬', ad:'Sohbetçi',     aciklama:'10+ mesaj gönderdin',          kosul: function(s){ return s.mesajSayisi >= 10; } },
+  { id:'davetci',    icon:'🎟', ad:'Davetçi',      aciklama:'3 kişiyi topluluğa davet ettin', kosul: function(s){ return s.davetSayisi >= 3; } },
+  { id:'gezgin',     icon:'📅', ad:'Gezgin',       aciklama:'Bir buluşmaya katıldın',        kosul: function(s){ return s.bulusmaSayisi >= 1; } },
+  { id:'organiz',    icon:'🎪', ad:'Organizatör',  aciklama:'Bir buluşma düzenledin',        kosul: function(s){ return s.orgSayisi >= 1; } },
+  { id:'rituelci',   icon:'⭐', ad:'Ritüelci',     aciklama:'7 gün üst üste cevap verdin',   kosul: function(s){ return s.cevapSayisi >= 7; } },
+  { id:'bir-yil',    icon:'🎂', ad:'1 Yıl!',       aciklama:'1 yıllık üye oldun',            kosul: function(s){ return s.uyeAy >= 12; } },
+  { id:'efsane',     icon:'👑', ad:'Efsane',       aciklama:'Tüm rozetleri kazandın',        kosul: function(s){ return s.rozetSayisi >= 7; } },
+];
+
+async function rozetseriYukle() {
+  var { data: { user } } = await sb.auth.getUser();
+  if (!user) return;
+
+  var [msgRes, bulusmaRes, orgRes, davetRes, cevapRes, profRes] = await Promise.all([
+    sb.from('mesajlar').select('id', {count:'exact',head:true}).eq('kullanici_id', user.id),
+    sb.from('bulusma_katilimcilar').select('bulusma_id', {count:'exact',head:true}).eq('kullanici_id', user.id),
+    sb.from('bulusmalar').select('id', {count:'exact',head:true}).eq('olusturan', user.id),
+    sb.from('davet_kodlari').select('id', {count:'exact',head:true}).eq('olusturan', user.id).eq('kullanildi', true),
+    sb.from('cevaplar').select('id', {count:'exact',head:true}).eq('kullanici_id', user.id),
+    sb.from('profiles').select('created_at').eq('id', user.id).single()
+  ]);
+
+  var uyeAy = profRes.data ? Math.floor((Date.now() - new Date(profRes.data.created_at).getTime()) / (1000*60*60*24*30)) : 0;
+
+  var istatistik = {
+    mesajSayisi:   msgRes.count || 0,
+    bulusmaSayisi: bulusmaRes.count || 0,
+    orgSayisi:     orgRes.count || 0,
+    davetSayisi:   davetRes.count || 0,
+    cevapSayisi:   cevapRes.count || 0,
+    uyeAy:         uyeAy,
+    rozetSayisi:   0
+  };
+
+  // İlk geçişte rozetSayisi'ni hesapla (efsane hariç)
+  istatistik.rozetSayisi = TUM_ROZETLER.slice(0,-1).filter(function(r){ return r.kosul(istatistik); }).length;
+
+  var checkSvg = '<svg viewBox="0 0 10 10" fill="none"><path d="M2 5l2.5 2.5 3.5-4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+
+  var kazanilanlar = TUM_ROZETLER.filter(function(r){ return r.kosul(istatistik); });
+  var kilitliler   = TUM_ROZETLER.filter(function(r){ return !r.kosul(istatistik); });
+
+  var grid = document.getElementById('rozet-gercek-grid');
+  var sayi = document.getElementById('rozet-sayi-text');
+
+  if (sayi) sayi.textContent = kazanilanlar.length + ' / ' + TUM_ROZETLER.length + ' rozet kazandın';
+
+  if (!grid) return;
+  grid.innerHTML =
+    (kazanilanlar.length ? '<div class="sec-head" style="margin-top:0;">Kazanılanlar</div><div class="rozet-grid" style="margin-bottom:24px;">' +
+      kazanilanlar.map(function(r){
+        return '<div class="rozet-item earned">' +
+          '<div class="rozet-icon">' + r.icon + '<div class="rozet-check">' + checkSvg + '</div></div>' +
+          '<div class="rozet-name">' + r.ad + '</div>' +
+          '<div class="rozet-desc">' + r.aciklama + '</div>' +
+        '</div>';
+      }).join('') + '</div>' : '') +
+    (kilitliler.length ? '<div class="sec-head">Kilitli</div><div class="rozet-grid">' +
+      kilitliler.map(function(r){
+        return '<div class="rozet-item locked">' +
+          '<div class="rozet-icon">' + r.icon + '</div>' +
+          '<div class="rozet-name">' + r.ad + '</div>' +
+          '<div class="rozet-desc">' + r.aciklama + '</div>' +
+        '</div>';
+      }).join('') + '</div>' : '');
+}
+
+
 var RUTBELER = [
   { min: 0,   max: 1,   id: 'yeni',   label: '🌱 Filiz',  cls: 'rank-yeni',   aciklama: 'Topluluğa yeni katıldın' },
   { min: 1,   max: 6,   id: 'uye',    label: '🌿 Üye',    cls: 'rank-uye',    aciklama: 'Topluluğun bir parçasısın' },
@@ -3770,7 +3905,7 @@ navTo = function(id) {
   if (id === 'library') kanallariYukle();
   if (id === 'bugun')   gunuSorusunuYukle();
   if (id === 'meet')    { if (isPrem) buslusmalariYukle(); }
-  if (id === 'rozetler' && aktifKullanici) rutbeGoster(aktifKullanici.created_at);
+  if (id === 'rozetler' && aktifKullanici) { rutbeGoster(aktifKullanici.created_at); rozetseriYukle(); }
 };
 </script>
 
