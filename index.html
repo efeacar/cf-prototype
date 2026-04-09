@@ -1712,6 +1712,34 @@ select.inp {
         </div>
       </div>
 
+      <!-- BULUŞMA DÜZENLE -->
+      <div class="sc" id="sc-bulusma-duzenle">
+        <div class="page-header" style="display:flex;align-items:center;gap:14px;">
+          <button onclick="navTo('meetdetay')" style="background:none;border:none;cursor:pointer;font-size:20px;color:var(--text2);padding:0;">←</button>
+          <div class="page-title">Buluşmayı Düzenle</div>
+        </div>
+        <div class="page-body">
+          <div class="field"><label class="inp-label">Başlık</label><input id="d-baslik" class="inp" placeholder="Brunch, piknik, kahve..."></div>
+          <div class="field"><label class="inp-label">Açıklama</label><textarea id="d-aciklama" class="inp" rows="3" style="resize:vertical;height:90px;"></textarea></div>
+          <div class="two-col">
+            <div class="field"><label class="inp-label">Tarih</label><input id="d-tarih" class="inp" type="date"></div>
+            <div class="field"><label class="inp-label">Saat</label><input id="d-saat" class="inp" type="time"></div>
+          </div>
+          <div class="field">
+            <label class="inp-label">Konum</label>
+            <div style="position:relative;">
+              <input id="d-konum" class="inp" placeholder="Konum ara..." autocomplete="off" oninput="konumAraD(this.value)">
+              <div id="d-konum-oneriler" style="display:none;position:absolute;top:100%;left:0;right:0;background:var(--light);border:0.5px solid var(--border);border-radius:10px;box-shadow:0 4px 20px rgba(44,26,14,.12);z-index:50;max-height:200px;overflow-y:auto;margin-top:4px;"></div>
+            </div>
+          </div>
+          <div id="d-error" style="display:none;background:#FAECE7;color:#993C1D;border:1px solid #f5c4b3;border-radius:10px;padding:12px 16px;margin-bottom:14px;font-size:13px;font-weight:500;"></div>
+          <div style="display:flex;gap:10px;">
+            <button class="btn-accent" onclick="bulusmayiGuncelle()" id="d-btn" style="flex:1;">Değişiklikleri Kaydet</button>
+            <button onclick="bulusmaySil()" style="padding:14px 16px;background:transparent;color:#E24B4A;border:0.5px solid rgba(226,75,74,.3);border-radius:10px;font-family:'Montserrat',sans-serif;font-size:13px;font-weight:600;cursor:pointer;">Sil</button>
+          </div>
+        </div>
+      </div>
+
       <!-- BULUŞMA DETAY -->
       <div class="sc" id="sc-meetdetay">
         <div class="page-header" style="display:flex;align-items:center;gap:14px;">
@@ -1757,6 +1785,7 @@ select.inp {
             <div style="font-size:12px;color:var(--text2);font-weight:600;margin-bottom:8px;">Katılımcılar</div>
             <div id="detay-katilimcilar" style="display:flex;flex-wrap:wrap;gap:4px;margin-bottom:20px;"></div>
             <button class="btn-accent" id="join-btn" onclick="katilToggle()" style="max-width:280px;">Katıl</button>
+            <button id="duzenle-btn" onclick="bulusmaDuzenleAc()" style="display:none;margin-top:10px;max-width:280px;width:100%;padding:12px;background:var(--dark);color:#F0E8DC;border:none;border-radius:10px;font-family:'Montserrat',sans-serif;font-size:13px;font-weight:600;cursor:pointer;">✏️ Buluşmayı Düzenle</button>
             <button onclick="showFeatureModal()" style="margin-top:10px;max-width:280px;display:block;width:100%;padding:12px;background:transparent;color:var(--accent);border:1.5px solid var(--accent);border-radius:10px;font-family:'Montserrat',sans-serif;font-size:13px;font-weight:600;cursor:pointer;" id="feature-btn">⭐ Bu Buluşmayı Öne Çıkar</button>
             <div style="font-size:12px;color:var(--text2);margin-top:10px;">Topluluk kurallarını kabul etmiş sayılırsın</div>
           </div>
@@ -2072,12 +2101,13 @@ var isDark = false;
 
 /* ── ROUTING ── */
 var AUTH_SCREENS = ['login','giris-form','reg1','reg2'];
-var APP_SCREENS  = ['home','bugun','library','channel','meet','meetdetay','bulusma-olustur','conn','kesf','profile','rozetler','hesabim','profil-duzenle'];
-var NAV_MAP = { home:'nav-home', 'bulusma-olustur':'nav-meet', library:'nav-library', channel:'nav-library', meet:'nav-meet', meetdetay:'nav-meet', conn:'nav-conn', kesf:'nav-kesf', profile:'nav-profile', rozetler:'nav-rozetler', hesabim:'nav-hesabim' };
+var APP_SCREENS  = ['home','bugun','library','channel','meet','meetdetay','bulusma-olustur','bulusma-duzenle','conn','kesf','profile','rozetler','hesabim','profil-duzenle'];
+var NAV_MAP = { home:'nav-home', 'bulusma-olustur':'nav-meet', 'bulusma-duzenle':'nav-meet', library:'nav-library', channel:'nav-library', meet:'nav-meet', meetdetay:'nav-meet', conn:'nav-conn', kesf:'nav-kesf', profile:'nav-profile', rozetler:'nav-rozetler', hesabim:'nav-hesabim' };
 
 var MOBILE_NAV_MAP = {
   'profil-duzenle': 'mni-profile',
   'bulusma-olustur': 'mni-meet',
+  'bulusma-duzenle': 'mni-meet',
   home: 'mni-home',
   bugun: 'mni-home',
   library: 'mni-library',
@@ -2091,6 +2121,7 @@ var MOBILE_NAV_MAP = {
   hesabim: 'mni-profile',
   'profil-duzenle': 'mni-profile',
   'bulusma-olustur': 'mni-meet',
+  'bulusma-duzenle': 'mni-meet',
 };
 
 function go(id) {
@@ -2945,6 +2976,98 @@ function konumSifirla() {
 }
 
 
+/* ── BULUŞMA DÜZENLE ── */
+var duzenleKonumTimeout = null;
+var duzenleKonumLat = null;
+var duzenleKonumLng = null;
+var duzenleKonumTam = null;
+
+function konumAraD(query) {
+  clearTimeout(duzenleKonumTimeout);
+  var onerilerEl = document.getElementById('d-konum-oneriler');
+  if (!query || query.length < 3) { if (onerilerEl) onerilerEl.style.display='none'; return; }
+  duzenleKonumTimeout = setTimeout(async function() {
+    var res = await fetch('https://nominatim.openstreetmap.org/search?format=json&q=' + encodeURIComponent(query) + '&countrycodes=tr&limit=5&accept-language=tr');
+    var results = await res.json();
+    if (!onerilerEl || !results.length) { if(onerilerEl) onerilerEl.style.display='none'; return; }
+    window._dKonumSonuclari = results;
+    onerilerEl.innerHTML = results.map(function(r, i) {
+      var ad = r.display_name.split(',').slice(0,3).join(',');
+      return '<div onclick="konumSecD(' + i + ')" style="padding:12px 14px;cursor:pointer;font-size:13px;color:var(--text);border-bottom:0.5px solid var(--border);" onmouseover="this.style.background=\'var(--surface)\'" onmouseout="this.style.background=\'\'">📍 ' + ad + '</div>';
+    }).join('');
+    onerilerEl.style.display = 'block';
+  }, 400);
+}
+
+function konumSecD(idx) {
+  var r = window._dKonumSonuclari[idx];
+  if (!r) return;
+  duzenleKonumLat = parseFloat(r.lat);
+  duzenleKonumLng = parseFloat(r.lon);
+  duzenleKonumTam = r.display_name;
+  var inp = document.getElementById('d-konum');
+  var oneriler = document.getElementById('d-konum-oneriler');
+  if (inp) inp.value = r.display_name.split(',').slice(0,2).join(',').trim();
+  if (oneriler) oneriler.style.display = 'none';
+}
+
+async function bulusmaDuzenleAc() {
+  if (!aktifBulusmaId) return;
+  navTo('bulusma-duzenle');
+  var { data: b } = await sb.from('bulusmalar').select('*').eq('id', aktifBulusmaId).single();
+  if (!b) return;
+  var tarihObj = b.tarih ? new Date(b.tarih) : null;
+  var tarihStr = tarihObj ? tarihObj.toISOString().split('T')[0] : '';
+  var saatStr  = tarihObj ? tarihObj.toTimeString().slice(0,5) : '';
+  document.getElementById('d-baslik').value   = b.baslik   || '';
+  document.getElementById('d-aciklama').value = b.aciklama || '';
+  document.getElementById('d-tarih').value    = tarihStr;
+  document.getElementById('d-saat').value     = saatStr;
+  document.getElementById('d-konum').value    = b.konum_tam ? b.konum_tam.split(',').slice(0,2).join(',').trim() : (b.konum || '');
+  duzenleKonumLat = b.konum_lat;
+  duzenleKonumLng = b.konum_lng;
+  duzenleKonumTam = b.konum_tam;
+}
+
+async function bulusmayiGuncelle() {
+  if (!aktifBulusmaId) return;
+  var baslik   = document.getElementById('d-baslik');
+  var aciklama = document.getElementById('d-aciklama');
+  var tarih    = document.getElementById('d-tarih');
+  var saat     = document.getElementById('d-saat');
+  var konum    = document.getElementById('d-konum');
+  var errEl    = document.getElementById('d-error');
+  var btn      = document.getElementById('d-btn');
+  errEl.style.display = 'none';
+  if (!baslik.value.trim()) { errEl.textContent = 'Başlık zorunlu.'; errEl.style.display='block'; return; }
+  btn.textContent = 'Kaydediliyor...'; btn.disabled = true;
+  var tarihZaman = tarih.value ? tarih.value + (saat.value ? 'T' + saat.value : 'T12:00') + ':00' : null;
+  var { error } = await sb.from('bulusmalar').update({
+    baslik:    baslik.value.trim(),
+    aciklama:  aciklama.value.trim(),
+    tarih:     tarihZaman,
+    konum:     konum.value.trim(),
+    konum_tam: duzenleKonumTam,
+    konum_lat: duzenleKonumLat,
+    konum_lng: duzenleKonumLng
+  }).eq('id', aktifBulusmaId);
+  btn.textContent = 'Değişiklikleri Kaydet'; btn.disabled = false;
+  if (error) { errEl.textContent = 'Hata: ' + error.message; errEl.style.display='block'; return; }
+  navTo('meetdetay');
+  bulusmaDetayYukle(aktifBulusmaId);
+  buslusmalariYukle();
+}
+
+async function bulusmaySil() {
+  if (!aktifBulusmaId) return;
+  if (!confirm('Bu buluşmayı silmek istediğinden emin misin?')) return;
+  await sb.from('bulusma_katilimcilar').delete().eq('bulusma_id', aktifBulusmaId);
+  await sb.from('bulusmalar').delete().eq('id', aktifBulusmaId);
+  aktifBulusmaId = null;
+  navTo('meet');
+  buslusmalariYukle();
+}
+
 var aktifBulusmaId = null;
 
 async function buslusmalariYukle() {
@@ -2989,8 +3112,9 @@ async function buslusmalariYukle() {
     var sayi  = katilimSayisi[b.id] || 0;
     var renkler = ['#2C1A0E','#C1491E','#1D9E75','#185FA5','#7A5C42'];
     var renk = renkler[(b.baslik.charCodeAt(0) || 0) % renkler.length];
-    var thumbnail = b.resim_url
-      ? '<img src="' + b.resim_url + '" style="width:100%;height:130px;object-fit:cover;display:block;">'
+    var kapakUrl = b.resim_url || (b.resimler && b.resimler.length > 0 ? b.resimler[0] : null);
+    var thumbnail = kapakUrl
+      ? '<img src="' + kapakUrl + '" style="width:100%;height:140px;object-fit:cover;display:block;" onerror="this.parentElement.innerHTML=\'<div style=\"width:100%;height:100px;background:' + renk + ';display:flex;align-items:center;justify-content:center;\"><span style=\"font-size:28px;opacity:.25;\">📅</span></div>\';">'
       : '<div style="width:100%;height:100px;background:' + renk + ';display:flex;align-items:center;justify-content:center;"><span style="font-size:28px;opacity:.25;">📅</span></div>';
 
     if (b.one_cikan) {
@@ -3029,13 +3153,13 @@ function bulusmaDetayAc(id) {
 async function bulusmaDetayYukle(id) {
   var { data: b } = await sb
     .from('bulusmalar')
-    .select('*, olusturan:profiles!bulusmalar_olusturan_fkey(ad), bulusma_katilimcilar(kullanici_id, katilimci:profiles!bulusma_katilimcilar_kullanici_id_fkey(ad))')
+    .select('*, olusturan, olusturan_profil:profiles!bulusmalar_olusturan_fkey(ad), bulusma_katilimcilar(kullanici_id, katilimci:profiles!bulusma_katilimcilar_kullanici_id_fkey(ad))')
     .eq('id', id)
     .single();
 
   if (!b) return;
 
-  var host  = b.olusturan ? (b.olusturan.ad || 'Üye') : 'Üye';
+  var host  = b.olusturan_profil ? (b.olusturan_profil.ad || 'Üye') : 'Üye';
   var tarih = b.tarih ? new Date(b.tarih).toLocaleDateString('tr-TR', {weekday:'long', day:'numeric', month:'long', hour:'2-digit', minute:'2-digit'}) : '';
 
   var titleEl  = document.getElementById('detay-baslik');
@@ -3102,7 +3226,7 @@ async function bulusmaDetayYukle(id) {
     }).join('');
   }
 
-  // Katılma durumu
+  // Katılma durumu + düzenle butonu
   var { data: { user } } = await sb.auth.getUser();
   if (user && b.bulusma_katilimcilar) {
     var katildi = b.bulusma_katilimcilar.some(function(k){ return k.kullanici_id === user.id; });
@@ -3112,6 +3236,9 @@ async function bulusmaDetayYukle(id) {
       joinBtn.dataset.joined= katildi ? 'true' : 'false';
       joinBtn.style.background = katildi ? 'var(--mid)' : 'var(--accent)';
     }
+    // Düzenle butonunu sadece oluşturana göster
+    var duzenleBtn = document.getElementById('duzenle-btn');
+    if (duzenleBtn) duzenleBtn.style.display = (b.olusturan === user.id) ? 'block' : 'none';
   }
 }
 
