@@ -2735,13 +2735,18 @@ console.log('Supabase bağlandı ✓');
 
 /* ── HATA MESAJI ── */
 function showError(msg) {
+  var card = document.querySelector('.sc.show .auth-card');
+  if (!card) {
+    // Auth ekranı dışında — sessizce console'a yaz
+    console.warn('showError (auth dışı):', msg);
+    return;
+  }
   var el = document.getElementById('auth-error');
   if (!el) {
     el = document.createElement('div');
     el.id = 'auth-error';
     el.style.cssText = 'background:#FAECE7;color:#993C1D;border:1px solid #f5c4b3;border-radius:10px;padding:12px 16px;margin-bottom:14px;font-size:13px;font-weight:500;';
-    var card = document.querySelector('.sc.show .auth-card');
-    if (card) card.insertBefore(el, card.firstChild);
+    card.insertBefore(el, card.firstChild);
   }
   el.textContent = msg;
   el.style.display = 'block';
@@ -5110,12 +5115,14 @@ async function tumunuOku() {
 
 async function okunmamisSay() {
   if (!aktifKullanici) return;
-  var { count } = await sb.from('bildirimler')
-    .select('id', { count: 'exact', head: true })
-    .eq('kullanici_id', aktifKullanici.id)
-    .eq('okundu', false);
-  var dot = document.getElementById('notif-dot');
-  if (dot) dot.style.display = (count && count > 0) ? 'block' : 'none';
+  try {
+    var { count } = await sb.from('bildirimler')
+      .select('id', { count: 'exact', head: true })
+      .eq('kullanici_id', aktifKullanici.id)
+      .eq('okundu', false);
+    var dot = document.getElementById('notif-dot');
+    if (dot) dot.style.display = (count && count > 0) ? 'block' : 'none';
+  } catch(e) { /* bildirimler tablosu henüz yok */ }
 }
 
 async function bildirimGonder(kullaniciId, tur, metin, link) {
@@ -5129,15 +5136,21 @@ async function bildirimGonder(kullaniciId, tur, metin, link) {
 }
 
 function bildirimDinle(userId) {
-  sb.channel('bildirimler-' + userId)
-    .on('postgres_changes', {
-      event: 'INSERT', schema: 'public', table: 'bildirimler',
-      filter: 'kullanici_id=eq.' + userId
-    }, function() {
-      okunmamisSay();
-      if (notifPanelAcik) bildirimleriYukle();
-    })
-    .subscribe();
+  try {
+    sb.channel('bildirimler-' + userId)
+      .on('postgres_changes', {
+        event: 'INSERT', schema: 'public', table: 'bildirimler',
+        filter: 'kullanici_id=eq.' + userId
+      }, function() {
+        okunmamisSay();
+        if (notifPanelAcik) bildirimleriYukle();
+      })
+      .subscribe(function(status, err) {
+        if (err) console.warn('Bildirim realtime:', err.message);
+      });
+  } catch(e) {
+    console.warn('bildirimDinle hatası:', e.message);
+  }
 }
 
 async function adminKanallarYukle() {
