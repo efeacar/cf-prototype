@@ -2826,16 +2826,16 @@ async function girisYap() {
 
 /* ── OTURUM KONTROL ── */
 sb.auth.onAuthStateChange(async function(event, session) {
-  if (session && session.user) {
+  if (event === 'SIGNED_IN' && session && session.user) {
     var currentSc = document.querySelector('.sc.show');
     var authScreens = ['sc-login','sc-giris-form','sc-reg1','sc-reg2'];
     var isOnAuth = !currentSc || authScreens.includes(currentSc.id);
     if (isOnAuth) {
+      await kullaniciBilgisiYukle(session.user.id);
+      gunuSorusunuYukle();
       var sonSayfa = localStorage.getItem('aktifSayfa') || 'home';
       go(sonSayfa);
     }
-    kullaniciBilgisiYukle(session.user.id);
-    gunuSorusunuYukle();
   }
 });
 
@@ -2843,10 +2843,17 @@ sb.auth.onAuthStateChange(async function(event, session) {
 (async function() {
   var { data: { session } } = await sb.auth.getSession();
   if (session && session.user) {
-    var sonSayfa = localStorage.getItem('aktifSayfa') || 'home';
-    go(sonSayfa);
+    // Önce kullanıcı verisini yükle, sonra sayfaya git
     await kullaniciBilgisiYukle(session.user.id);
     gunuSorusunuYukle();
+    var sonSayfa = localStorage.getItem('aktifSayfa') || 'home';
+    go(sonSayfa);
+    // Sayfaya özel veri yükleme (navTo override'ı tetikle)
+    if (sonSayfa === 'conn')    baglantilarYukle();
+    if (sonSayfa === 'admin')   adminPanelYukle();
+    if (sonSayfa === 'library') kanallariYukle();
+    if (sonSayfa === 'meet' && isPrem) buslusmalariYukle();
+    if (sonSayfa === 'rozetler' && aktifKullanici) { rutbeGoster(aktifKullanici.created_at); rozetseriYukle(); rozetKademeleriYukle(); }
   }
 })();
 
