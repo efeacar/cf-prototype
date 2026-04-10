@@ -2330,7 +2330,7 @@ select.inp {
 </div><!-- /app-shell -->
 
 <!-- ÖNE ÇIKAR MODAL -->
-<div class="modal-bg" id="feature-modal" onclick="if(event.target===this)hideFeatureModal()">
+<div class="modal-bg" id="feature-modal" onclick="if(event.target===this)hideFeatureModal()" style="display:none;">
   <div class="modal">
     <div class="modal-title">Buluşmayı Öne Çıkar</div>
     <div class="modal-sub">Buluşman tüm üyelerin ana sayfasında ve listenin en üstünde görünür.</div>
@@ -2609,8 +2609,8 @@ function toggleJoin(btn) {
   btn.style.background = j ? 'var(--accent)' : 'var(--mid)';
 }
 
-function showFeatureModal() { document.getElementById('feature-modal').classList.add('show'); }
-function hideFeatureModal() { document.getElementById('feature-modal').classList.remove('show'); }
+function showFeatureModal() { document.getElementById('feature-modal').style.display = 'flex'; }
+function hideFeatureModal() { document.getElementById('feature-modal').style.display = 'none'; }
 
 function selPlan(el) {
   el.closest('.price-row').querySelectorAll('.price-opt').forEach(o=>o.classList.remove('sel'));
