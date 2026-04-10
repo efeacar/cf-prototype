@@ -1237,6 +1237,36 @@ select.inp {
   max-width: 100%;
 }
 
+/* ── LOADING OVERLAY ── */
+#app-loading {
+  position: fixed; inset: 0;
+  background: var(--bg);
+  display: flex; align-items: center; justify-content: center;
+  z-index: 9999;
+  transition: opacity .25s;
+}
+#app-loading.hide { opacity: 0; pointer-events: none; }
+
+/* ── MOBİL DÜZELTMELER ── */
+@media (max-width: 768px) {
+  /* Header sabit */
+  .topbar { position: fixed; top: 0; left: 0; right: 0; z-index: 100; }
+  /* App body başlangıcı header altından */
+  .app-body { padding-top: var(--top-h); }
+  /* Main scroll */
+  .main { height: calc(100vh - var(--top-h) - 58px); overflow-y: auto; }
+  /* Notification panel mobile */
+  #notif-panel { width: calc(100vw - 24px); right: 12px; }
+  /* Channel layout mobile tam ekran */
+  .channel-layout { height: calc(100vh - var(--top-h) - 58px); }
+  .channel-main { height: 100%; }
+  .ch-msgs { flex: 1; }
+  /* Stat grid mobile */
+  #admin-istatistikler { grid-template-columns: repeat(2,1fr); }
+  /* Premium toggle topbar */
+  #topbar-prem-toggle button { font-size: 10px; padding: 5px 8px; }
+}
+
 @media (max-width: 768px) {
   :root { --nav-w: 0px; }
   .sidebar { display: none; }
@@ -1269,11 +1299,18 @@ select.inp {
 </style>
 </head>
 <body>
+<!-- YÜKLEME EKRANI — flash önlemek için -->
+<div id="app-loading">
+  <div style="text-align:center;">
+    <div style="font-size:24px;font-weight:800;color:var(--text);letter-spacing:-1px;margin-bottom:6px;">childfree</div>
+    <div style="font-size:9px;letter-spacing:4px;color:var(--text2);text-transform:uppercase;">türkiye</div>
+  </div>
+</div>
 
 <!-- ══════════════════════════════
      AUTH — GİRİŞ
 ══════════════════════════════ -->
-<div id="sc-login" class="sc show auth-wrap">
+<div id="sc-login" class="sc auth-wrap" style="display:none;">
   <div class="auth-box">
     <div class="auth-logo">
       <span class="logo-main">childfree</span>
@@ -1885,6 +1922,52 @@ select.inp {
           <div class="sec-head" style="margin-top:20px;">Keşfet — Topluluktan Üyeler</div>
           <div id="uye-kesif-list">
             <div style="color:var(--text2);font-size:13px;padding:12px 0;">Yükleniyor...</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- DİREKT MESAJLAR -->
+      <div class="sc" id="sc-dm">
+        <div class="page-body wide" style="padding:0;">
+          <div class="channel-layout">
+            <!-- Sol: Konuşma listesi -->
+            <div class="channel-list" id="dm-list-panel">
+              <div class="cl-header">
+                <div class="cl-title">Mesajlar</div>
+                <div class="cl-sub">Bağlantılarınla özel sohbet</div>
+              </div>
+              <div id="dm-konusma-list">
+                <div style="padding:20px;color:var(--text2);font-size:13px;">Yükleniyor...</div>
+              </div>
+            </div>
+            <!-- Sağ: Aktif sohbet -->
+            <div class="channel-main" id="dm-chat-panel" style="display:flex;flex-direction:column;">
+              <!-- Sohbet yok durumu -->
+              <div id="dm-bos" style="flex:1;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:12px;color:var(--text2);">
+                <div style="font-size:40px;">💬</div>
+                <div style="font-size:14px;font-weight:600;color:var(--text);">Mesaj seç veya yeni başlat</div>
+                <div style="font-size:12px;color:var(--text2);">Bağlantıların buradan görünür</div>
+              </div>
+              <!-- Aktif sohbet -->
+              <div id="dm-aktif" style="display:none;flex-direction:column;height:100%;">
+                <div class="ch-top" id="dm-chat-header">
+                  <div id="dm-chat-av" style="width:36px;height:36px;border-radius:50%;background:var(--surface);display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;color:var(--text2);flex-shrink:0;overflow:hidden;"></div>
+                  <div>
+                    <div class="ch-top-title" id="dm-chat-ad">Sohbet</div>
+                    <div class="ch-top-sub" id="dm-chat-sub">Direkt mesaj</div>
+                  </div>
+                  <!-- Mobilde geri butonu -->
+                  <button onclick="dmListeyeDon()" style="display:none;margin-left:auto;background:none;border:none;cursor:pointer;font-size:20px;color:var(--text2);padding:0;" id="dm-geri-btn">←</button>
+                </div>
+                <div class="ch-msgs" id="dm-msgs"></div>
+                <div class="ch-input-row">
+                  <input class="ch-inp" id="dm-inp" placeholder="Mesaj yaz..." onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();dmGonder();}">
+                  <button class="ch-send" onclick="dmGonder()">
+                    <svg viewBox="0 0 18 18" fill="none"><path d="M2 9l14-6-6 14-2-6-6-2z" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/></svg>
+                  </button>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
       </div>
@@ -2517,6 +2600,7 @@ select.inp {
       <!-- Butonlar -->
       <div style="display:flex;gap:8px;margin-bottom:8px;">
         <button class="btn-accent" onclick="baglantiIstegiGonder()" id="pm-baglanti-btn" style="flex:1;padding:12px;">+ Bağlantı Kur</button>
+        <button id="pm-dm-btn" onclick="dmModalAc()" style="display:none;padding:12px 16px;background:var(--surface);color:var(--text);border:0.5px solid var(--border);border-radius:10px;font-family:'Montserrat',sans-serif;font-size:13px;font-weight:600;cursor:pointer;">💬</button>
         <button id="pm-rep-btn" onclick="repVer()" style="padding:12px 16px;background:rgba(232,200,74,.12);color:#8B6914;border:1px solid rgba(232,200,74,.3);border-radius:10px;font-family:'Montserrat',sans-serif;font-size:13px;font-weight:600;cursor:pointer;transition:all .15s;">⚡ Rep</button>
         <button id="pm-admin-btn" onclick="adminModAc()" style="display:none;padding:12px 16px;background:var(--surface);color:var(--text);border:0.5px solid var(--border);border-radius:10px;font-family:'Montserrat',sans-serif;font-size:13px;font-weight:600;cursor:pointer;">⚙️ Rol</button>
       </div>
@@ -2541,8 +2625,8 @@ var isDark = false;
 
 /* ── ROUTING ── */
 var AUTH_SCREENS = ['login','giris-form','reg1','reg2'];
-var APP_SCREENS  = ['home','bugun','library','channel','meet','meetdetay','bulusma-olustur','bulusma-duzenle','conn','kesf','profile','rozetler','hesabim','profil-duzenle','admin'];
-var NAV_MAP = { home:'nav-home', 'bulusma-olustur':'nav-meet', 'bulusma-duzenle':'nav-meet', library:'nav-library', channel:'nav-library', meet:'nav-meet', meetdetay:'nav-meet', conn:'nav-conn', kesf:'nav-kesf', profile:'nav-profile', rozetler:'nav-rozetler', hesabim:'nav-hesabim', admin:'nav-admin' };
+var APP_SCREENS  = ['home','bugun','library','channel','meet','meetdetay','bulusma-olustur','bulusma-duzenle','conn','dm','kesf','profile','rozetler','hesabim','profil-duzenle','admin'];
+var NAV_MAP = { home:'nav-home', 'bulusma-olustur':'nav-meet', 'bulusma-duzenle':'nav-meet', library:'nav-library', channel:'nav-library', meet:'nav-meet', meetdetay:'nav-meet', conn:'nav-conn', dm:'nav-conn', kesf:'nav-kesf', profile:'nav-profile', rozetler:'nav-rozetler', hesabim:'nav-hesabim', admin:'nav-admin' };
 
 var MOBILE_NAV_MAP = {
   'profil-duzenle': 'mni-profile',
@@ -2555,6 +2639,7 @@ var MOBILE_NAV_MAP = {
   meet: 'mni-meet',
   meetdetay: 'mni-meet',
   conn: 'mni-conn',
+  dm: 'mni-conn',
   kesf: 'mni-profile',
   profile: 'mni-profile',
   rozetler: 'mni-profile',
@@ -2573,9 +2658,12 @@ function go(id) {
 
   if (isAuth) {
     document.getElementById('app-shell').classList.remove('show');
-    document.getElementById('sc-' + id).classList.add('show');
+    var authEl = document.getElementById('sc-' + id);
+    if (authEl) { authEl.style.display = 'flex'; authEl.classList.add('show'); }
   } else if (isApp) {
     document.getElementById('app-shell').classList.add('show');
+    // Hide all auth screens
+    AUTH_SCREENS.forEach(function(a){ var el=document.getElementById('sc-'+a); if(el) el.style.display='none'; });
     var el = document.getElementById('sc-' + id);
     if (el) el.classList.add('show');
     updateNav(id);
@@ -2943,12 +3031,21 @@ sb.auth.onAuthStateChange(async function(event, session) {
     gunuSorusunuYukle();
     var sonSayfa = localStorage.getItem('aktifSayfa') || 'home';
     go(sonSayfa);
-    // Sayfaya özel veri yükleme (navTo override'ı tetikle)
     if (sonSayfa === 'conn')    baglantilarYukle();
+    if (sonSayfa === 'dm')      dmListeYukle();
     if (sonSayfa === 'admin')   adminPanelYukle();
     if (sonSayfa === 'library') kanallariYukle();
     if (sonSayfa === 'meet' && isPrem) buslusmalariYukle();
     if (sonSayfa === 'rozetler' && aktifKullanici) { rutbeGoster(aktifKullanici.created_at); rozetseriYukle(); rozetKademeleriYukle(); }
+  } else {
+    // Giriş ekranını göster
+    document.getElementById('sc-login').style.display = 'flex';
+  }
+  // Loading overlay'i kaldır
+  var loader = document.getElementById('app-loading');
+  if (loader) {
+    loader.classList.add('hide');
+    setTimeout(function(){ loader.style.display = 'none'; }, 300);
   }
 })();
 
@@ -3050,6 +3147,11 @@ function kullaniciBilgisiGoster(data) {
     var rolCls   = { superadmin: 'role-superadmin', admin: 'role-admin', mod: 'role-mod' };
     rolEl.innerHTML = '<div class="prof-badge ' + (rolCls[data.rol]||'') + '">' + (rolLabel[data.rol]||'') + '</div>';
     rolEl.style.display = 'inline-block';
+  }
+  // Rütbe badge'i admin/superadmin için gizle
+  var rankEl = document.getElementById('prof-rank-badge');
+  if (rankEl) {
+    rankEl.style.display = (data.rol === 'superadmin' || data.rol === 'admin') ? 'none' : 'inline-block';
   }
 
   // Admin sidebar link
@@ -4470,6 +4572,7 @@ navTo = function(id) {
     rozetKademeleriYukle();
   }
   if (id === 'conn')    baglantilarYukle();
+  if (id === 'dm')      dmListeYukle();
   if (id === 'admin')   adminPanelYukle();
 };
 
@@ -4556,11 +4659,13 @@ async function baglantilarYukle() {
         var p = a.diger;
         var ad = p ? (p.ad || 'Üye') : 'Üye';
         var rutbe = p ? rutbeHesapla(p.created_at) : RUTBELER[0];
-        return '<div class="conn-item" onclick="profilGor(\'' + (p ? p.id : '') + '\')" style="cursor:pointer;">' +
-          '<div class="conn-left">' + avatarHtml(p, 40) +
-          '<div><div class="conn-name">' + ad + '</div>' +
-          '<div class="conn-loc">' + (p && p.sehir ? p.sehir : '') + ' · ' + rutbe.label + ' ' + rolBadgeHtml(p && p.rol) + '</div></div></div>' +
-          '<div class="conn-stat" style="font-size:11px;color:var(--text2);">→</div>' +
+        return '<div class="conn-item" style="cursor:pointer;">' +
+          '<div class="conn-left" onclick="profilGor(\'' + (p ? p.id : '') + '\')" style="cursor:pointer;flex:1;">' +
+            avatarHtml(p, 40) +
+            '<div><div class="conn-name">' + ad + '</div>' +
+            '<div class="conn-loc">' + (p && p.sehir ? p.sehir : '') + ' · ' + rutbe.label + ' ' + rolBadgeHtml(p && p.rol) + '</div></div>' +
+          '</div>' +
+          '<button onclick="dmAc(\'' + (p ? p.id : '') + '\',\'' + ad.replace(/'/g,'') + '\',' + JSON.stringify(p && p.avatar_url ? p.avatar_url : null) + ')" style="padding:7px 12px;background:var(--surface);border:0.5px solid var(--border);border-radius:8px;font-family:\'Montserrat\',sans-serif;font-size:12px;font-weight:600;color:var(--text);cursor:pointer;flex-shrink:0;white-space:nowrap;">💬 Mesaj</button>' +
         '</div>';
       }).join('');
     }
@@ -4689,20 +4794,25 @@ async function profilGor(userId) {
 
   // Bağlantı durumu
   var bagBtn = document.getElementById('pm-baglanti-btn');
+  var dmBtn = document.getElementById('pm-dm-btn');
   if (bagBtn && aktifKullanici && userId !== aktifKullanici.id) {
     var { data: mevcut } = await sb.from('arkadasliklar')
       .select('id, durum')
       .or('and(gonderen_id.eq.' + aktifKullanici.id + ',alan_id.eq.' + userId + '),and(gonderen_id.eq.' + userId + ',alan_id.eq.' + aktifKullanici.id + ')')
       .maybeSingle();
+    var baglanti = mevcut && mevcut.durum === 'kabul';
     if (mevcut) {
-      bagBtn.textContent = mevcut.durum === 'kabul' ? '✓ Bağlantısın' : '⏳ İstek Gönderildi';
+      bagBtn.textContent = baglanti ? '✓ Bağlantısın' : '⏳ İstek Gönderildi';
       bagBtn.disabled = true; bagBtn.style.background = 'var(--mid)';
     } else {
       bagBtn.textContent = '+ Bağlantı Kur'; bagBtn.disabled = false; bagBtn.style.background = 'var(--accent)';
     }
     bagBtn.style.display = 'block';
+    // DM butonu sadece bağlı olunca görünür
+    if (dmBtn) dmBtn.style.display = baglanti ? 'block' : 'none';
   } else if (bagBtn) {
     bagBtn.style.display = userId === (aktifKullanici && aktifKullanici.id) ? 'none' : 'block';
+    if (dmBtn) dmBtn.style.display = 'none';
   }
 
   // Rep butonu — kendine gösterme
@@ -4728,6 +4838,181 @@ function adminTimeoutAcModal() {
 function profilModalKapat() {
   var m = document.getElementById('profil-modal');
   if (m) m.style.display = 'none';
+}
+
+/* ══════════════════════════════
+   DİREKT MESAJLAŞMA (DM)
+══════════════════════════════ */
+var aktifDmKullanici = null; // { id, ad, avatar_url }
+var dmSubscription = null;
+
+// Profil modalından DM aç
+function dmModalAc() {
+  var adEl = document.getElementById('pm-ad');
+  var avEl = document.getElementById('pm-av');
+  var avatarUrl = avEl && avEl.querySelector('img') ? avEl.querySelector('img').src : null;
+  var ad = adEl ? adEl.textContent : 'Üye';
+  profilModalKapat();
+  dmAc(goruntulenenProfilId, ad, avatarUrl);
+}
+
+// DM ekranını aç ve sohbeti yükle
+function dmAc(userId, ad, avatarUrl) {
+  if (!userId) return;
+  aktifDmKullanici = { id: userId, ad: ad, avatar_url: avatarUrl };
+  navTo('dm');
+
+  // Liste + chat görünümü
+  var listPanel = document.getElementById('dm-list-panel');
+  var chatPanel = document.getElementById('dm-aktif');
+  var bosPanel  = document.getElementById('dm-bos');
+
+  if (listPanel) listPanel.style.display = '';
+  if (chatPanel) { chatPanel.style.display = 'flex'; chatPanel.style.flexDirection = 'column'; }
+  if (bosPanel)  bosPanel.style.display = 'none';
+
+  // Header
+  var avEl = document.getElementById('dm-chat-av');
+  var adElChat = document.getElementById('dm-chat-ad');
+  if (avEl) {
+    if (avatarUrl) avEl.innerHTML = '<img src="' + avatarUrl + '" style="width:100%;height:100%;object-fit:cover;border-radius:50%;">';
+    else avEl.textContent = (ad || 'U').substring(0,2).toUpperCase();
+  }
+  if (adElChat) adElChat.textContent = ad;
+
+  // Mobilde liste gizle, chat göster
+  if (window.innerWidth <= 768) {
+    if (listPanel) listPanel.style.display = 'none';
+    var geriBtn = document.getElementById('dm-geri-btn');
+    if (geriBtn) geriBtn.style.display = 'block';
+  }
+
+  dmMesajlariYukle(userId);
+  dmListeYukle();
+}
+
+function dmListeyeDon() {
+  aktifDmKullanici = null;
+  var listPanel = document.getElementById('dm-list-panel');
+  var chatPanel = document.getElementById('dm-aktif');
+  var bosPanel  = document.getElementById('dm-bos');
+  if (listPanel) listPanel.style.display = '';
+  if (chatPanel) chatPanel.style.display = 'none';
+  if (bosPanel)  bosPanel.style.display = 'flex';
+  var geriBtn = document.getElementById('dm-geri-btn');
+  if (geriBtn) geriBtn.style.display = 'none';
+}
+
+async function dmListeYukle() {
+  if (!aktifKullanici) return;
+  var myId = aktifKullanici.id;
+
+  // Son DM mesajlarını çek — her benzersiz kişiyle en son mesaj
+  var { data: msgs } = await sb.from('dm_mesajlar')
+    .select('*, gonderen:profiles!dm_mesajlar_gonderen_id_fkey(id, ad, avatar_url), alan:profiles!dm_mesajlar_alan_id_fkey(id, ad, avatar_url)')
+    .or('gonderen_id.eq.' + myId + ',alan_id.eq.' + myId)
+    .order('created_at', { ascending: false })
+    .limit(50);
+
+  var listEl = document.getElementById('dm-konusma-list');
+  if (!listEl) return;
+
+  if (!msgs || msgs.length === 0) {
+    listEl.innerHTML = '<div style="padding:20px;color:var(--text2);font-size:13px;">Henüz mesaj yok.</div>';
+    return;
+  }
+
+  // Her kişiyle sadece en son mesajı göster
+  var konusmalar = {};
+  msgs.forEach(function(m) {
+    var diger = m.gonderen_id === myId ? m.alan : m.gonderen;
+    if (!diger) return;
+    if (!konusmalar[diger.id]) konusmalar[diger.id] = { diger: diger, sonMesaj: m };
+  });
+
+  listEl.innerHTML = Object.values(konusmalar).map(function(k) {
+    var d = k.diger;
+    var m = k.sonMesaj;
+    var zaman = zamanaGore(m.created_at);
+    var metin = m.icerik ? m.icerik.substring(0,40) + (m.icerik.length > 40 ? '...' : '') : '';
+    var aktif = aktifDmKullanici && aktifDmKullanici.id === d.id;
+    return '<div class="cl-item' + (aktif ? ' active' : '') + '" onclick="dmAc(\'' + d.id + '\',\'' + (d.ad||'Üye').replace(/'/g,'') + '\',\'' + (d.avatar_url||'') + '\')" style="gap:10px;">' +
+      avatarHtml(d, 36) +
+      '<div style="flex:1;min-width:0;">' +
+        '<div style="font-size:13px;font-weight:600;' + (aktif ? 'color:#F0E8DC;' : 'color:var(--text);') + '">' + (d.ad||'Üye') + '</div>' +
+        '<div style="font-size:11px;' + (aktif ? 'color:rgba(240,232,220,.5);' : 'color:var(--text2);') + 'overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">' + metin + '</div>' +
+      '</div>' +
+      '<div style="font-size:10px;' + (aktif ? 'color:rgba(240,232,220,.4);' : 'color:var(--text2);') + 'flex-shrink:0;">' + zaman + '</div>' +
+    '</div>';
+  }).join('');
+}
+
+async function dmMesajlariYukle(hedefId) {
+  if (!aktifKullanici || !hedefId) return;
+  var myId = aktifKullanici.id;
+  var msgsEl = document.getElementById('dm-msgs');
+  if (msgsEl) msgsEl.innerHTML = '<div style="color:var(--text2);font-size:13px;padding:20px;">Yükleniyor...</div>';
+
+  var { data } = await sb.from('dm_mesajlar')
+    .select('*, gonderen:profiles!dm_mesajlar_gonderen_id_fkey(ad, avatar_url)')
+    .or('and(gonderen_id.eq.' + myId + ',alan_id.eq.' + hedefId + '),and(gonderen_id.eq.' + hedefId + ',alan_id.eq.' + myId + ')')
+    .order('created_at', { ascending: true })
+    .limit(100);
+
+  if (msgsEl) {
+    if (!data || data.length === 0) {
+      msgsEl.innerHTML = '<div style="color:var(--text2);font-size:13px;padding:20px;">Henüz mesaj yok. İlk mesajı sen at!</div>';
+    } else {
+      msgsEl.innerHTML = data.map(function(m) {
+        var benim = m.gonderen_id === myId;
+        var ad = m.gonderen ? (m.gonderen.ad || 'Üye') : 'Üye';
+        var zaman = new Date(m.created_at).toLocaleTimeString('tr-TR', {hour:'2-digit', minute:'2-digit'});
+        return '<div style="display:flex;flex-direction:column;align-items:' + (benim ? 'flex-end' : 'flex-start') + ';margin-bottom:10px;">' +
+          '<div style="max-width:72%;background:' + (benim ? 'var(--accent)' : 'var(--light)') + ';color:' + (benim ? '#fff' : 'var(--text)') + ';border-radius:' + (benim ? '14px 14px 4px 14px' : '14px 14px 14px 4px') + ';padding:10px 14px;border:0.5px solid ' + (benim ? 'transparent' : 'var(--border)') + ';font-size:14px;line-height:1.5;">' +
+            m.icerik +
+          '</div>' +
+          '<div style="font-size:10px;color:var(--text2);margin-top:3px;padding:0 2px;">' + (benim ? '' : ad + ' · ') + zaman + '</div>' +
+        '</div>';
+      }).join('');
+      msgsEl.scrollTop = msgsEl.scrollHeight;
+    }
+  }
+
+  // Realtime
+  if (dmSubscription) dmSubscription.unsubscribe();
+  var kanalAd = [myId, hedefId].sort().join('-');
+  dmSubscription = sb.channel('dm-' + kanalAd)
+    .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'dm_mesajlar' },
+      function(payload) {
+        var m = payload.new;
+        var ilgili = (m.gonderen_id === myId && m.alan_id === hedefId) || (m.gonderen_id === hedefId && m.alan_id === myId);
+        if (!ilgili || !msgsEl) return;
+        var benim = m.gonderen_id === myId;
+        var zaman = new Date(m.created_at).toLocaleTimeString('tr-TR', {hour:'2-digit', minute:'2-digit'});
+        var div = document.createElement('div');
+        div.style.cssText = 'display:flex;flex-direction:column;align-items:' + (benim ? 'flex-end' : 'flex-start') + ';margin-bottom:10px;';
+        div.innerHTML = '<div style="max-width:72%;background:' + (benim ? 'var(--accent)' : 'var(--light)') + ';color:' + (benim ? '#fff' : 'var(--text)') + ';border-radius:' + (benim ? '14px 14px 4px 14px' : '14px 14px 14px 4px') + ';padding:10px 14px;border:0.5px solid ' + (benim ? 'transparent' : 'var(--border)') + ';font-size:14px;line-height:1.5;">' + m.icerik + '</div>' +
+          '<div style="font-size:10px;color:var(--text2);margin-top:3px;">' + zaman + '</div>';
+        msgsEl.appendChild(div);
+        msgsEl.scrollTop = msgsEl.scrollHeight;
+        dmListeYukle();
+      }
+    ).subscribe();
+}
+
+async function dmGonder() {
+  var inp = document.getElementById('dm-inp');
+  if (!inp || !inp.value.trim() || !aktifKullanici || !aktifDmKullanici) return;
+  var icerik = inp.value.trim();
+  inp.value = '';
+  await sb.from('dm_mesajlar').insert({
+    gonderen_id: aktifKullanici.id,
+    alan_id: aktifDmKullanici.id,
+    icerik: icerik
+  });
+  // Alana bildirim gönder
+  await bildirimGonder(aktifDmKullanici.id, 'yeni_mesaj',
+    (aktifKullanici.ad || 'Biri') + ' sana mesaj gönderdi 💬', 'dm');
 }
 
 async function baglantiIstegiGonder() {
