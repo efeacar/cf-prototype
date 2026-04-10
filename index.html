@@ -2191,43 +2191,101 @@ select.inp {
     </div><!-- /main -->
 
       <!-- ADMİN PANELİ -->
-      <div class="sc" id="sc-admin" style="display:none;">
+      <div class="sc" id="sc-admin">
         <div class="page-header">
           <div class="page-title">⚙️ Admin Paneli</div>
-          <div class="page-sub">Topluluk yönetimi ve moderasyon araçları.</div>
+          <div class="page-sub" id="admin-rol-label">Yükleniyor...</div>
         </div>
-        <div class="page-body">
-          <div class="sec-head">Kullanıcı Yönetimi</div>
-          <div id="admin-kullanicilar-list">
-            <div style="color:var(--text2);font-size:13px;">Yükleniyor...</div>
-          </div>
+        <div class="page-body" style="max-width:900px;">
 
-          <div class="sec-head" style="margin-top:24px;">Kanallar</div>
-          <button onclick="adminKanalAc()" style="margin-bottom:14px;padding:10px 18px;background:var(--accent);color:#fff;border:none;border-radius:8px;font-family:'Montserrat',sans-serif;font-size:13px;font-weight:600;cursor:pointer;">+ Yeni Kanal Ekle</button>
-          <div id="admin-kanallar-list">
-            <div style="color:var(--text2);font-size:13px;">Yükleniyor...</div>
-          </div>
-
-          <div class="sec-head" style="margin-top:24px;">Günün Sorusu</div>
-          <div class="field"><label class="inp-label">Yeni Soru</label><input id="admin-soru-inp" class="inp" placeholder="Soruyu buraya yaz..."></div>
-          <div class="field"><label class="inp-label">Bitiş Zamanı</label><input id="admin-soru-bitis" class="inp" type="datetime-local"></div>
-          <button onclick="adminSoruYayinla()" style="padding:12px 20px;background:var(--dark);color:#F0E8DC;border:none;border-radius:8px;font-family:'Montserrat',sans-serif;font-size:13px;font-weight:600;cursor:pointer;">Soruyu Yayınla</button>
-
-          <div class="sec-head" style="margin-top:24px;">İstatistikler</div>
-          <div id="admin-istatistikler" style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px;">
+          <!-- İstatistikler -->
+          <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:24px;">
             <div style="background:var(--dark);border-radius:12px;padding:16px;text-align:center;">
-              <div id="stat-uye" style="font-size:28px;color:#F0E8DC;font-weight:800;">—</div>
-              <div style="font-size:11px;color:rgba(240,232,220,.4);margin-top:4px;">Toplam Üye</div>
+              <div id="stat-uye" style="font-size:26px;color:#F0E8DC;font-weight:800;">—</div>
+              <div style="font-size:10px;color:rgba(240,232,220,.4);margin-top:4px;text-transform:uppercase;letter-spacing:.5px;">Üye</div>
             </div>
             <div style="background:var(--dark);border-radius:12px;padding:16px;text-align:center;">
-              <div id="stat-mesaj" style="font-size:28px;color:#F0E8DC;font-weight:800;">—</div>
-              <div style="font-size:11px;color:rgba(240,232,220,.4);margin-top:4px;">Mesaj</div>
+              <div id="stat-mesaj" style="font-size:26px;color:#F0E8DC;font-weight:800;">—</div>
+              <div style="font-size:10px;color:rgba(240,232,220,.4);margin-top:4px;text-transform:uppercase;letter-spacing:.5px;">Mesaj</div>
             </div>
             <div style="background:var(--dark);border-radius:12px;padding:16px;text-align:center;">
-              <div id="stat-bulusma" style="font-size:28px;color:#F0E8DC;font-weight:800;">—</div>
-              <div style="font-size:11px;color:rgba(240,232,220,.4);margin-top:4px;">Buluşma</div>
+              <div id="stat-bulusma" style="font-size:26px;color:#F0E8DC;font-weight:800;">—</div>
+              <div style="font-size:10px;color:rgba(240,232,220,.4);margin-top:4px;text-transform:uppercase;letter-spacing:.5px;">Buluşma</div>
+            </div>
+            <div style="background:var(--dark);border-radius:12px;padding:16px;text-align:center;">
+              <div id="stat-kanal" style="font-size:26px;color:#F0E8DC;font-weight:800;">—</div>
+              <div style="font-size:10px;color:rgba(240,232,220,.4);margin-top:4px;text-transform:uppercase;letter-spacing:.5px;">Kanal</div>
             </div>
           </div>
+
+          <!-- Sekmeler -->
+          <div style="display:flex;gap:4px;margin-bottom:20px;border-bottom:0.5px solid var(--border);padding-bottom:0;">
+            <button onclick="adminSekme('uyeler')" id="sekme-uyeler" class="admin-sekme-btn active-sekme" style="padding:10px 16px;background:none;border:none;border-bottom:2px solid var(--accent);font-family:'Montserrat',sans-serif;font-size:13px;font-weight:600;color:var(--accent);cursor:pointer;margin-bottom:-1px;">👥 Kullanıcılar</button>
+            <button onclick="adminSekme('kanallar')" id="sekme-kanallar" class="admin-sekme-btn" style="padding:10px 16px;background:none;border:none;border-bottom:2px solid transparent;font-family:'Montserrat',sans-serif;font-size:13px;font-weight:500;color:var(--text2);cursor:pointer;margin-bottom:-1px;">💬 Kanallar</button>
+            <button onclick="adminSekme('icerik')" id="sekme-icerik" class="admin-sekme-btn" style="padding:10px 16px;background:none;border:none;border-bottom:2px solid transparent;font-family:'Montserrat',sans-serif;font-size:13px;font-weight:500;color:var(--text2);cursor:pointer;margin-bottom:-1px;">📝 İçerik</button>
+            <button onclick="adminSekme('davet')" id="sekme-davet" class="admin-sekme-btn" style="padding:10px 16px;background:none;border:none;border-bottom:2px solid transparent;font-family:'Montserrat',sans-serif;font-size:13px;font-weight:500;color:var(--text2);cursor:pointer;margin-bottom:-1px;">🎟️ Davetler</button>
+          </div>
+
+          <!-- Kullanıcılar Sekmesi -->
+          <div id="admin-panel-uyeler">
+            <div style="display:flex;gap:10px;margin-bottom:16px;flex-wrap:wrap;">
+              <input id="admin-arama" class="inp" placeholder="🔍 Ad, e-posta veya şehir ara..." oninput="adminKullaniciAra(this.value)" style="flex:1;min-width:200px;padding:10px 14px;">
+              <select id="admin-rol-filtre" class="inp" onchange="adminKullaniciAra(document.getElementById('admin-arama').value)" style="appearance:none;width:auto;padding:10px 14px;">
+                <option value="">Tüm Roller</option>
+                <option value="superadmin">👑 Süper Admin</option>
+                <option value="admin">⚙️ Admin</option>
+                <option value="mod">🛡️ Mod</option>
+                <option value="uye">👤 Üye</option>
+              </select>
+              <select id="admin-sehir-filtre" class="inp" onchange="adminKullaniciAra(document.getElementById('admin-arama').value)" style="appearance:none;width:auto;padding:10px 14px;">
+                <option value="">Tüm Şehirler</option>
+                <option>İstanbul</option><option>Ankara</option><option>İzmir</option>
+                <option>Bursa</option><option>Antalya</option><option>Eskişehir</option>
+              </select>
+            </div>
+            <div id="admin-kullanicilar-list">
+              <div style="color:var(--text2);font-size:13px;padding:20px 0;">Yükleniyor...</div>
+            </div>
+          </div>
+
+          <!-- Kanallar Sekmesi -->
+          <div id="admin-panel-kanallar" style="display:none;">
+            <button onclick="adminKanalAc()" style="margin-bottom:16px;padding:11px 20px;background:var(--accent);color:#fff;border:none;border-radius:9px;font-family:'Montserrat',sans-serif;font-size:13px;font-weight:600;cursor:pointer;">+ Yeni Kanal Ekle</button>
+            <div id="admin-kanallar-list">
+              <div style="color:var(--text2);font-size:13px;">Yükleniyor...</div>
+            </div>
+          </div>
+
+          <!-- İçerik Sekmesi -->
+          <div id="admin-panel-icerik" style="display:none;">
+            <div class="sec-head">Günün Sorusu</div>
+            <div class="field"><label class="inp-label">Yeni Soru</label><input id="admin-soru-inp" class="inp" placeholder="Soruyu buraya yaz..."></div>
+            <div class="field"><label class="inp-label">Bitiş Zamanı</label><input id="admin-soru-bitis" class="inp" type="datetime-local"></div>
+            <button onclick="adminSoruYayinla()" style="padding:12px 20px;background:var(--dark);color:#F0E8DC;border:none;border-radius:9px;font-family:'Montserrat',sans-serif;font-size:13px;font-weight:600;cursor:pointer;margin-bottom:20px;">✓ Soruyu Yayınla</button>
+
+            <div class="sec-head">Son Mesajlar (Moderasyon)</div>
+            <div id="admin-son-mesajlar">
+              <div style="color:var(--text2);font-size:13px;">Yükleniyor...</div>
+            </div>
+
+            <div class="sec-head" style="margin-top:20px;">Son Buluşmalar</div>
+            <div id="admin-son-bulusmalar">
+              <div style="color:var(--text2);font-size:13px;">Yükleniyor...</div>
+            </div>
+          </div>
+
+          <!-- Davetler Sekmesi -->
+          <div id="admin-panel-davet" style="display:none;">
+            <div class="sec-head">Davet Kodu Oluştur</div>
+            <div style="background:var(--light);border-radius:12px;border:0.5px solid var(--border);padding:16px;margin-bottom:16px;">
+              <div class="field"><label class="inp-label">Kaç adet?</label><input id="admin-davet-adet" class="inp" type="number" min="1" max="50" value="5" style="width:120px;"></div>
+              <button onclick="adminDavetUret()" style="padding:11px 20px;background:var(--accent);color:#fff;border:none;border-radius:9px;font-family:'Montserrat',sans-serif;font-size:13px;font-weight:600;cursor:pointer;">Kod Üret</button>
+            </div>
+            <div id="admin-davet-list">
+              <div style="color:var(--text2);font-size:13px;">Yükleniyor...</div>
+            </div>
+          </div>
+
         </div>
       </div>
 
@@ -2379,6 +2437,7 @@ var MOBILE_NAV_MAP = {
   'profil-duzenle': 'mni-profile',
   'bulusma-olustur': 'mni-meet',
   'bulusma-duzenle': 'mni-meet',
+  admin: 'mni-profile',
 };
 
 function go(id) {
@@ -2732,8 +2791,11 @@ sb.auth.onAuthStateChange(async function(event, session) {
   if (session && session.user) {
     var currentSc = document.querySelector('.sc.show');
     var authScreens = ['sc-login','sc-giris-form','sc-reg1','sc-reg2'];
-    var isOnAuth = currentSc && authScreens.includes(currentSc.id);
-    if (isOnAuth) go('home');
+    var isOnAuth = !currentSc || authScreens.includes(currentSc.id);
+    if (isOnAuth) {
+      var sonSayfa = localStorage.getItem('aktifSayfa') || 'home';
+      go(sonSayfa);
+    }
     kullaniciBilgisiYukle(session.user.id);
     gunuSorusunuYukle();
   }
@@ -4198,7 +4260,11 @@ navTo = function(id) {
   if (id === 'library') kanallariYukle();
   if (id === 'bugun')   gunuSorusunuYukle();
   if (id === 'meet')    { if (isPrem) buslusmalariYukle(); }
-  if (id === 'rozetler' && aktifKullanici) { rutbeGoster(aktifKullanici.created_at); rozetseriYukle(); }
+  if (id === 'rozetler' && aktifKullanici) {
+    rutbeGoster(aktifKullanici.created_at);
+    rozetseriYukle();
+    rozetKademeleriYukle();
+  }
   if (id === 'conn')    baglantilarYukle();
   if (id === 'admin')   adminPanelYukle();
 };
@@ -4283,11 +4349,11 @@ async function baglantilarYukle() {
         var p = a.diger;
         var ad = p ? (p.ad || 'Üye') : 'Üye';
         var rutbe = p ? rutbeHesapla(p.created_at) : RUTBELER[0];
-        return '<div class="conn-item" onclick="profilGor(\'' + (p ? p.id : '') + '\')">' +
+        return '<div class="conn-item" onclick="profilGor(\'' + (p ? p.id : '') + '\')" style="cursor:pointer;">' +
           '<div class="conn-left"><div class="conn-av">' + ad.substring(0,2).toUpperCase() + '</div>' +
           '<div><div class="conn-name">' + ad + '</div>' +
-          '<div class="conn-loc">' + (p && p.sehir ? p.sehir : '') + ' · ' + rutbe.label + '</div></div></div>' +
-          '<div class="conn-stat">' + rolBadgeHtml(p && p.rol) + '</div>' +
+          '<div class="conn-loc">' + (p && p.sehir ? p.sehir : '') + ' · ' + rutbe.label + ' ' + rolBadgeHtml(p && p.rol) + '</div></div></div>' +
+          '<div class="conn-stat" style="font-size:11px;color:var(--text2);">Profili gör →</div>' +
         '</div>';
       }).join('');
     }
@@ -4489,91 +4555,341 @@ function adminModKapat() {
   if (m) m.style.display = 'none';
 }
 
+/* ══════════════════════════════
+   ADMİN PANELİ — TAM KAPSAMlI
+══════════════════════════════ */
+var adminTumUyeler = []; // cache
+
+function adminSekme(sekme) {
+  var sekmeler = ['uyeler','kanallar','icerik','davet'];
+  sekmeler.forEach(function(s) {
+    var panel = document.getElementById('admin-panel-' + s);
+    var btn   = document.getElementById('sekme-' + s);
+    if (panel) panel.style.display = s === sekme ? 'block' : 'none';
+    if (btn) {
+      btn.style.borderBottomColor = s === sekme ? 'var(--accent)' : 'transparent';
+      btn.style.color  = s === sekme ? 'var(--accent)' : 'var(--text2)';
+      btn.style.fontWeight = s === sekme ? '600' : '500';
+    }
+  });
+  if (sekme === 'kanallar') adminKanallarYukle();
+  if (sekme === 'icerik')   adminIcerikYukle();
+  if (sekme === 'davet')    adminDavetlerYukle();
+}
+
+function kullaniciKartHtml(u, aktifRol) {
+  var ad = (u.ad || 'Üye') + (u.soyad ? ' ' + u.soyad.charAt(0) + '.' : '');
+  var rolLabel = { superadmin: '👑 Süper Admin', admin: '⚙️ Admin', mod: '🛡️ Mod', uye: '👤 Üye' };
+  var rolCls   = { superadmin: 'role-superadmin', admin: 'role-admin', mod: 'role-mod' };
+  var tarih = u.created_at ? new Date(u.created_at).toLocaleDateString('tr-TR') : '—';
+
+  var butonlar = '';
+  if (aktifRol === 'superadmin' || aktifRol === 'admin') {
+    butonlar += '<button onclick="adminHizliRol(\'' + u.id + '\',\'' + ad.replace(/'/g,'') + '\')" style="padding:6px 12px;background:var(--surface);border:0.5px solid var(--border);border-radius:7px;font-family:\'Montserrat\',sans-serif;font-size:11px;font-weight:600;cursor:pointer;transition:all .15s;" onmouseover="this.style.background=\'var(--bg)\'" onmouseout="this.style.background=\'var(--surface)\'">⚙️ Rol</button>';
+  }
+  if (aktifRol === 'superadmin' || aktifRol === 'admin' || aktifRol === 'mod') {
+    var banBtn = u.banlandi
+      ? '<button onclick="adminBanKaldir(\'' + u.id + '\')" style="padding:6px 12px;background:rgba(29,158,117,.12);color:#1D9E75;border:0.5px solid rgba(29,158,117,.3);border-radius:7px;font-family:\'Montserrat\',sans-serif;font-size:11px;font-weight:600;cursor:pointer;">✓ Ban Kaldır</button>'
+      : '<button onclick="adminBanla(\'' + u.id + '\',\'' + ad.replace(/'/g,'') + '\')" style="padding:6px 12px;background:transparent;color:#E24B4A;border:0.5px solid rgba(226,75,74,.3);border-radius:7px;font-family:\'Montserrat\',sans-serif;font-size:11px;font-weight:600;cursor:pointer;">🚫 Ban</button>';
+    butonlar += ' ' + banBtn;
+  }
+  butonlar += '<button onclick="profilGor(\'' + u.id + '\')" style="padding:6px 12px;background:var(--dark);color:#F0E8DC;border:none;border-radius:7px;font-family:\'Montserrat\',sans-serif;font-size:11px;font-weight:600;cursor:pointer;">Profil</button>';
+
+  return '<div style="background:var(--light);border-radius:12px;border:0.5px solid ' + (u.banlandi ? 'rgba(226,75,74,.4)' : 'var(--border)') + ';padding:14px 16px;margin-bottom:8px;' + (u.banlandi ? 'opacity:.7;' : '') + '">' +
+    '<div style="display:flex;align-items:flex-start;justify-content:space-between;gap:12px;flex-wrap:wrap;">' +
+      '<div style="display:flex;align-items:center;gap:12px;">' +
+        '<div style="width:40px;height:40px;border-radius:50%;background:var(--surface);display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:700;color:var(--text2);flex-shrink:0;">' + (u.ad||'U').substring(0,2).toUpperCase() + '</div>' +
+        '<div>' +
+          '<div style="font-size:14px;font-weight:600;color:var(--text);margin-bottom:2px;">' + ad + (u.banlandi ? ' <span style="font-size:10px;color:#E24B4A;background:rgba(226,75,74,.1);padding:1px 6px;border-radius:5px;">Banlı</span>' : '') + '</div>' +
+          '<div style="font-size:11px;color:var(--text2);">' + (u.sehir||'—') + ' · ' + tarih + ' · ' + (u.meslek||'Meslek yok') + '</div>' +
+          '<div style="margin-top:4px;"><span class="prof-badge ' + (rolCls[u.rol]||'') + '" style="font-size:10px;">' + (rolLabel[u.rol]||'Üye') + '</span></div>' +
+        '</div>' +
+      '</div>' +
+      '<div style="display:flex;gap:6px;flex-wrap:wrap;align-items:center;">' + butonlar + '</div>' +
+    '</div>' +
+  '</div>';
+}
+
+async function adminPanelYukle() {
+  var aktifRol = aktifKullanici ? aktifKullanici.rol : 'uye';
+  if (aktifRol !== 'superadmin' && aktifRol !== 'admin' && aktifRol !== 'mod') {
+    navTo('home');
+    return;
+  }
+
+  var rolLabelMap = { superadmin: '👑 Süper Admin Paneli', admin: '⚙️ Admin Paneli', mod: '🛡️ Moderatör Paneli' };
+  var labelEl = document.getElementById('admin-rol-label');
+  if (labelEl) labelEl.textContent = rolLabelMap[aktifRol] || 'Admin Paneli';
+
+  // İstatistikler
+  var [{ count: uyeSayi }, { count: mesajSayi }, { count: bulusmaSayi }, { count: kanalSayi }] = await Promise.all([
+    sb.from('profiles').select('id', { count: 'exact', head: true }),
+    sb.from('mesajlar').select('id', { count: 'exact', head: true }),
+    sb.from('bulusmalar').select('id', { count: 'exact', head: true }),
+    sb.from('kanallar').select('id', { count: 'exact', head: true }),
+  ]);
+  var f = function(id, v) { var el = document.getElementById(id); if(el) el.textContent = v || 0; };
+  f('stat-uye', uyeSayi); f('stat-mesaj', mesajSayi); f('stat-bulusma', bulusmaSayi); f('stat-kanal', kanalSayi);
+
+  // Kullanıcıları yükle
+  var { data: uyeler } = await sb.from('profiles')
+    .select('id, ad, soyad, sehir, rol, created_at, meslek, banlandi')
+    .order('created_at', { ascending: false })
+    .limit(100);
+
+  adminTumUyeler = uyeler || [];
+  adminKullaniciListesiGoster(adminTumUyeler, aktifRol);
+}
+
+function adminKullaniciListesiGoster(uyeler, aktifRol) {
+  aktifRol = aktifRol || (aktifKullanici ? aktifKullanici.rol : 'uye');
+  var listEl = document.getElementById('admin-kullanicilar-list');
+  if (!listEl) return;
+  if (!uyeler || uyeler.length === 0) {
+    listEl.innerHTML = '<div style="color:var(--text2);font-size:13px;padding:20px 0;">Sonuç bulunamadı.</div>';
+    return;
+  }
+  listEl.innerHTML = '<div style="font-size:11px;color:var(--text2);margin-bottom:12px;">' + uyeler.length + ' kullanıcı gösteriliyor</div>' +
+    uyeler.map(function(u) { return kullaniciKartHtml(u, aktifRol); }).join('');
+}
+
+var adminAramaTimeout = null;
+function adminKullaniciAra(q) {
+  clearTimeout(adminAramaTimeout);
+  adminAramaTimeout = setTimeout(function() {
+    var rolFiltre   = (document.getElementById('admin-rol-filtre') || {}).value || '';
+    var sehirFiltre = (document.getElementById('admin-sehir-filtre') || {}).value || '';
+    var aranan = (q || '').toLowerCase().trim();
+
+    var filtre = adminTumUyeler.filter(function(u) {
+      var adMesaj = ((u.ad||'') + ' ' + (u.soyad||'')).toLowerCase();
+      var eslesme = !aranan || adMesaj.includes(aranan) || (u.sehir||'').toLowerCase().includes(aranan) || (u.meslek||'').toLowerCase().includes(aranan);
+      var rolEsles = !rolFiltre || u.rol === rolFiltre;
+      var sehirEsles = !sehirFiltre || (u.sehir||'') === sehirFiltre;
+      return eslesme && rolEsles && sehirEsles;
+    });
+    adminKullaniciListesiGoster(filtre);
+  }, 300);
+}
+
+function adminHizliRol(userId, adText) {
+  goruntulenenProfilId = userId;
+  var adEl = document.getElementById('admin-mod-kullanici-ad');
+  if (adEl) adEl.textContent = adText + ' için rol seç:';
+  var m = document.getElementById('admin-mod-modal');
+  if (m) m.style.display = 'flex';
+}
+
+async function adminBanla(userId, adText) {
+  if (!confirm(adText + ' kullanıcısını banlamak istediğine emin misin?')) return;
+  await sb.from('profiles').update({ banlandi: true }).eq('id', userId);
+  // Lokal cache güncelle
+  var idx = adminTumUyeler.findIndex(function(u){ return u.id === userId; });
+  if (idx !== -1) adminTumUyeler[idx].banlandi = true;
+  adminKullaniciListesiGoster(adminTumUyeler);
+}
+
+async function adminBanKaldir(userId) {
+  await sb.from('profiles').update({ banlandi: false }).eq('id', userId);
+  var idx = adminTumUyeler.findIndex(function(u){ return u.id === userId; });
+  if (idx !== -1) adminTumUyeler[idx].banlandi = false;
+  adminKullaniciListesiGoster(adminTumUyeler);
+}
+
+async function adminKanallarYukle() {
+  var { data: kanallar } = await sb.from('kanallar').select('*').order('created_at');
+  var kanalList = document.getElementById('admin-kanallar-list');
+  if (!kanalList) return;
+  if (!kanallar || kanallar.length === 0) {
+    kanalList.innerHTML = '<div style="color:var(--text2);font-size:13px;">Henüz kanal yok.</div>';
+    return;
+  }
+  kanalList.innerHTML = kanallar.map(function(k) {
+    return '<div style="background:var(--light);border-radius:12px;border:0.5px solid var(--border);padding:14px 16px;margin-bottom:8px;display:flex;align-items:center;justify-content:space-between;gap:12px;">' +
+      '<div style="display:flex;align-items:center;gap:12px;">' +
+        '<div style="font-size:24px;">' + (k.emoji||'💬') + '</div>' +
+        '<div>' +
+          '<div style="font-size:14px;font-weight:600;color:var(--text);">' + k.ad + '</div>' +
+          '<div style="font-size:11px;color:var(--text2);margin-top:2px;">' + (k.aciklama||'—') + ' · ' + (k.premium_gerekli ? '🔒 Premium' : '🌐 Herkese açık') + '</div>' +
+        '</div>' +
+      '</div>' +
+      '<div style="display:flex;gap:8px;">' +
+        '<button onclick="adminKanalDuzenle(\'' + k.id + '\')" style="padding:6px 12px;background:var(--surface);border:0.5px solid var(--border);border-radius:7px;font-family:\'Montserrat\',sans-serif;font-size:11px;cursor:pointer;">✏️ Düzenle</button>' +
+        '<button onclick="adminKanalSil(\'' + k.id + '\')" style="padding:6px 12px;background:transparent;color:#E24B4A;border:0.5px solid rgba(226,75,74,.3);border-radius:7px;font-family:\'Montserrat\',sans-serif;font-size:11px;cursor:pointer;">🗑️ Sil</button>' +
+      '</div>' +
+    '</div>';
+  }).join('');
+}
+
+async function adminIcerikYukle() {
+  // Son mesajlar
+  var { data: mesajlar } = await sb.from('mesajlar')
+    .select('*, profiles(ad)')
+    .order('created_at', { ascending: false })
+    .limit(20);
+
+  var msgsEl = document.getElementById('admin-son-mesajlar');
+  if (msgsEl && mesajlar) {
+    msgsEl.innerHTML = mesajlar.map(function(m) {
+      var ad = m.profiles ? (m.profiles.ad||'Üye') : 'Üye';
+      var zaman = new Date(m.created_at).toLocaleString('tr-TR');
+      var metin = m.icerik && m.icerik.trim() ? m.icerik.substring(0,100) + (m.icerik.length > 100 ? '...' : '') : '[Fotoğraf]';
+      return '<div style="background:var(--light);border-radius:10px;border:0.5px solid var(--border);padding:12px 14px;margin-bottom:8px;display:flex;justify-content:space-between;align-items:flex-start;gap:12px;">' +
+        '<div>' +
+          '<div style="font-size:12px;font-weight:600;color:var(--text);margin-bottom:3px;">' + ad + ' · <span style="font-weight:400;color:var(--text2);">' + zaman + '</span></div>' +
+          '<div style="font-size:13px;color:var(--text);">' + metin + '</div>' +
+        '</div>' +
+        '<button onclick="mesajSil(\'' + m.id + '\');this.closest(\'div\').remove();" style="flex-shrink:0;padding:5px 10px;background:transparent;color:#E24B4A;border:0.5px solid rgba(226,75,74,.3);border-radius:6px;font-family:\'Montserrat\',sans-serif;font-size:11px;cursor:pointer;">Sil</button>' +
+      '</div>';
+    }).join('');
+  }
+
+  // Son buluşmalar
+  var { data: bulusmalar } = await sb.from('bulusmalar')
+    .select('*, profiles(ad)')
+    .order('created_at', { ascending: false })
+    .limit(10);
+
+  var bulEl = document.getElementById('admin-son-bulusmalar');
+  if (bulEl && bulusmalar) {
+    bulEl.innerHTML = bulusmalar.map(function(b) {
+      var host = b.profiles ? (b.profiles.ad||'Üye') : 'Üye';
+      return '<div style="background:var(--light);border-radius:10px;border:0.5px solid var(--border);padding:12px 14px;margin-bottom:8px;display:flex;justify-content:space-between;align-items:center;gap:12px;">' +
+        '<div>' +
+          '<div style="font-size:13px;font-weight:600;color:var(--text);">' + (b.baslik||'Başlıksız') + '</div>' +
+          '<div style="font-size:11px;color:var(--text2);margin-top:2px;">' + host + ' · ' + (b.sehir||'—') + ' · ' + (b.tarih ? new Date(b.tarih).toLocaleDateString('tr-TR') : '—') + '</div>' +
+        '</div>' +
+        '<button onclick="adminBulusmaSil(\'' + b.id + '\',this)" style="flex-shrink:0;padding:5px 10px;background:transparent;color:#E24B4A;border:0.5px solid rgba(226,75,74,.3);border-radius:6px;font-family:\'Montserrat\',sans-serif;font-size:11px;cursor:pointer;">Sil</button>' +
+      '</div>';
+    }).join('');
+  }
+}
+
+async function adminBulusmaSil(bulId, btn) {
+  if (!confirm('Bu buluşmayı silmek istediğine emin misin?')) return;
+  await sb.from('bulusma_katilimcilar').delete().eq('bulusma_id', bulId);
+  await sb.from('bulusmalar').delete().eq('id', bulId);
+  if (btn) btn.closest('div').remove();
+}
+
+async function adminDavetlerYukle() {
+  var { data: davetler } = await sb.from('davet_kodlari')
+    .select('*, olusturan_profil:profiles!davet_kodlari_olusturan_fkey(ad), kullanan_profil:profiles!davet_kodlari_kullanan_fkey(ad)')
+    .order('created_at', { ascending: false })
+    .limit(50);
+
+  var listEl = document.getElementById('admin-davet-list');
+  if (!listEl || !davetler) return;
+
+  var kullanilanlar = davetler.filter(function(d){ return d.kullanildi; });
+  var bekleyenler   = davetler.filter(function(d){ return !d.kullanildi; });
+
+  listEl.innerHTML =
+    '<div class="sec-head">Bekleyen Kodlar (' + bekleyenler.length + ')</div>' +
+    bekleyenler.slice(0,20).map(function(d) {
+      var sahip = d.olusturan_profil ? (d.olusturan_profil.ad||'Üye') : 'Sistem';
+      return '<div style="background:var(--light);border-radius:10px;border:0.5px solid var(--border);padding:10px 14px;margin-bottom:6px;display:flex;align-items:center;justify-content:space-between;">' +
+        '<span style="font-size:13px;color:var(--text);letter-spacing:1px;font-weight:600;">' + d.kod + '</span>' +
+        '<span style="font-size:11px;color:var(--text2);">' + sahip + '</span>' +
+        '<button onclick="navigator.clipboard.writeText(\'' + d.kod + '\');this.textContent=\'✓\'" style="padding:4px 10px;background:var(--surface);border:0.5px solid var(--border);border-radius:6px;font-family:\'Montserrat\',sans-serif;font-size:11px;cursor:pointer;">Kopyala</button>' +
+      '</div>';
+    }).join('') +
+    '<div class="sec-head" style="margin-top:16px;">Kullanılmış Kodlar (' + kullanilanlar.length + ')</div>' +
+    kullanilanlar.slice(0,10).map(function(d) {
+      var sahip    = d.olusturan_profil ? (d.olusturan_profil.ad||'Üye') : 'Sistem';
+      var kullanan = d.kullanan_profil ? (d.kullanan_profil.ad||'Üye') : '—';
+      return '<div style="background:var(--surface);border-radius:10px;border:0.5px solid var(--border);padding:10px 14px;margin-bottom:6px;display:flex;align-items:center;justify-content:space-between;opacity:.6;">' +
+        '<span style="font-size:12px;color:var(--text2);letter-spacing:1px;">' + d.kod + '</span>' +
+        '<span style="font-size:11px;color:var(--text2);">' + sahip + ' → ' + kullanan + '</span>' +
+        '<span style="font-size:10px;color:var(--text2);">✓ Kullanıldı</span>' +
+      '</div>';
+    }).join('');
+}
+
+async function adminDavetUret() {
+  var adetEl = document.getElementById('admin-davet-adet');
+  var adet = parseInt((adetEl && adetEl.value) || 5);
+  if (adet < 1 || adet > 50) { alert('1-50 arası bir sayı gir.'); return; }
+
+  var kodlar = [];
+  for (var i = 0; i < adet; i++) {
+    kodlar.push({ kod: gucluKodUret(), olusturan: aktifKullanici ? aktifKullanici.id : null, kullanildi: false });
+  }
+  await sb.from('davet_kodlari').insert(kodlar);
+  alert(adet + ' davet kodu oluşturuldu!');
+  adminDavetlerYukle();
+}
+
+async function adminKanalDuzenle(kanalId) {
+  var { data: k } = await sb.from('kanallar').select('*').eq('id', kanalId).single();
+  if (!k) return;
+  var adEl    = document.getElementById('ak-ad');
+  var emojiEl = document.getElementById('ak-emoji');
+  var acikEl  = document.getElementById('ak-aciklama');
+  var premEl  = document.getElementById('ak-premium');
+  if (adEl)    adEl.value    = k.ad || '';
+  if (emojiEl) emojiEl.value = k.emoji || '';
+  if (acikEl)  acikEl.value  = k.aciklama || '';
+  if (premEl)  premEl.checked = k.premium_gerekli || false;
+
+  // Düzenleme modunda kaydet butonunu güncelle
+  var modal = document.getElementById('admin-kanal-modal');
+  if (modal) {
+    var kaydetBtn = modal.querySelector('button.btn-accent');
+    if (kaydetBtn) {
+      kaydetBtn.onclick = async function() {
+        await sb.from('kanallar').update({
+          ad: adEl.value.trim(), emoji: emojiEl.value,
+          aciklama: acikEl.value, premium_gerekli: premEl.checked
+        }).eq('id', kanalId);
+        adminKanalKapat();
+        adminKanallarYukle();
+        kanallariYukle();
+      };
+    }
+    modal.style.display = 'flex';
+  }
+}
+
+/* adminRolKaydet - güncelle: cache'i de yenile */
 async function adminRolKaydet() {
   if (!goruntulenenProfilId) return;
   var rolEl = document.getElementById('admin-mod-rol');
   if (!rolEl) return;
-  await sb.from('profiles').update({ rol: rolEl.value }).eq('id', goruntulenenProfilId);
+  var yeniRol = rolEl.value;
+  await sb.from('profiles').update({ rol: yeniRol }).eq('id', goruntulenenProfilId);
+
+  // Cache güncelle
+  var idx = adminTumUyeler.findIndex(function(u){ return u.id === goruntulenenProfilId; });
+  if (idx !== -1) adminTumUyeler[idx].rol = yeniRol;
+  adminKullaniciListesiGoster(adminTumUyeler);
+
   adminModKapat();
   profilModalKapat();
   alert('Rol güncellendi!');
-}
-
-/* ══════════════════════════════
-   ADMİN PANELİ
-══════════════════════════════ */
-async function adminPanelYukle() {
-  var aktifRol = aktifKullanici ? aktifKullanici.rol : 'uye';
-  if (aktifRol !== 'superadmin' && aktifRol !== 'admin' && aktifRol !== 'mod') return;
-
-  // Kullanıcı listesi
-  var { data: uyeler } = await sb.from('profiles').select('id, ad, soyad, sehir, rol, created_at').order('created_at', { ascending: false }).limit(30);
-  var uyeList = document.getElementById('admin-kullanicilar-list');
-  if (uyeList && uyeler) {
-    uyeList.innerHTML = uyeler.map(function(u) {
-      var ad = (u.ad || 'Üye') + (u.soyad ? ' ' + u.soyad.charAt(0) + '.' : '');
-      var rolLabel = { superadmin: '👑 Süper Admin', admin: '⚙️ Admin', mod: '🛡️ Mod', uye: '👤 Üye' };
-      return '<div class="conn-item" style="justify-content:space-between;">' +
-        '<div class="conn-left"><div class="conn-av">' + (u.ad||'U').substring(0,2).toUpperCase() + '</div>' +
-        '<div><div class="conn-name">' + ad + '</div>' +
-        '<div class="conn-loc">' + (u.sehir||'—') + ' · ' + (rolLabel[u.rol]||'Üye') + '</div></div></div>' +
-        ((aktifRol === 'superadmin' || aktifRol === 'admin') ? '<button onclick="goruntulenenProfilId=\'' + u.id + '\';adminModAc()" style="padding:6px 12px;background:var(--surface);border:0.5px solid var(--border);border-radius:7px;font-family:\'Montserrat\',sans-serif;font-size:11px;cursor:pointer;">Rol</button>' : '') +
-      '</div>';
-    }).join('');
-  }
-
-  // Kanallar
-  var { data: kanallar } = await sb.from('kanallar').select('*').order('created_at');
-  var kanalList = document.getElementById('admin-kanallar-list');
-  if (kanalList && kanallar) {
-    kanalList.innerHTML = kanallar.map(function(k) {
-      return '<div style="background:var(--light);border-radius:10px;border:0.5px solid var(--border);padding:12px 14px;margin-bottom:8px;display:flex;align-items:center;justify-content:space-between;">' +
-        '<div style="display:flex;align-items:center;gap:10px;">' +
-          '<div style="font-size:20px;">' + (k.emoji||'💬') + '</div>' +
-          '<div><div style="font-size:14px;font-weight:600;color:var(--text);">' + k.ad + '</div>' +
-          '<div style="font-size:11px;color:var(--text2);">' + (k.premium_gerekli ? '🔒 Premium' : 'Herkes') + '</div></div>' +
-        '</div>' +
-        '<button onclick="adminKanalSil(\'' + k.id + '\')" style="padding:5px 10px;background:transparent;color:#E24B4A;border:0.5px solid rgba(226,75,74,.3);border-radius:6px;font-size:11px;cursor:pointer;">Sil</button>' +
-      '</div>';
-    }).join('');
-  }
-
-  // İstatistikler
-  var { count: uyeSayi } = await sb.from('profiles').select('id', { count: 'exact', head: true });
-  var { count: mesajSayi } = await sb.from('mesajlar').select('id', { count: 'exact', head: true });
-  var { count: bulusmaSayi } = await sb.from('bulusmalar').select('id', { count: 'exact', head: true });
-  var statUye = document.getElementById('stat-uye');
-  var statMsj = document.getElementById('stat-mesaj');
-  var statBul = document.getElementById('stat-bulusma');
-  if (statUye) statUye.textContent = uyeSayi || 0;
-  if (statMsj) statMsj.textContent = mesajSayi || 0;
-  if (statBul) statBul.textContent = bulusmaSayi || 0;
-}
-
-async function adminKanalSil(kanalId) {
-  if (!confirm('Bu kanalı silmek istediğine emin misin? Tüm mesajlar silinir.')) return;
-  await sb.from('mesajlar').delete().eq('kanal_id', kanalId);
-  await sb.from('kanallar').delete().eq('id', kanalId);
-  adminPanelYukle();
-  kanallariYukle();
 }
 
 async function adminSoruYayinla() {
   var inp  = document.getElementById('admin-soru-inp');
   var bits = document.getElementById('admin-soru-bitis');
   if (!inp || !inp.value.trim()) { alert('Soru boş olamaz.'); return; }
-
-  // Eskiyi pasif yap
   await sb.from('gunun_sorusu').update({ aktif: false }).eq('aktif', true);
   await sb.from('gunun_sorusu').insert({ soru: inp.value.trim(), aktif: true, bitis_zamani: bits && bits.value ? bits.value : null });
-
   inp.value = '';
   if (bits) bits.value = '';
   alert('Günün sorusu yayınlandı!');
 }
 
+async function adminKanalSil(kanalId) {
+  if (!confirm('Bu kanalı silmek istediğine emin misin? Tüm mesajlar silinir.')) return;
+  await sb.from('mesajlar').delete().eq('kanal_id', kanalId);
+  await sb.from('kanallar').delete().eq('id', kanalId);
+  adminKanallarYukle();
+  kanallariYukle();
+}
+
 /* ══════════════════════════════
-   ROZET KADEMELERİ (Çok Aşamalı)
+   ROZET KADEMELERİ
 ══════════════════════════════ */
 var ROZET_KADEMELERI = [
   {
@@ -4626,11 +4942,7 @@ var ROZET_KADEMELERI = [
   }
 ];
 
-async function rozetseriYukle() {
-  if (!aktifKullanici) return;
-  var uid = aktifKullanici.id;
-
-  var kademeGrid = document.getElementById('rozet-kademeler');
+async function rozetKademeleriYukle() {
   if (!kademeGrid) {
     // Rozet sayfasına kademe bölümü ekle
     var rozetEl = document.getElementById('rozet-rutbe');
