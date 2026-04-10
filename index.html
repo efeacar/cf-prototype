@@ -2233,6 +2233,12 @@ select.inp {
           <div id="rozet-gercek-grid">
             <div style="color:var(--text2);font-size:13px;">Rozetler yükleniyor...</div>
           </div>
+
+          <!-- REP LEADERBOARD -->
+          <div class="sec-head" style="margin-top:28px;">⚡ Rep Sıralaması</div>
+          <div id="rep-leaderboard">
+            <div style="color:var(--text2);font-size:13px;">Yükleniyor...</div>
+          </div>
         </div>
       </div>
 
@@ -2785,7 +2791,10 @@ function applyMode() {
   if (cd) cd.style.display = isPrem ? 'block' : 'none';
 
   var pb = document.getElementById('prof-badge');
-  if (pb) pb.style.display = isPrem ? 'block' : 'none';
+  // Premium badge — admin/superadmin için gösterme
+  var rol = aktifKullanici ? aktifKullanici.rol : 'uye';
+  var hideForAdmin = (rol === 'superadmin' || rol === 'admin');
+  if (pb) pb.style.display = (isPrem && !hideForAdmin) ? 'block' : 'none';
 
   var sp  = document.getElementById('sub-plan');
   var sd  = document.getElementById('sub-detail');
@@ -3120,7 +3129,7 @@ sb.auth.onAuthStateChange(async function(event, session) {
     if (sonSayfa === 'admin')   adminPanelYukle();
     if (sonSayfa === 'library') kanallariYukle();
     if (sonSayfa === 'meet' && isPrem) buslusmalariYukle();
-    if (sonSayfa === 'rozetler' && aktifKullanici) { rutbeGoster(aktifKullanici.created_at); rozetseriYukle(); rozetKademeleriYukle(); }
+    if (sonSayfa === 'rozetler' && aktifKullanici) { rutbeGoster(aktifKullanici.created_at); rozetseriYukle(); rozetKademeleriYukle(); repLeaderboardYukle(); }
   }
   // Session yoksa login ekranı zaten görünüyor (sc-login show class'ı var)
 })();
@@ -4451,18 +4460,28 @@ async function gunuSorusunuYukle() {
   if (homeSoru)  homeSoru.textContent  = data.soru;
   if (bugunSoru) bugunSoru.textContent = data.soru;
 
-  // Kalan süre
-  if (data.bitis_zamani) {
-    var bitis  = new Date(data.bitis_zamani);
-    var simdi  = new Date();
-    var fark   = bitis - simdi;
-    if (fark > 0) {
-      var saat   = Math.floor(fark / 3600000);
-      var dakika = Math.floor((fark % 3600000) / 60000);
-      var sure   = saat + 's ' + dakika + 'dk kaldı';
-      var homeCount  = document.getElementById('home-soru-count');
+  // Kalan süre — canlı geri sayım
+  var homeCount = document.getElementById('home-soru-count');
+  if (data.bitis_zamani && homeCount) {
+    // Önceki timer'ı temizle
+    if (window._soruTimer) clearInterval(window._soruTimer);
+    var bitis = new Date(data.bitis_zamani);
+
+    function soruSureGuncelle() {
+      var fark = bitis - new Date();
+      if (fark <= 0) {
+        if (homeCount) homeCount.textContent = 'Soru sona erdi';
+        clearInterval(window._soruTimer);
+        return;
+      }
+      var saat  = Math.floor(fark / 3600000);
+      var dk    = Math.floor((fark % 3600000) / 60000);
+      var sn    = Math.floor((fark % 60000) / 1000);
+      var sure  = saat > 0 ? saat + 's ' + dk + 'dk kaldı' : dk + 'dk ' + sn + 'sn kaldı';
       if (homeCount) homeCount.textContent = sure;
     }
+    soruSureGuncelle();
+    window._soruTimer = setInterval(soruSureGuncelle, 1000);
   }
 
   cevaplariYukle(data.id);
@@ -4657,6 +4676,7 @@ navTo = function(id) {
     rutbeGoster(aktifKullanici.created_at);
     rozetseriYukle();
     rozetKademeleriYukle();
+    repLeaderboardYukle();
   }
   if (id === 'conn')    baglantilarYukle();
   if (id === 'dm')      dmListeYukle();
@@ -5090,17 +5110,21 @@ async function dmMesajlariYukle(hedefId) {
         var m = payload.new;
         var ilgili = (m.gonderen_id === myId && m.alan_id === hedefId) || (m.gonderen_id === hedefId && m.alan_id === myId);
         if (!ilgili || !msgsEl) return;
-        var benim = m.gonderen_id === myId;
+        // Kendi mesajlarımızı optimistic update ile zaten ekledik
+        if (m.gonderen_id === myId) return;
+        var benim = false;
         var zaman = new Date(m.created_at).toLocaleTimeString('tr-TR', {hour:'2-digit', minute:'2-digit'});
         var div = document.createElement('div');
-        div.style.cssText = 'display:flex;flex-direction:column;align-items:' + (benim ? 'flex-end' : 'flex-start') + ';margin-bottom:10px;';
-        div.innerHTML = '<div style="max-width:72%;background:' + (benim ? 'var(--accent)' : 'var(--light)') + ';color:' + (benim ? '#fff' : 'var(--text)') + ';border-radius:' + (benim ? '14px 14px 4px 14px' : '14px 14px 14px 4px') + ';padding:10px 14px;border:0.5px solid ' + (benim ? 'transparent' : 'var(--border)') + ';font-size:14px;line-height:1.5;">' + m.icerik + '</div>' +
+        div.style.cssText = 'display:flex;flex-direction:column;align-items:flex-start;margin-bottom:10px;';
+        div.innerHTML = '<div style="max-width:72%;background:var(--light);color:var(--text);border-radius:14px 14px 14px 4px;padding:10px 14px;border:0.5px solid var(--border);font-size:14px;line-height:1.5;">' + m.icerik + '</div>' +
           '<div style="font-size:10px;color:var(--text2);margin-top:3px;">' + zaman + '</div>';
         msgsEl.appendChild(div);
         msgsEl.scrollTop = msgsEl.scrollHeight;
         dmListeYukle();
       }
-    ).subscribe();
+    ).subscribe(function(status, err) {
+      if (err) console.warn('DM realtime:', err.message);
+    });
 }
 
 async function dmGonder() {
@@ -5108,13 +5132,28 @@ async function dmGonder() {
   if (!inp || !inp.value.trim() || !aktifKullanici || !aktifDmKullanici) return;
   var icerik = inp.value.trim();
   inp.value = '';
+
+  // Optimistic update — mesajı hemen ekrana yaz
+  var msgsEl = document.getElementById('dm-msgs');
+  if (msgsEl) {
+    var zaman = new Date().toLocaleTimeString('tr-TR', {hour:'2-digit', minute:'2-digit'});
+    var div = document.createElement('div');
+    div.style.cssText = 'display:flex;flex-direction:column;align-items:flex-end;margin-bottom:10px;';
+    div.innerHTML = '<div style="max-width:72%;background:var(--accent);color:#fff;border-radius:14px 14px 4px 14px;padding:10px 14px;font-size:14px;line-height:1.5;">' + icerik + '</div>' +
+      '<div style="font-size:10px;color:var(--text2);margin-top:3px;">' + zaman + '</div>';
+    msgsEl.appendChild(div);
+    msgsEl.scrollTop = msgsEl.scrollHeight;
+  }
+
+  // DB'ye kaydet
   await sb.from('dm_mesajlar').insert({
     gonderen_id: aktifKullanici.id,
     alan_id: aktifDmKullanici.id,
     icerik: icerik
   });
-  // Alana bildirim gönder
-  await bildirimGonder(aktifDmKullanici.id, 'yeni_mesaj',
+
+  // Alana bildirim gönder (arka planda)
+  bildirimGonder(aktifDmKullanici.id, 'yeni_mesaj',
     (aktifKullanici.ad || 'Biri') + ' sana mesaj gönderdi 💬', 'dm');
 }
 
@@ -5714,9 +5753,16 @@ async function adminRolKaydet() {
   if (idx !== -1) adminTumUyeler[idx].rol = yeniRol;
   adminKullaniciListesiGoster(adminTumUyeler);
 
+  // Kendi rolümüz değiştiyse aktifKullanici'yı güncelle
+  if (aktifKullanici && aktifKullanici.id === goruntulenenProfilId) {
+    aktifKullanici.rol = yeniRol;
+    kullaniciBilgisiGoster(aktifKullanici);
+  }
+
   adminModKapat();
+  // Profil modalını kapat ve yeniden aç — güncel rozeti göster
   profilModalKapat();
-  alert('Rol güncellendi!');
+  setTimeout(function() { profilGor(goruntulenenProfilId); }, 150);
 }
 
 async function adminSoruYayinla() {
@@ -6042,6 +6088,54 @@ async function rozetKademeleriYukle() {
     html += '</div></div>';
     kademeGrid.innerHTML += html;
   }
+}
+
+/* ══════════════════════════════
+   REP LEADERBOARD
+══════════════════════════════ */
+async function repLeaderboardYukle() {
+  var el = document.getElementById('rep-leaderboard');
+  if (!el) return;
+
+  var { data } = await sb.from('profiles')
+    .select('id, ad, soyad, avatar_url, rep_puani, rol')
+    .order('rep_puani', { ascending: false })
+    .limit(10);
+
+  if (!data || data.length === 0) {
+    el.innerHTML = '<div style="color:var(--text2);font-size:13px;">Henüz rep verisi yok.</div>';
+    return;
+  }
+
+  var beniId = aktifKullanici ? aktifKullanici.id : null;
+  var MADALYALAR = ['🥇','🥈','🥉'];
+
+  el.innerHTML = data.map(function(u, i) {
+    var ad = (u.ad || 'Üye') + (u.soyad ? ' ' + u.soyad.charAt(0) + '.' : '');
+    var puan = u.rep_puani || 0;
+    var unvan = repUnvaniAl(puan);
+    var benim = u.id === beniId;
+    var madalya = MADALYALAR[i] || (i + 1) + '.';
+    var puanRenk = i === 0 ? '#D4A830' : i === 1 ? '#9BA0A3' : i === 2 ? '#C07840' : 'var(--text)';
+
+    return '<div onclick="profilGor(\'' + u.id + '\')" style="' +
+      'background:' + (benim ? 'rgba(192,74,26,.06)' : 'var(--light)') + ';' +
+      'border:1px solid ' + (benim ? 'var(--accent)' : 'var(--border)') + ';' +
+      'border-radius:12px;padding:12px 14px;margin-bottom:8px;' +
+      'display:flex;align-items:center;gap:12px;cursor:pointer;' +
+      'transition:all .15s;box-shadow:var(--shadow);">' +
+      '<div style="font-size:' + (i < 3 ? '20px' : '13px') + ';width:26px;text-align:center;flex-shrink:0;font-weight:700;color:var(--text2);">' + madalya + '</div>' +
+      avatarHtml(u, 36) +
+      '<div style="flex:1;min-width:0;">' +
+        '<div style="font-size:13px;font-weight:' + (benim ? '700' : '600') + ';color:' + (benim ? 'var(--accent)' : 'var(--text)') + ';overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">' + ad + (benim ? ' ✦' : '') + '</div>' +
+        '<div style="font-size:11px;color:var(--text2);">' + unvan.icon + ' ' + unvan.label + '</div>' +
+      '</div>' +
+      '<div style="text-align:right;flex-shrink:0;">' +
+        '<div style="font-size:18px;font-weight:800;color:' + puanRenk + ';letter-spacing:-.5px;">' + puan + '</div>' +
+        '<div style="font-size:9px;color:var(--text2);text-transform:uppercase;letter-spacing:.5px;">rep</div>' +
+      '</div>' +
+    '</div>';
+  }).join('');
 }
 
 </script>
