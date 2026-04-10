@@ -3920,18 +3920,40 @@ function forumCevapHtml(c) {
   var uid = c.kullanici_id || '';
   var zaman = zamanaGore(c.created_at);
   var aktifRol = aktifKullanici ? aktifKullanici.rol : 'uye';
-  var yetkili = aktifRol === 'superadmin' || aktifRol === 'admin' || aktifRol === 'mod';
-  var silBtn = yetkili ? '<button class="forum-mod-del" onclick="forumSil(\'' + c.id + '\')" title="Sil">✕</button>' : '';
-
+  var yetkili  = aktifRol === 'superadmin' || aktifRol === 'admin' || aktifRol === 'mod';
+  var benim    = aktifKullanici && uid === aktifKullanici.id;
+  var upvotlar = c.upvote_sayisi || 0;
+  var isTmp    = c.id && c.id.toString().startsWith('tmp-');
+  var eylemler = '';
+  if (!isTmp) {
+    eylemler += '<button class="forum-action-btn" onclick="forumUpvote(\'' + c.id + '\',this)" style="color:' + (upvotedIds[c.id] ? 'var(--accent)' : 'var(--text2)') + ';font-size:11px;">' +
+      '<svg width="11" height="11" viewBox="0 0 12 12" fill="none"><path d="M6 1L11 6H7.5v5h-3V6H1L6 1z" stroke="currentColor" stroke-width="1.2" stroke-linejoin="round" fill="' + (upvotedIds[c.id] ? 'currentColor' : 'none') + '"/></svg>' +
+      '<span>' + (upvotlar > 0 ? upvotlar : '') + '</span></button>';
+  }
+  if (benim && !isTmp) {
+    eylemler += '<button class="forum-action-btn" onclick="forumDuzenle(\'' + c.id + '\')" style="color:var(--text2);font-size:11px;">Düzenle</button>';
+    eylemler += '<button class="forum-action-btn" onclick="forumSil(\'' + c.id + '\')" style="color:#E24B4A;font-size:11px;">Sil</button>';
+  } else if (yetkili && !isTmp) {
+    eylemler += '<button class="forum-mod-del" onclick="forumSil(\'' + c.id + '\')" title="Sil">✕</button>';
+  }
   return '<div class="forum-reply" id="forum-post-' + c.id + '">' +
     '<div class="forum-reply-header">' +
       avatarHtml(p, 28) +
       '<span onclick="profilGor(\'' + uid + '\')" style="font-size:12px;font-weight:700;color:var(--text);cursor:pointer;" onmouseover="this.style.color=\'var(--accent)\'" onmouseout="this.style.color=\'var(--text)\'">' + ad + '</span>' +
       rolBadgeHtml(p.rol) +
       '<span style="font-size:10px;color:var(--text2);">· ' + zaman + '</span>' +
-      silBtn +
     '</div>' +
-    '<div class="forum-reply-body">' + (c.icerik||'') + '</div>' +
+    '<div class="forum-reply-body" id="post-body-' + c.id + '">' + (c.icerik||'') + '</div>' +
+    '<div id="post-edit-' + c.id + '" style="display:none;padding:4px 0 4px 36px;">' +
+      '<div style="display:flex;gap:6px;">' +
+        '<textarea id="edit-inp-' + c.id + '" style="flex:1;padding:8px;background:var(--bg);border:1.5px solid var(--accent);border-radius:8px;font-family:\'Montserrat\',sans-serif;font-size:12px;color:var(--text);resize:none;outline:none;" rows="2">' + (c.icerik||'') + '</textarea>' +
+        '<div style="display:flex;flex-direction:column;gap:4px;">' +
+          '<button onclick="forumDuzenleKaydet(\'' + c.id + '\')" style="background:var(--accent);border:none;border-radius:6px;padding:5px 10px;color:#fff;font-size:11px;font-weight:600;cursor:pointer;font-family:\'Montserrat\',sans-serif;">Kaydet</button>' +
+          '<button onclick="forumDuzenleIptal(\'' + c.id + '\')" style="background:var(--surface);border:0.5px solid var(--border);border-radius:6px;padding:5px 10px;color:var(--text2);font-size:11px;cursor:pointer;font-family:\'Montserrat\',sans-serif;">İptal</button>' +
+        '</div>' +
+      '</div>' +
+    '</div>' +
+    (eylemler ? '<div style="display:flex;align-items:center;gap:4px;padding:2px 0 6px 36px;">' + eylemler + '</div>' : '') +
   '</div>';
 }
 
@@ -3940,7 +3962,6 @@ function forumCevapAc(mesajId) {
   var btn = document.getElementById('reply-btn-' + mesajId);
   if (!inputEl) return;
   var acik = inputEl.classList.contains('open');
-  // Tüm açık reply inputları kapat
   document.querySelectorAll('.forum-reply-input.open').forEach(function(el){ el.classList.remove('open'); });
   document.querySelectorAll('.forum-action-btn.reply-active').forEach(function(el){ el.classList.remove('reply-active'); });
   if (!acik) {
@@ -3956,8 +3977,7 @@ async function forumCevapGonder(parentId, inpEl) {
   if (!aktifKullanici) return;
   var icerik = inpEl.value.trim();
   inpEl.value = '';
-
-  // Optimistic update
+  var tmpId = 'tmp-' + Date.now();
   var repliesEl = document.getElementById('forum-post-' + parentId);
   if (repliesEl) {
     var rContainer = repliesEl.querySelector('.forum-replies');
@@ -3967,26 +3987,27 @@ async function forumCevapGonder(parentId, inpEl) {
       var actionsEl = repliesEl.querySelector('.forum-post-actions');
       if (actionsEl) actionsEl.insertAdjacentElement('afterend', rContainer);
     }
-    var fakeC = { id: 'tmp-' + Date.now(), kullanici_id: aktifKullanici.id, icerik: icerik, created_at: new Date().toISOString(), profiles: aktifKullanici };
-    rContainer.innerHTML += forumCevapHtml(fakeC);
-    // Cevap sayısını güncelle
+    var fakeC = { id: tmpId, kullanici_id: aktifKullanici.id, icerik: icerik, created_at: new Date().toISOString(), profiles: aktifKullanici };
+    var wrapper = document.createElement('div');
+    wrapper.innerHTML = forumCevapHtml(fakeC);
+    var replyEl = wrapper.querySelector('.forum-reply') || wrapper.firstElementChild;
+    if (replyEl) rContainer.appendChild(replyEl);
     var sayi = rContainer.querySelectorAll('.forum-reply').length;
     var cevapBtn = repliesEl.querySelector('.forum-reply-count');
     if (cevapBtn) cevapBtn.textContent = sayi + ' cevap';
   }
-
-  // Reply inputu kapat
   var inputBox = document.getElementById('reply-input-' + parentId);
   if (inputBox) inputBox.classList.remove('open');
-
-  // DB'ye kaydet
-  await sb.from('mesajlar').insert({
-    kanal_id: aktifKanalId,
-    kullanici_id: aktifKullanici.id,
-    icerik: icerik,
-    parent_id: parentId
-  });
+  var { data: sonuc } = await sb.from('mesajlar').insert({
+    kanal_id: aktifKanalId, kullanici_id: aktifKullanici.id,
+    icerik: icerik, parent_id: parentId
+  }).select().single();
+  if (sonuc) {
+    var tmpEl = document.getElementById('forum-post-' + tmpId);
+    if (tmpEl) tmpEl.id = 'forum-post-' + sonuc.id;
+  }
 }
+
 
 async function forumSil(mesajId) {
   await sb.from('mesajlar').delete().eq('id', mesajId);
@@ -4214,21 +4235,28 @@ async function mesajGonder() {
 
   // Optimistic update — yeni postu hemen ekrana ekle
   var feedEl = document.getElementById('forum-feed');
+  var tmpId = 'tmp-' + Date.now();
   if (feedEl) {
-    var fakeM = { id: 'tmp-' + Date.now(), kullanici_id: aktifKullanici.id, icerik: icerik || ' ', resim_url: resimUrl, created_at: new Date().toISOString(), profiles: aktifKullanici, parent_id: null };
-    var div = document.createElement('div');
-    div.innerHTML = forumPostHtml(fakeM, []);
-    feedEl.insertBefore(div.firstChild, feedEl.firstChild);
+    var fakeM = { id: tmpId, kullanici_id: aktifKullanici.id, icerik: icerik || ' ', resim_url: resimUrl, created_at: new Date().toISOString(), profiles: aktifKullanici, parent_id: null };
+    var wrapper = document.createElement('div');
+    wrapper.innerHTML = forumPostHtml(fakeM, []);
+    var postEl = wrapper.querySelector('.forum-post') || wrapper.firstElementChild;
+    if (postEl) feedEl.insertBefore(postEl, feedEl.firstChild);
   }
 
-  // DB'ye kaydet
-  await sb.from('mesajlar').insert({
+  // DB'ye kaydet — sonuç gelince tmp id'yi gerçeğiyle değiştir
+  var { data: sonuc } = await sb.from('mesajlar').insert({
     kanal_id: aktifKanalId,
     kullanici_id: aktifKullanici.id,
     icerik: icerik || ' ',
     resim_url: resimUrl,
     parent_id: null
-  });
+  }).select().single();
+
+  if (sonuc) {
+    var tmpEl = document.getElementById('forum-post-' + tmpId);
+    if (tmpEl) tmpEl.id = 'forum-post-' + sonuc.id;
+  }
 }
 
 /* ── PROFİL GÖR ── */
