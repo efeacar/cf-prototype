@@ -2188,14 +2188,13 @@ select.inp {
         </div>
       </div>
 
-    </div><!-- /main -->
-
       <!-- ADMİN PANELİ -->
       <div class="sc" id="sc-admin">
         <div class="page-header">
           <div class="page-title">⚙️ Admin Paneli</div>
           <div class="page-sub" id="admin-rol-label">Yükleniyor...</div>
         </div>
+
         <div class="page-body" style="max-width:900px;">
 
           <!-- İstatistikler -->
@@ -2300,6 +2299,8 @@ select.inp {
         </div>
       </div>
 
+
+    </div><!-- /main -->
 
   </div><!-- /app-body -->
 
@@ -4360,12 +4361,15 @@ async function baglantilarYukle() {
     bekList.innerHTML = bekleyenler.map(function(b) {
       var p = b.gonderen;
       var ad = p ? (p.ad || 'Üye') : 'Üye';
-      return '<div class="conn-item" style="flex-direction:column;align-items:flex-start;gap:10px;">' +
-        '<div class="conn-left"><div class="conn-av">' + ad.substring(0,2).toUpperCase() + '</div>' +
-        '<div><div class="conn-name">' + ad + '</div><div class="conn-loc">' + (p && p.sehir ? p.sehir : '') + '</div></div></div>' +
-        '<div style="display:flex;gap:8px;width:100%;">' +
-          '<button onclick="istekKabul(\'' + b.id + '\')" style="flex:1;padding:9px;background:var(--accent);color:#fff;border:none;border-radius:8px;font-family:\'Montserrat\',sans-serif;font-size:12px;font-weight:600;cursor:pointer;">✓ Kabul Et</button>' +
-          '<button onclick="istekReddet(\'' + b.id + '\')" style="flex:1;padding:9px;background:transparent;color:var(--text2);border:0.5px solid var(--border);border-radius:8px;font-family:\'Montserrat\',sans-serif;font-size:12px;cursor:pointer;">✗ Reddet</button>' +
+      return '<div class="conn-item" style="flex-direction:row;align-items:center;justify-content:space-between;gap:12px;">' +
+        '<div class="conn-left" onclick="profilGor(\'' + (p ? p.id : '') + '\')" style="cursor:pointer;flex:1;min-width:0;">' +
+          '<div class="conn-av">' + ad.substring(0,2).toUpperCase() + '</div>' +
+          '<div style="min-width:0;"><div class="conn-name" style="white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">' + ad + '</div>' +
+          '<div class="conn-loc">' + (p && p.sehir ? p.sehir : '') + '</div></div>' +
+        '</div>' +
+        '<div style="display:flex;gap:6px;flex-shrink:0;">' +
+          '<button onclick="istekKabul(\'' + b.id + '\')" style="padding:8px 14px;background:var(--accent);color:#fff;border:none;border-radius:8px;font-family:\'Montserrat\',sans-serif;font-size:12px;font-weight:600;cursor:pointer;white-space:nowrap;">✓ Kabul</button>' +
+          '<button onclick="istekReddet(\'' + b.id + '\')" style="padding:8px 14px;background:transparent;color:var(--text2);border:0.5px solid var(--border);border-radius:8px;font-family:\'Montserrat\',sans-serif;font-size:12px;cursor:pointer;white-space:nowrap;">✗ Reddet</button>' +
         '</div>' +
       '</div>';
     }).join('');
