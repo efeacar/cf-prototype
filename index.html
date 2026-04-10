@@ -2809,32 +2809,35 @@ async function girisYap() {
   var btn = document.querySelector('#sc-giris-form .btn-accent');
   if (btn) { btn.textContent = 'Giriş yapılıyor...'; btn.disabled = true; }
 
-  var { data, error } = await sb.auth.signInWithPassword({ email: email.value, password: sifre.value });
+  try {
+    var { data, error } = await sb.auth.signInWithPassword({ email: email.value, password: sifre.value });
 
-  if (error) {
-    showError('E-posta veya şifre hatalı.');
-    if (btn) { btn.textContent = 'Giriş Yap →'; btn.disabled = false; }
-    return;
+    if (error) {
+      showError('E-posta veya şifre hatalı.');
+      if (btn) { btn.textContent = 'Giriş Yap →'; btn.disabled = false; }
+      return;
+    }
+
+    // Kullanıcı verisini yükle, sonra anasayfaya git
+    clearError();
+    await kullaniciBilgisiYukle(data.user.id);
+    gunuSorusunuYukle();
+    go('home');
+  } catch(e) {
+    showError('Bir hata oluştu: ' + e.message);
   }
 
-  clearError();
-  go('home');
-  kullaniciBilgisiYukle(data.user.id);
-  gunuSorusunuYukle();
   if (btn) { btn.textContent = 'Giriş Yap →'; btn.disabled = false; }
 }
 
 /* ── OTURUM KONTROL ── */
 sb.auth.onAuthStateChange(async function(event, session) {
-  if (event === 'SIGNED_IN' && session && session.user) {
-    var currentSc = document.querySelector('.sc.show');
-    var authScreens = ['sc-login','sc-giris-form','sc-reg1','sc-reg2'];
-    var isOnAuth = !currentSc || authScreens.includes(currentSc.id);
-    if (isOnAuth) {
+  // Sadece TOKEN_REFRESHED ve INITIAL_SESSION event'lerinde çalış
+  // SIGNED_IN event'i girisYap() tarafından zaten işleniyor
+  if (event === 'TOKEN_REFRESHED' || event === 'INITIAL_SESSION') {
+    if (session && session.user && !aktifKullanici) {
       await kullaniciBilgisiYukle(session.user.id);
       gunuSorusunuYukle();
-      var sonSayfa = localStorage.getItem('aktifSayfa') || 'home';
-      go(sonSayfa);
     }
   }
 });
