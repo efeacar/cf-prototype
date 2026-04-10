@@ -1405,10 +1405,31 @@ select.inp {
       <span class="tl-main">childfree</span>
       <span class="tl-sub">türkiye</span>
     </div>
-    <div class="topbar-icon" style="position:relative;">
-      <svg viewBox="0 0 22 22" fill="none"><path d="M11 2a6 6 0 00-6 6v4l-2 2v1h16v-1l-2-2V8a6 6 0 00-6-6zM9 18a2 2 0 004 0" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"></path></svg>
-      <div class="notif-dot"></div>
+
+    <!-- Admin premium önizleme toggle (sadece admin/superadmin görür) -->
+    <div id="topbar-prem-toggle" style="display:none;" title="Premium görünümü önizle">
+      <button onclick="adminGorunumToggle()" id="topbar-prem-btn" style="padding:6px 12px;background:rgba(232,200,74,.15);color:rgba(232,200,74,.8);border:1px solid rgba(232,200,74,.25);border-radius:20px;font-family:'Montserrat',sans-serif;font-size:11px;font-weight:600;cursor:pointer;transition:all .2s;white-space:nowrap;">
+        ⭐ Normal
+      </button>
     </div>
+
+    <!-- Bildirim zili -->
+    <div class="topbar-icon" style="position:relative;" onclick="notifPanelToggle()" id="notif-btn">
+      <svg viewBox="0 0 22 22" fill="none"><path d="M11 2a6 6 0 00-6 6v4l-2 2v1h16v-1l-2-2V8a6 6 0 00-6-6zM9 18a2 2 0 004 0" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"></path></svg>
+      <div class="notif-dot" id="notif-dot" style="display:none;"></div>
+    </div>
+
+    <!-- Bildirim paneli -->
+    <div id="notif-panel" style="display:none;position:fixed;top:54px;right:12px;width:320px;background:var(--light);border:0.5px solid var(--border);border-radius:14px;box-shadow:0 8px 32px rgba(44,26,14,.15);z-index:500;overflow:hidden;">
+      <div style="padding:14px 16px 10px;border-bottom:0.5px solid var(--border);display:flex;align-items:center;justify-content:space-between;">
+        <div style="font-size:14px;font-weight:700;color:var(--text);">Bildirimler</div>
+        <button onclick="tumunuOku()" style="font-size:11px;color:var(--accent);background:none;border:none;cursor:pointer;font-family:'Montserrat',sans-serif;font-weight:600;">Tümünü oku</button>
+      </div>
+      <div id="notif-list" style="max-height:380px;overflow-y:auto;">
+        <div style="padding:20px;text-align:center;color:var(--text2);font-size:13px;">Yükleniyor...</div>
+      </div>
+    </div>
+
     <div class="topbar-avatar" onclick="navTo('profile')" id="topbar-av">...</div>
   </div>
 
@@ -2266,6 +2287,22 @@ select.inp {
 
           <!-- İçerik Sekmesi -->
           <div id="admin-panel-icerik" style="display:none;">
+
+            <!-- Duyuru Gönder -->
+            <div class="sec-head">📢 Tüm Üyelere Duyuru Gönder</div>
+            <div style="background:var(--light);border-radius:12px;border:0.5px solid var(--border);padding:16px;margin-bottom:20px;">
+              <div class="field"><label class="inp-label">Duyuru Metni</label><input id="admin-duyuru-inp" class="inp" placeholder="Duyuru metnini yaz... (örn: Yeni buluşma eklendi!)"></div>
+              <div class="field">
+                <label class="inp-label">Hedef</label>
+                <select id="admin-duyuru-hedef" class="inp" style="appearance:none;">
+                  <option value="hepsi">Tüm Üyeler</option>
+                  <option value="premium">Yalnızca Premium Üyeler</option>
+                </select>
+              </div>
+              <button onclick="adminDuyuruGonder()" style="padding:11px 20px;background:var(--dark);color:#F0E8DC;border:none;border-radius:9px;font-family:'Montserrat',sans-serif;font-size:13px;font-weight:600;cursor:pointer;">📢 Duyuruyu Gönder</button>
+              <div id="admin-duyuru-sonuc" style="font-size:12px;color:var(--text2);margin-top:10px;"></div>
+            </div>
+
             <div class="sec-head">Günün Sorusu</div>
             <div class="field"><label class="inp-label">Yeni Soru</label><input id="admin-soru-inp" class="inp" placeholder="Soruyu buraya yaz..."></div>
             <div class="field"><label class="inp-label">Bitiş Zamanı</label><input id="admin-soru-bitis" class="inp" type="datetime-local"></div>
@@ -2928,7 +2965,9 @@ async function kullaniciBilgisiYukle(userId) {
   davetKodlariniYukle(userId);
   rutbeGoster(data.created_at);
   cihazKaydet(userId);
-  gunlukGirisBonusu(userId); // Günlük +1 rep
+  gunlukGirisBonusu(userId);
+  okunmamisSay();
+  bildirimDinle(userId);
 
   // Referans bilgisi — kim davet etti?
   if (data.davet_eden) {
@@ -3015,6 +3054,9 @@ function kullaniciBilgisiGoster(data) {
     var adminKanalBtn = document.getElementById('admin-kanal-ekle-btn');
     if (adminKanalBtn && (data.rol === 'superadmin' || data.rol === 'admin')) adminKanalBtn.style.display = 'block';
   }
+  // Topbar premium toggle — sadece admin ve superadmin
+  var topPremToggle = document.getElementById('topbar-prem-toggle');
+  if (topPremToggle) topPremToggle.style.display = (data.rol === 'superadmin' || data.rol === 'admin') ? 'flex' : 'none';
 }
 
 /* ── DAVET KODLARINI YÜKLE ── */
@@ -3234,7 +3276,8 @@ async function repVer() {
     kaynak: 'kullanici_rep',
     tarih: new Date().toISOString()
   }).catch(function(){});
-
+  await bildirimGonder(goruntulenenProfilId, 'rep',
+    (aktifKullanici.ad || 'Biri') + ' sana +5 rep verdi ⚡', 'profile');
   if (gosterge) gosterge.textContent = '✅ +5 rep verildi!';
 }
 
@@ -4549,6 +4592,12 @@ async function baglantilarYukle() {
 
 async function istekKabul(arkId) {
   await sb.from('arkadasliklar').update({ durum: 'kabul' }).eq('id', arkId);
+  // Gönderene bildirim
+  var { data: ark } = await sb.from('arkadasliklar').select('gonderen_id').eq('id', arkId).single();
+  if (ark && aktifKullanici) {
+    await bildirimGonder(ark.gonderen_id, 'baglanti_kabul',
+      (aktifKullanici.ad || 'Biri') + ' bağlantı isteğini kabul etti! 🎉', 'conn');
+  }
   baglantilarYukle();
 }
 
@@ -4681,6 +4730,9 @@ async function baglantiIstegiGonder() {
   var btn = document.getElementById('pm-baglanti-btn');
   if (btn) { btn.textContent = '⏳ Gönderiliyor...'; btn.disabled = true; }
   await sb.from('arkadasliklar').insert({ gonderen_id: aktifKullanici.id, alan_id: goruntulenenProfilId, durum: 'bekliyor' });
+  // Bildirim gönder
+  await bildirimGonder(goruntulenenProfilId, 'baglanti_istegi',
+    (aktifKullanici.ad || 'Biri') + ' sana bağlantı isteği gönderdi.', 'conn');
   if (btn) { btn.textContent = '⏳ İstek Gönderildi'; btn.style.background = 'var(--mid)'; }
 }
 
@@ -4909,8 +4961,9 @@ async function adminPremiumVer(userId) {
   var idx = adminTumUyeler.findIndex(function(u){ return u.id === userId; });
   if (idx !== -1) adminTumUyeler[idx].premium = true;
   adminKullaniciListesiGoster(adminTumUyeler);
-  // Eğer kendi profili ise isPrem'i güncelle
   if (aktifKullanici && aktifKullanici.id === userId) { isPrem = true; applyMode(); }
+  await bildirimGonder(userId, 'premium',
+    '⭐ Tebrikler! Premium üyeliğin aktive edildi. Tüm özellikler artık açık!', 'hesabim');
 }
 
 async function adminPremiumKaldir(userId) {
@@ -4919,14 +4972,172 @@ async function adminPremiumKaldir(userId) {
   if (idx !== -1) adminTumUyeler[idx].premium = false;
   adminKullaniciListesiGoster(adminTumUyeler);
   if (aktifKullanici && aktifKullanici.id === userId) { isPrem = false; applyMode(); }
+  await bildirimGonder(userId, 'premium',
+    'Premium üyeliğin sonlandırıldı. Detay için hesabım sayfasını ziyaret et.', 'hesabim');
+}
+
+async function adminDuyuruGonder() {
+  var inp     = document.getElementById('admin-duyuru-inp');
+  var hedef   = document.getElementById('admin-duyuru-hedef');
+  var sonucEl = document.getElementById('admin-duyuru-sonuc');
+  if (!inp || !inp.value.trim()) { if (sonucEl) sonucEl.textContent = '⚠️ Duyuru metni boş olamaz.'; return; }
+  var metin    = inp.value.trim();
+  var hedefVal = hedef ? hedef.value : 'hepsi';
+  if (sonucEl) sonucEl.textContent = 'Gönderiliyor...';
+  var query = sb.from('profiles').select('id');
+  if (hedefVal === 'premium') query = query.eq('premium', true);
+  var { data: uyeler, error } = await query;
+  if (error || !uyeler) {
+    if (sonucEl) sonucEl.textContent = '❌ Hata: ' + (error ? error.message : 'Bilinmeyen hata');
+    return;
+  }
+  var bildirimler = uyeler.map(function(u) {
+    return { kullanici_id: u.id, tur: 'sistem', metin: '📢 ' + metin, link: null, okundu: false };
+  });
+  var BATCH = 100;
+  for (var i = 0; i < bildirimler.length; i += BATCH) {
+    await sb.from('bildirimler').insert(bildirimler.slice(i, i + BATCH));
+  }
+  if (sonucEl) sonucEl.textContent = '✅ ' + uyeler.length + ' üyeye duyuru gönderildi!';
+  inp.value = '';
+  setTimeout(function(){ if (sonucEl) sonucEl.textContent = ''; }, 4000);
 }
 
 // Admin/superadmin için görünüm önizleme toggle
 function adminGorunumToggle() {
   isPrem = !isPrem;
   applyMode();
-  var btn = document.getElementById('admin-gorunum-btn');
-  if (btn) btn.textContent = isPrem ? '👁️ Premium Görünüm Aktif — Normal\'e Geç' : '👁️ Normal Görünüm — Premium\'u Önizle';
+  var panelBtn = document.getElementById('admin-gorunum-btn');
+  var topBtn   = document.getElementById('topbar-prem-btn');
+  var label = isPrem ? '⭐ Premium' : '⭐ Normal';
+  var labelLong = isPrem ? '👁️ Premium Görünüm Aktif — Normal\'e Geç' : '👁️ Normal Görünüm — Premium\'u Önizle';
+  if (panelBtn) panelBtn.textContent = labelLong;
+  if (topBtn) {
+    topBtn.textContent = label;
+    topBtn.style.background = isPrem ? 'rgba(232,200,74,.3)' : 'rgba(232,200,74,.15)';
+    topBtn.style.color = isPrem ? 'rgba(232,200,74,1)' : 'rgba(232,200,74,.8)';
+  }
+}
+
+/* ══════════════════════════════
+   BİLDİRİM SİSTEMİ
+══════════════════════════════ */
+var notifPanelAcik = false;
+
+function notifPanelToggle() {
+  notifPanelAcik = !notifPanelAcik;
+  var panel = document.getElementById('notif-panel');
+  if (!panel) return;
+  panel.style.display = notifPanelAcik ? 'block' : 'none';
+  if (notifPanelAcik) bildirimleriYukle();
+}
+
+document.addEventListener('click', function(e) {
+  var panel = document.getElementById('notif-panel');
+  var btn   = document.getElementById('notif-btn');
+  if (!panel || !btn) return;
+  if (notifPanelAcik && !panel.contains(e.target) && !btn.contains(e.target)) {
+    panel.style.display = 'none';
+    notifPanelAcik = false;
+  }
+});
+
+async function bildirimleriYukle() {
+  if (!aktifKullanici) return;
+  var { data } = await sb.from('bildirimler')
+    .select('*')
+    .eq('kullanici_id', aktifKullanici.id)
+    .order('created_at', { ascending: false })
+    .limit(30);
+
+  var listEl = document.getElementById('notif-list');
+  if (!listEl) return;
+
+  if (!data || data.length === 0) {
+    listEl.innerHTML = '<div style="padding:24px;text-align:center;color:var(--text2);font-size:13px;">Henüz bildirim yok.</div>';
+    return;
+  }
+
+  var NOTIF_ICONS = {
+    baglanti_istegi: '🤝', baglanti_kabul: '✅',
+    rep: '⚡', bulusma_davet: '📅',
+    yeni_mesaj: '💬', sistem: '📢', premium: '⭐'
+  };
+
+  listEl.innerHTML = data.map(function(n) {
+    var icon = NOTIF_ICONS[n.tur] || '🔔';
+    var zaman = zamanaGore(n.created_at);
+    var bg = n.okundu ? 'transparent' : 'rgba(193,73,30,.04)';
+    return '<div onclick="notifTikla(\'' + n.id + '\',\'' + (n.link||'') + '\')" style="padding:12px 16px;border-bottom:0.5px solid var(--border);cursor:pointer;display:flex;gap:12px;align-items:flex-start;background:' + bg + ';transition:background .15s;" onmouseover="this.style.background=\'var(--surface)\'" onmouseout="this.style.background=\'' + bg + '\'">' +
+      '<div style="width:36px;height:36px;border-radius:50%;background:var(--surface);display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0;">' + icon + '</div>' +
+      '<div style="flex:1;min-width:0;">' +
+        '<div style="font-size:13px;color:var(--text);line-height:1.4;' + (n.okundu ? '' : 'font-weight:600;') + '">' + (n.metin||'') + '</div>' +
+        '<div style="font-size:11px;color:var(--text2);margin-top:3px;">' + zaman + '</div>' +
+      '</div>' +
+      (!n.okundu ? '<div style="width:7px;height:7px;border-radius:50%;background:var(--accent);flex-shrink:0;margin-top:4px;"></div>' : '') +
+    '</div>';
+  }).join('');
+}
+
+function zamanaGore(tarih) {
+  if (!tarih) return '';
+  var fark = Date.now() - new Date(tarih).getTime();
+  var dk = Math.floor(fark / 60000);
+  if (dk < 1)  return 'Az önce';
+  if (dk < 60) return dk + ' dk önce';
+  var sa = Math.floor(dk / 60);
+  if (sa < 24) return sa + ' sa önce';
+  var gun = Math.floor(sa / 24);
+  if (gun < 7) return gun + ' gün önce';
+  return new Date(tarih).toLocaleDateString('tr-TR');
+}
+
+async function notifTikla(notifId, link) {
+  await sb.from('bildirimler').update({ okundu: true }).eq('id', notifId);
+  notifPanelToggle();
+  if (link && link !== '' && link !== 'undefined') go(link);
+  else bildirimleriYukle();
+}
+
+async function tumunuOku() {
+  if (!aktifKullanici) return;
+  await sb.from('bildirimler').update({ okundu: true })
+    .eq('kullanici_id', aktifKullanici.id).eq('okundu', false);
+  var dot = document.getElementById('notif-dot');
+  if (dot) dot.style.display = 'none';
+  bildirimleriYukle();
+}
+
+async function okunmamisSay() {
+  if (!aktifKullanici) return;
+  var { count } = await sb.from('bildirimler')
+    .select('id', { count: 'exact', head: true })
+    .eq('kullanici_id', aktifKullanici.id)
+    .eq('okundu', false);
+  var dot = document.getElementById('notif-dot');
+  if (dot) dot.style.display = (count && count > 0) ? 'block' : 'none';
+}
+
+async function bildirimGonder(kullaniciId, tur, metin, link) {
+  if (!kullaniciId || !metin) return;
+  try {
+    await sb.from('bildirimler').insert({
+      kullanici_id: kullaniciId, tur: tur || 'sistem',
+      metin: metin, link: link || null, okundu: false
+    });
+  } catch(e) { console.log('Bildirim gönderilemedi:', e.message); }
+}
+
+function bildirimDinle(userId) {
+  sb.channel('bildirimler-' + userId)
+    .on('postgres_changes', {
+      event: 'INSERT', schema: 'public', table: 'bildirimler',
+      filter: 'kullanici_id=eq.' + userId
+    }, function() {
+      okunmamisSay();
+      if (notifPanelAcik) bildirimleriYukle();
+    })
+    .subscribe();
 }
 
 async function adminKanallarYukle() {
