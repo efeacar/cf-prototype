@@ -1264,9 +1264,13 @@ select.inp {
   background: var(--bg);
   display: flex; align-items: center; justify-content: center;
   z-index: 9999;
-  transition: opacity .3s ease;
+  animation: loadFadeOut .4s ease 1.5s forwards;
+  pointer-events: none; /* Altındaki elementlere tıklamayı bloklamasın */
 }
-#app-loading.hide { opacity: 0; pointer-events: none; }
+@keyframes loadFadeOut {
+  to { opacity: 0; visibility: hidden; }
+}
+#app-loading.hide { opacity: 0; visibility: hidden; pointer-events: none; }
 
 /* ── BTN ACCENT ── */
 .btn-accent {
@@ -1358,7 +1362,7 @@ select.inp {
 <!-- ══════════════════════════════
      AUTH — GİRİŞ
 ══════════════════════════════ -->
-<div id="sc-login" class="sc auth-wrap" style="display:none;">
+<div id="sc-login" class="sc show auth-wrap">
   <div class="auth-box">
     <div class="auth-logo">
       <span class="logo-main">childfree</span>
@@ -3073,8 +3077,15 @@ sb.auth.onAuthStateChange(async function(event, session) {
 /* ── SAYFA AÇILIŞINDA OTURUM KONTROL ── */
 (async function() {
   var { data: { session } } = await sb.auth.getSession();
+  // Loading overlay'i hemen gizle
+  var loader = document.getElementById('app-loading');
+  if (loader) loader.classList.add('hide');
+
   if (session && session.user) {
-    // Önce kullanıcı verisini yükle, sonra sayfaya git
+    // Login ekranını gizle, uygulamayı aç
+    var loginEl = document.getElementById('sc-login');
+    if (loginEl) { loginEl.classList.remove('show'); loginEl.style.display = 'none'; }
+
     await kullaniciBilgisiYukle(session.user.id);
     gunuSorusunuYukle();
     var sonSayfa = localStorage.getItem('aktifSayfa') || 'home';
@@ -3085,16 +3096,8 @@ sb.auth.onAuthStateChange(async function(event, session) {
     if (sonSayfa === 'library') kanallariYukle();
     if (sonSayfa === 'meet' && isPrem) buslusmalariYukle();
     if (sonSayfa === 'rozetler' && aktifKullanici) { rutbeGoster(aktifKullanici.created_at); rozetseriYukle(); rozetKademeleriYukle(); }
-  } else {
-    // Giriş ekranını göster
-    document.getElementById('sc-login').style.display = 'flex';
   }
-  // Loading overlay'i kaldır
-  var loader = document.getElementById('app-loading');
-  if (loader) {
-    loader.classList.add('hide');
-    setTimeout(function(){ loader.style.display = 'none'; }, 300);
-  }
+  // Session yoksa login ekranı zaten görünüyor (sc-login show class'ı var)
 })();
 
 /* ── KULLANICI BİLGİSİ YükLE ── */
