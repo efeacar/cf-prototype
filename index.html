@@ -1,6 +1,9 @@
 <!DOCTYPE html>
 <html lang="tr"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="theme-color" content="#1E0F07">
 <title>childfree türkiye</title>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
@@ -26,7 +29,9 @@
   --shadow-lg: 0 8px 40px rgba(30,15,7,.12);
 }
 
-[data-dark="true"] {
+[data-dark="true"],
+html[data-dark="true"],
+[data-dark="true"] body {
   --dark:    #0E0906;
   --bg:      #141008;
   --surface: #1C1510;
@@ -57,18 +62,21 @@ body {
 ══════════════════════════════ */
 .auth-wrap {
   min-height: 100vh;
+  min-height: 100dvh;
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 24px 16px;
+  padding: max(24px, env(safe-area-inset-top)) 16px max(24px, env(safe-area-inset-bottom));
   background: var(--bg);
   background-image: radial-gradient(ellipse at 20% 50%, rgba(192,74,26,.06) 0%, transparent 60%),
                     radial-gradient(ellipse at 80% 20%, rgba(192,74,26,.04) 0%, transparent 50%);
+  overflow-y: auto;
 }
 
 .auth-box {
   width: 100%;
   max-width: 400px;
+  padding: 8px 0; /* Küçük ekranlarda üst/alt boşluk */
 }
 
 .auth-logo {
@@ -1331,7 +1339,7 @@ select.inp {
   .prod-grid { grid-template-columns: 1fr; }
   .rozet-grid { grid-template-columns: repeat(3, 1fr); }
   .profile-hero { flex-direction: column; text-align: center; padding: 20px 18px; }
-  .auth-card { padding: 22px 18px; }
+  .auth-card { padding: 24px 20px; }
   .modal { padding: 22px 18px; }
   .ritual-card { flex-direction: column; align-items: flex-start; gap: 12px; }
   .ritual-btn { width: 100%; }
@@ -1339,6 +1347,11 @@ select.inp {
   .featured-card { padding: 16px 18px; }
   .fc-title { font-size: 18px; }
   .topbar { padding: 0 14px; gap: 10px; }
+  /* Auth screens mobile */
+  .auth-logo { margin-bottom: 24px; }
+  .logo-main { font-size: 28px; }
+  /* Notification panel */
+  #notif-panel { width: calc(100vw - 24px); right: 12px; left: 12px; }
 }
 </style>
 </head>
@@ -2673,7 +2686,13 @@ select.inp {
 
 <script>
 var isPrem = false;
-var isDark = false;
+var isDark = localStorage.getItem('darkMode') === '1';
+
+// Dark mode'u hemen uygula (flash önlemek için)
+if (isDark) {
+  document.documentElement.dataset.dark = 'true';
+  document.getElementById('app-shell').dataset.dark = 'true';
+}
 
 /* ── ROUTING ── */
 var AUTH_SCREENS = ['login','giris-form','reg1','reg2'];
@@ -2802,7 +2821,10 @@ function applyMode() {
 function toggleDark() {
   isDark = !isDark;
   document.getElementById('app-shell').dataset.dark = isDark;
+  document.documentElement.dataset.dark = isDark; // html elementine de uygula
+  document.body.style.background = isDark ? 'var(--bg)' : '';
   document.getElementById('dark-sw').classList.toggle('on', isDark);
+  localStorage.setItem('darkMode', isDark ? '1' : '');
 }
 
 /* ── ANKET ── */
@@ -2866,8 +2888,11 @@ function copyCode(btn, code) {
 function updateClock() {}
 
 applyMode();
-
-/* ── SUPABASE BAĞLANTISI ── */
+// Dark switch durumunu yükle
+setTimeout(function() {
+  var darkSw = document.getElementById('dark-sw');
+  if (darkSw) darkSw.classList.toggle('on', isDark);
+}, 0);
 const SUPABASE_URL = 'https://qkjegdocknktffqqywdi.supabase.co';
 const SUPABASE_KEY = 'sb_publishable_4z_jcwYTVLjHKBDBQ-7hyQ_voAk1JTM';
 const sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
