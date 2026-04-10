@@ -1613,8 +1613,8 @@ select.inp {
                 </div>
               </div>
               <div class="ch-msgs">
-                <div class="msg"><div class="msg-meta">Ayşe K. · 2 sa önce</div><div class="msg-text">Geçen ay yalnız Kyoto'ya gittim, inanılmazdı. Childfree olmanın en güzel yanı böyle ani kararlar verebilmek!</div><div class="msg-like"><svg viewBox="0 0 16 16" fill="none"><path d="M8 13s-5-3.5-5-7a4 4 0 018 0" stroke="currentColor" stroke-width="1.2"></path><path d="M8 13s5-3.5 5-7a4 4 0 00-8 0" stroke="currentColor" stroke-width="1.2"></path></svg>12</div></div>
-                <div class="msg"><div class="msg-meta">Merve T. · 1 sa önce</div><div class="msg-text">Ben de geçen yaz Portekiz'e solo gittim. "Yalnız mısın?" diye sordular ama harika vakit geçirdim 😄</div><div class="msg-like"><svg viewBox="0 0 16 16" fill="none"><path d="M8 13s-5-3.5-5-7a4 4 0 018 0" stroke="currentColor" stroke-width="1.2"></path><path d="M8 13s5-3.5 5-7a4 4 0 00-8 0" stroke="currentColor" stroke-width="1.2"></path></svg>8</div></div>
+                <div class="msg"><div class="msg-meta">Ayşe K. · 2 sa önce</div><div class="msg-text">Geçen ay yalnız Kyoto'ya gittim, inanılmazdı. Childfree olmanın en güzel yanı böyle ani kararlar verebilmek!</div></div>
+                <div class="msg"><div class="msg-meta">Merve T. · 1 sa önce</div><div class="msg-text">Ben de geçen yaz Portekiz'e solo gittim. "Yalnız mısın?" diye sordular ama harika vakit geçirdim 😄</div></div>
 
                 <div class="poll-card" style="max-width:480px;">
                   <div class="poll-label">📊 Anket · Selin tarafından</div>
@@ -1628,7 +1628,7 @@ select.inp {
                   <div class="poll-footer"><span id="poll-ch-count">32 oy · 2 gün kaldı</span></div>
                 </div>
 
-                <div class="msg"><div class="msg-meta">Selin A. · 20 dk önce</div><div class="msg-text">Bali'yi düşünüyorum sonbahar için, kim gelir? Küçük grup olur harika!</div><div class="msg-like"><svg viewBox="0 0 16 16" fill="none"><path d="M8 13s-5-3.5-5-7a4 4 0 018 0" stroke="currentColor" stroke-width="1.2"></path><path d="M8 13s5-3.5 5-7a4 4 0 00-8 0" stroke="currentColor" stroke-width="1.2"></path></svg>4</div></div>
+                <div class="msg"><div class="msg-meta">Selin A. · 20 dk önce</div><div class="msg-text">Bali'yi düşünüyorum sonbahar için, kim gelir? Küçük grup olur harika!</div></div>
               </div>
               <div class="ch-input-row" style="flex-direction:column;gap:0;padding:8px 12px 12px;">
                 <div id="msg-img-preview" style="display:none;margin-bottom:8px;position:relative;">
@@ -2199,7 +2199,7 @@ select.inp {
         <div class="page-body" style="max-width:900px;">
 
           <!-- İstatistikler -->
-          <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:24px;">
+          <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:12px;">
             <div style="background:var(--dark);border-radius:12px;padding:16px;text-align:center;">
               <div id="stat-uye" style="font-size:26px;color:#F0E8DC;font-weight:800;">—</div>
               <div style="font-size:10px;color:rgba(240,232,220,.4);margin-top:4px;text-transform:uppercase;letter-spacing:.5px;">Üye</div>
@@ -2216,6 +2216,13 @@ select.inp {
               <div id="stat-kanal" style="font-size:26px;color:#F0E8DC;font-weight:800;">—</div>
               <div style="font-size:10px;color:rgba(240,232,220,.4);margin-top:4px;text-transform:uppercase;letter-spacing:.5px;">Kanal</div>
             </div>
+          </div>
+
+          <!-- Görünüm Önizleme Toggle -->
+          <div style="margin-bottom:16px;">
+            <button id="admin-gorunum-btn" onclick="adminGorunumToggle()" style="width:100%;padding:11px 16px;background:var(--surface);border:0.5px solid var(--border);border-radius:10px;font-family:'Montserrat',sans-serif;font-size:13px;font-weight:600;color:var(--text);cursor:pointer;text-align:left;transition:all .15s;" onmouseover="this.style.borderColor='var(--accent)'" onmouseout="this.style.borderColor='var(--border)'">
+              👁️ Normal Görünüm — Premium'u Önizle
+            </button>
           </div>
 
           <!-- Sekmeler -->
@@ -2914,6 +2921,9 @@ async function kullaniciBilgisiYukle(userId) {
   if (timeoutKontrol(data)) return;
 
   aktifKullanici = data;
+  // isPrem'i gerçek Supabase verisinden al
+  isPrem = data.premium === true;
+  applyMode();
   kullaniciBilgisiGoster(data);
   davetKodlariniYukle(userId);
   rutbeGoster(data.created_at);
@@ -3308,7 +3318,7 @@ async function mesajlariYukle(kanalId, kanalAd, kanalEmoji) {
             silBtn +
           '</div>' +
           metin + imgHtml +
-          '<div class="msg-like"><svg viewBox="0 0 16 16" fill="none"><path d="M8 13s-5-3.5-5-7a4 4 0 018 0" stroke="currentColor" stroke-width="1.2"/><path d="M8 13s5-3.5 5-7a4 4 0 00-8 0" stroke="currentColor" stroke-width="1.2"/></svg>' + (m.begeni_sayisi||0) + '</div>' +
+          '' +
         '</div>';
       }).join('');
       msgsEl.scrollTop = msgsEl.scrollHeight;
@@ -3327,7 +3337,7 @@ async function mesajlariYukle(kanalId, kanalAd, kanalEmoji) {
           div.className = 'msg';
           div.id = 'msg-' + m.id;
           var imgHtml = m.resim_url ? '<img src="' + m.resim_url + '" style="max-width:100%;border-radius:8px;margin-top:8px;display:block;cursor:pointer;" onclick="window.open(\'' + m.resim_url + '\')">' : '';
-          div.innerHTML = '<div class="msg-meta" style="cursor:pointer;">Üye · şimdi</div><div class="msg-text">' + (m.icerik && m.icerik.trim() !== ' ' ? m.icerik : '') + '</div>' + imgHtml + '<div class="msg-like"><svg viewBox="0 0 16 16" fill="none"><path d="M8 13s-5-3.5-5-7a4 4 0 018 0" stroke="currentColor" stroke-width="1.2"/><path d="M8 13s5-3.5 5-7a4 4 0 00-8 0" stroke="currentColor" stroke-width="1.2"/></svg>0</div>';
+          div.innerHTML = '<div class="msg-meta" style="cursor:pointer;">Üye · şimdi</div><div class="msg-text">' + (m.icerik && m.icerik.trim() !== ' ' ? m.icerik : '') + '</div>' + imgHtml + '';
           msgsEl.appendChild(div);
           msgsEl.scrollTop = msgsEl.scrollHeight;
         }
@@ -4250,15 +4260,13 @@ async function cevaplariYukle(soruId) {
     return;
   }
 
-  var heartSvg = '<svg viewBox="0 0 16 16" fill="none"><path d="M8 13s-5-3.5-5-7a4 4 0 018 0" stroke="currentColor" stroke-width="1.2"/><path d="M8 13s5-3.5 5-7a4 4 0 00-8 0" stroke="currentColor" stroke-width="1.2"/></svg>';
-
   listEl.innerHTML = data.map(function(c) {
     var ad    = c.profiles ? (c.profiles.ad || 'Üye') : 'Üye';
     var zaman = new Date(c.created_at).toLocaleTimeString('tr-TR', {hour:'2-digit',minute:'2-digit'});
     return '<div class="ans-item">' +
       '<div class="ai-meta"><span>' + ad + '</span><span>' + zaman + '</span></div>' +
       '<div class="ai-text">' + c.icerik + '</div>' +
-      '<div class="ai-like">' + heartSvg + (c.begeni_sayisi || 0) + '</div>' +
+      
     '</div>';
   }).join('');
 }
@@ -4780,6 +4788,12 @@ function kullaniciKartHtml(u, aktifRol) {
     butonlar += ' ' + timeoutBtn + ' ' + banBtn;
   }
   butonlar += '<button onclick="profilGor(\'' + u.id + '\')" style="padding:6px 12px;background:var(--dark);color:#F0E8DC;border:none;border-radius:7px;font-family:\'Montserrat\',sans-serif;font-size:11px;font-weight:600;cursor:pointer;">Profil</button>';
+  if (aktifRol === 'superadmin' || aktifRol === 'admin') {
+    var premBtn = u.premium
+      ? '<button onclick="adminPremiumKaldir(\'' + u.id + '\')" style="padding:6px 12px;background:rgba(232,200,74,.15);color:#8B6914;border:0.5px solid rgba(232,200,74,.3);border-radius:7px;font-family:\'Montserrat\',sans-serif;font-size:11px;font-weight:600;cursor:pointer;">⭐ Premium Kaldır</button>'
+      : '<button onclick="adminPremiumVer(\'' + u.id + '\')" style="padding:6px 12px;background:rgba(232,200,74,.12);color:#8B6914;border:0.5px solid rgba(232,200,74,.2);border-radius:7px;font-family:\'Montserrat\',sans-serif;font-size:11px;font-weight:600;cursor:pointer;">⭐ Premium Ver</button>';
+    butonlar += ' ' + premBtn;
+  }
 
   return '<div style="background:var(--light);border-radius:12px;border:0.5px solid ' + (u.banlandi ? 'rgba(226,75,74,.4)' : 'var(--border)') + ';padding:14px 16px;margin-bottom:8px;' + (u.banlandi ? 'opacity:.7;' : '') + '">' +
     '<div style="display:flex;align-items:flex-start;justify-content:space-between;gap:12px;flex-wrap:wrap;">' +
@@ -4790,6 +4804,7 @@ function kullaniciKartHtml(u, aktifRol) {
           '<div style="font-size:11px;color:var(--text2);">' + (u.sehir||'—') + ' · ' + tarih + ' · ' + (u.meslek||'Meslek yok') + '</div>' +
           '<div style="margin-top:4px;display:flex;gap:4px;flex-wrap:wrap;">' +
             '<span class="prof-badge ' + (rolCls[u.rol]||'') + '" style="font-size:10px;">' + (rolLabel[u.rol]||'Üye') + '</span>' +
+            (u.premium ? '<span style="font-size:10px;background:rgba(232,200,74,.15);color:#8B6914;padding:2px 7px;border-radius:6px;font-weight:600;">⭐ Premium</span>' : '') +
             (u.timeout_bitis && new Date(u.timeout_bitis) > new Date() ? '<span style="font-size:10px;background:rgba(255,165,0,.15);color:#B8860B;padding:2px 7px;border-radius:6px;font-weight:600;">⏱️ Timeout: ' + new Date(u.timeout_bitis).toLocaleDateString('tr-TR') + '</span>' : '') +
           '</div>' +
         '</div>' +
@@ -4820,9 +4835,13 @@ async function adminPanelYukle() {
   var f = function(id, v) { var el = document.getElementById(id); if(el) el.textContent = v || 0; };
   f('stat-uye', uyeSayi); f('stat-mesaj', mesajSayi); f('stat-bulusma', bulusmaSayi); f('stat-kanal', kanalSayi);
 
+  // Görünüm toggle butonu metnini güncelle
+  var gorunumBtn = document.getElementById('admin-gorunum-btn');
+  if (gorunumBtn) gorunumBtn.textContent = isPrem ? '👁️ Premium Görünüm Aktif — Normal\'e Geç' : '👁️ Normal Görünüm — Premium\'u Önizle';
+
   // Kullanıcıları yükle
   var { data: uyeler } = await sb.from('profiles')
-    .select('id, ad, soyad, sehir, rol, created_at, meslek, banlandi, timeout_bitis, timeout_sebep')
+    .select('id, ad, soyad, sehir, rol, created_at, meslek, banlandi, timeout_bitis, timeout_sebep, premium')
     .order('created_at', { ascending: false })
     .limit(100);
 
@@ -4883,6 +4902,31 @@ async function adminBanKaldir(userId) {
   var idx = adminTumUyeler.findIndex(function(u){ return u.id === userId; });
   if (idx !== -1) adminTumUyeler[idx].banlandi = false;
   adminKullaniciListesiGoster(adminTumUyeler);
+}
+
+async function adminPremiumVer(userId) {
+  await sb.from('profiles').update({ premium: true }).eq('id', userId);
+  var idx = adminTumUyeler.findIndex(function(u){ return u.id === userId; });
+  if (idx !== -1) adminTumUyeler[idx].premium = true;
+  adminKullaniciListesiGoster(adminTumUyeler);
+  // Eğer kendi profili ise isPrem'i güncelle
+  if (aktifKullanici && aktifKullanici.id === userId) { isPrem = true; applyMode(); }
+}
+
+async function adminPremiumKaldir(userId) {
+  await sb.from('profiles').update({ premium: false }).eq('id', userId);
+  var idx = adminTumUyeler.findIndex(function(u){ return u.id === userId; });
+  if (idx !== -1) adminTumUyeler[idx].premium = false;
+  adminKullaniciListesiGoster(adminTumUyeler);
+  if (aktifKullanici && aktifKullanici.id === userId) { isPrem = false; applyMode(); }
+}
+
+// Admin/superadmin için görünüm önizleme toggle
+function adminGorunumToggle() {
+  isPrem = !isPrem;
+  applyMode();
+  var btn = document.getElementById('admin-gorunum-btn');
+  if (btn) btn.textContent = isPrem ? '👁️ Premium Görünüm Aktif — Normal\'e Geç' : '👁️ Normal Görünüm — Premium\'u Önizle';
 }
 
 async function adminKanallarYukle() {
