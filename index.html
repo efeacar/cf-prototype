@@ -2381,7 +2381,7 @@ select.inp {
 </div>
 
 <!-- ADMİN — MOD ATAMA MODAL -->
-<div class="modal-bg" id="admin-mod-modal" onclick="if(event.target===this)adminModKapat()" style="display:none;align-items:center;justify-content:center;z-index:200;">
+<div class="modal-bg" id="admin-mod-modal" onclick="if(event.target===this)adminModKapat()" style="display:none;align-items:center;justify-content:center;z-index:400;">
   <div class="modal" style="max-width:420px;">
     <div class="modal-title">Rol Yönetimi</div>
     <div class="modal-sub" id="admin-mod-kullanici-ad">Kullanıcı seçilmedi.</div>
@@ -2426,27 +2426,67 @@ select.inp {
 
 <!-- PROFİL GÖRÜNTÜLEME MODAL -->
 <div class="modal-bg" id="profil-modal" onclick="if(event.target===this)profilModalKapat()" style="display:none;align-items:center;justify-content:center;z-index:200;">
-  <div class="modal" style="max-width:400px;">
-    <div style="display:flex;align-items:center;gap:16px;margin-bottom:16px;">
-      <div id="pm-av" style="width:60px;height:60px;border-radius:50%;background:var(--surface);border:3px solid var(--accent);display:flex;align-items:center;justify-content:center;font-size:22px;font-weight:700;color:var(--mid);flex-shrink:0;overflow:hidden;"></div>
-      <div>
-        <div id="pm-ad" style="font-size:18px;font-weight:700;color:var(--text);"></div>
-        <div id="pm-loc" style="font-size:12px;color:var(--text2);margin-top:2px;"></div>
-        <div id="pm-badges" style="display:flex;gap:5px;flex-wrap:wrap;margin-top:6px;"></div>
+  <div style="background:var(--light);border-radius:20px;width:100%;max-width:420px;overflow:hidden;box-shadow:0 20px 60px rgba(44,26,14,.2);">
+
+    <!-- Header — koyu arka plan -->
+    <div style="background:var(--dark);padding:24px 24px 20px;position:relative;">
+      <button onclick="profilModalKapat()" style="position:absolute;top:14px;right:14px;background:rgba(255,255,255,.08);border:none;color:rgba(240,232,220,.6);border-radius:50%;width:30px;height:30px;cursor:pointer;font-size:16px;line-height:1;display:flex;align-items:center;justify-content:center;">×</button>
+
+      <div style="display:flex;align-items:center;gap:14px;">
+        <!-- Avatar -->
+        <div id="pm-av" style="width:64px;height:64px;border-radius:50%;background:var(--surface);border:2.5px solid rgba(193,73,30,.6);flex-shrink:0;overflow:hidden;display:flex;align-items:center;justify-content:center;font-size:22px;font-weight:700;color:var(--mid);"></div>
+        <div style="flex:1;min-width:0;">
+          <div id="pm-ad" style="font-size:18px;font-weight:700;color:#F0E8DC;letter-spacing:-.3px;margin-bottom:3px;"></div>
+          <div id="pm-loc" style="font-size:12px;color:rgba(240,232,220,.45);margin-bottom:8px;"></div>
+          <!-- Badges row -->
+          <div id="pm-badges" style="display:flex;gap:5px;flex-wrap:wrap;"></div>
+        </div>
+      </div>
+
+      <!-- Rep bar -->
+      <div id="pm-rep-bar" style="margin-top:16px;background:rgba(255,255,255,.06);border-radius:8px;padding:10px 12px;display:flex;align-items:center;gap:8px;">
+        <span style="font-size:16px;">⚡</span>
+        <div style="flex:1;">
+          <div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:4px;">
+            <span id="pm-rep-unvan" style="font-size:11px;font-weight:600;color:rgba(232,200,74,.9);"></span>
+            <span id="pm-rep-puan" style="font-size:11px;color:rgba(240,232,220,.4);"></span>
+          </div>
+          <div style="height:3px;background:rgba(255,255,255,.1);border-radius:2px;">
+            <div id="pm-rep-progress" style="height:100%;background:linear-gradient(90deg,#E8C84A,#C1491E);border-radius:2px;transition:width .4s ease;width:0%;"></div>
+          </div>
+        </div>
       </div>
     </div>
-    <div id="pm-meslek" style="display:none;background:var(--surface);border-radius:8px;padding:10px 12px;margin-bottom:12px;font-size:13px;color:var(--text);">💼 <span id="pm-meslek-text"></span></div>
-    <div id="pm-etiketler" style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:16px;"></div>
-    <div id="pm-rozetler" style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:16px;"></div>
-    <div style="display:flex;gap:8px;">
-      <button class="btn-accent" onclick="baglantiIstegiGonder()" id="pm-baglanti-btn" style="flex:1;">+ Bağlantı Kur</button>
-      <button id="pm-rep-btn" onclick="repVer()" style="padding:14px 16px;background:rgba(232,200,74,.15);color:#7A5C00;border:1px solid rgba(232,200,74,.4);border-radius:10px;font-family:'Montserrat',sans-serif;font-size:13px;font-weight:600;cursor:pointer;" title="Rep ver">⚡ Rep</button>
-      <button id="pm-admin-btn" onclick="adminModAc()" style="display:none;padding:14px 16px;background:var(--dark);color:#F0E8DC;border:none;border-radius:10px;font-family:'Montserrat',sans-serif;font-size:13px;font-weight:600;cursor:pointer;">⚙️ Rol</button>
-    </div>
-    <div id="pm-rep-gosterge" style="font-size:12px;color:var(--text2);text-align:center;margin-top:8px;"></div>
-    <div id="pm-mod-actions" style="display:none;margin-top:10px;padding-top:10px;border-top:0.5px solid var(--border);">
-      <div style="font-size:10px;font-weight:600;color:var(--text2);text-transform:uppercase;letter-spacing:.5px;margin-bottom:8px;">Moderasyon</div>
-      <button onclick="kullaniciyiBanla()" style="width:100%;padding:10px;background:transparent;color:#E24B4A;border:0.5px solid rgba(226,75,74,.3);border-radius:8px;font-family:'Montserrat',sans-serif;font-size:12px;font-weight:600;cursor:pointer;">🚫 Kullanıcıyı Banla</button>
+
+    <!-- Body -->
+    <div style="padding:20px 24px;">
+
+      <!-- Meslek -->
+      <div id="pm-meslek" style="display:none;font-size:13px;color:var(--text2);margin-bottom:14px;">💼 <span id="pm-meslek-text"></span></div>
+
+      <!-- Etiketler -->
+      <div id="pm-etiketler" style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:16px;"></div>
+
+      <!-- Üyelik süresi -->
+      <div id="pm-sure" style="font-size:12px;color:var(--text2);margin-bottom:20px;"></div>
+
+      <!-- Butonlar -->
+      <div style="display:flex;gap:8px;margin-bottom:8px;">
+        <button class="btn-accent" onclick="baglantiIstegiGonder()" id="pm-baglanti-btn" style="flex:1;padding:12px;">+ Bağlantı Kur</button>
+        <button id="pm-rep-btn" onclick="repVer()" style="padding:12px 16px;background:rgba(232,200,74,.12);color:#8B6914;border:1px solid rgba(232,200,74,.3);border-radius:10px;font-family:'Montserrat',sans-serif;font-size:13px;font-weight:600;cursor:pointer;transition:all .15s;">⚡ Rep</button>
+        <button id="pm-admin-btn" onclick="adminModAc()" style="display:none;padding:12px 16px;background:var(--surface);color:var(--text);border:0.5px solid var(--border);border-radius:10px;font-family:'Montserrat',sans-serif;font-size:13px;font-weight:600;cursor:pointer;">⚙️ Rol</button>
+      </div>
+      <div id="pm-rep-gosterge" style="font-size:12px;color:var(--text2);text-align:center;min-height:18px;"></div>
+
+      <!-- Moderasyon (mod/admin için) -->
+      <div id="pm-mod-actions" style="display:none;margin-top:14px;padding-top:14px;border-top:0.5px solid var(--border);">
+        <div style="font-size:10px;font-weight:600;color:var(--text2);text-transform:uppercase;letter-spacing:.8px;margin-bottom:10px;">Moderasyon</div>
+        <div style="display:flex;gap:8px;">
+          <button onclick="adminTimeoutAcModal()" style="flex:1;padding:10px;background:rgba(255,165,0,.08);color:#8B6914;border:0.5px solid rgba(255,165,0,.25);border-radius:8px;font-family:'Montserrat',sans-serif;font-size:12px;font-weight:600;cursor:pointer;">⏱️ Timeout</button>
+          <button onclick="kullaniciyiBanla()" style="flex:1;padding:10px;background:rgba(226,75,74,.06);color:#C14040;border:0.5px solid rgba(226,75,74,.25);border-radius:8px;font-family:'Montserrat',sans-serif;font-size:12px;font-weight:600;cursor:pointer;">🚫 Banla</button>
+        </div>
+      </div>
+
     </div>
   </div>
 </div>
@@ -3066,6 +3106,17 @@ async function kanallariYukle() {
 var aktifKanalId = null;
 var mesajSubscription = null;
 
+function avatarHtml(profil, boyut) {
+  boyut = boyut || 40;
+  var ad = profil ? (profil.ad || 'U') : 'U';
+  var initials = ad.substring(0,2).toUpperCase();
+  var stl = 'width:' + boyut + 'px;height:' + boyut + 'px;border-radius:50%;flex-shrink:0;object-fit:cover;';
+  if (profil && profil.avatar_url) {
+    return '<img src="' + profil.avatar_url + '" style="' + stl + 'border:2px solid var(--border);" onerror="this.outerHTML=\'<div style=\\"' + stl + 'background:var(--surface);display:flex;align-items:center;justify-content:center;font-size:' + Math.floor(boyut*0.35) + 'px;font-weight:700;color:var(--text2);border:2px solid var(--border);\\">' + initials + '</div>\'">';
+  }
+  return '<div style="' + stl + 'background:var(--surface);display:flex;align-items:center;justify-content:center;font-size:' + Math.floor(boyut*0.35) + 'px;font-weight:700;color:var(--text2);border:2px solid var(--border);">' + initials + '</div>';
+}
+
 function rolBadgeHtml(rol) {
   if (rol === 'superadmin') return '<span style="font-size:9px;background:rgba(139,0,0,.15);color:#8B0000;padding:1px 6px;border-radius:6px;font-weight:600;margin-left:2px;">👑 SAdmin</span>';
   if (rol === 'admin') return '<span style="font-size:9px;background:rgba(193,73,30,.15);color:#C1491E;padding:1px 6px;border-radius:6px;font-weight:600;margin-left:2px;">⚙️ Admin</span>';
@@ -3180,22 +3231,22 @@ async function repModalGoster(userId) {
   var { data: profil } = await sb.from('profiles').select('rep_puani').eq('id', userId).single();
   var puan = (profil && profil.rep_puani) || 0;
   var unvan = repUnvaniAl(puan);
-  var pmBadges = document.getElementById('pm-badges');
-  if (pmBadges) {
-    // Rep badge ekle
-    var eskiRep = pmBadges.querySelector('.rep-badge');
-    if (eskiRep) eskiRep.remove();
-    var repSpan = document.createElement('span');
-    repSpan.className = 'prof-badge rep-badge';
-    repSpan.style.cssText = 'background:rgba(232,200,74,.15);color:#7A5C00;';
-    repSpan.textContent = unvan.icon + ' ' + puan + ' rep · ' + unvan.label;
-    pmBadges.appendChild(repSpan);
-  }
+  var sonrakiIdx = REP_UNVANLARI.findIndex(function(u){ return u.min === unvan.min; }) + 1;
+  var sonraki = REP_UNVANLARI[sonrakiIdx];
+  var ilerleme = sonraki ? Math.min(100, Math.round((puan - unvan.min) / (sonraki.min - unvan.min) * 100)) : 100;
+
+  var unvanEl    = document.getElementById('pm-rep-unvan');
+  var puanEl     = document.getElementById('pm-rep-puan');
+  var progressEl = document.getElementById('pm-rep-progress');
+
+  if (unvanEl) unvanEl.textContent = unvan.icon + ' ' + unvan.label;
+  if (puanEl)  puanEl.textContent  = puan + ' rep' + (sonraki ? ' · Sonraki: ' + sonraki.min : '');
+  if (progressEl) progressEl.style.width = ilerleme + '%';
 
   // Rep ver butonunu sıfırla
   var btn = document.getElementById('pm-rep-btn');
   var gosterge = document.getElementById('pm-rep-gosterge');
-  if (btn) { btn.disabled = false; btn.textContent = '⚡ Rep'; btn.style.background = 'rgba(232,200,74,.15)'; }
+  if (btn) { btn.disabled = false; btn.textContent = '⚡ Rep'; btn.style.background = 'rgba(232,200,74,.12)'; }
   if (gosterge) gosterge.textContent = '';
 }
 
@@ -4402,7 +4453,7 @@ async function baglantilarYukle() {
 
   // Bekleyen istekler (bana gelen)
   var { data: bekleyenler } = await sb.from('arkadasliklar')
-    .select('*, gonderen:profiles!arkadasliklar_gonderen_id_fkey(id, ad, soyad, sehir, rol)')
+    .select('*, gonderen:profiles!arkadasliklar_gonderen_id_fkey(id, ad, soyad, sehir, rol, avatar_url)')
     .eq('alan_id', userId)
     .eq('durum', 'bekliyor');
 
@@ -4415,7 +4466,7 @@ async function baglantilarYukle() {
       var ad = p ? (p.ad || 'Üye') : 'Üye';
       return '<div class="conn-item" style="flex-direction:row;align-items:center;justify-content:space-between;gap:12px;">' +
         '<div class="conn-left" onclick="profilGor(\'' + (p ? p.id : '') + '\')" style="cursor:pointer;flex:1;min-width:0;">' +
-          '<div class="conn-av">' + ad.substring(0,2).toUpperCase() + '</div>' +
+          avatarHtml(p, 40) +
           '<div style="min-width:0;"><div class="conn-name" style="white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">' + ad + '</div>' +
           '<div class="conn-loc">' + (p && p.sehir ? p.sehir : '') + '</div></div>' +
         '</div>' +
@@ -4431,10 +4482,10 @@ async function baglantilarYukle() {
 
   // Mevcut bağlantılar
   var { data: arkalar1 } = await sb.from('arkadasliklar')
-    .select('*, diger:profiles!arkadasliklar_alan_id_fkey(id, ad, soyad, sehir, rol, created_at)')
+    .select('*, diger:profiles!arkadasliklar_alan_id_fkey(id, ad, soyad, sehir, rol, avatar_url, created_at)')
     .eq('gonderen_id', userId).eq('durum', 'kabul');
   var { data: arkalar2 } = await sb.from('arkadasliklar')
-    .select('*, diger:profiles!arkadasliklar_gonderen_id_fkey(id, ad, soyad, sehir, rol, created_at)')
+    .select('*, diger:profiles!arkadasliklar_gonderen_id_fkey(id, ad, soyad, sehir, rol, avatar_url, created_at)')
     .eq('alan_id', userId).eq('durum', 'kabul');
 
   var tumArkalar = (arkalar1 || []).concat(arkalar2 || []);
@@ -4448,10 +4499,10 @@ async function baglantilarYukle() {
         var ad = p ? (p.ad || 'Üye') : 'Üye';
         var rutbe = p ? rutbeHesapla(p.created_at) : RUTBELER[0];
         return '<div class="conn-item" onclick="profilGor(\'' + (p ? p.id : '') + '\')" style="cursor:pointer;">' +
-          '<div class="conn-left"><div class="conn-av">' + ad.substring(0,2).toUpperCase() + '</div>' +
+          '<div class="conn-left">' + avatarHtml(p, 40) +
           '<div><div class="conn-name">' + ad + '</div>' +
           '<div class="conn-loc">' + (p && p.sehir ? p.sehir : '') + ' · ' + rutbe.label + ' ' + rolBadgeHtml(p && p.rol) + '</div></div></div>' +
-          '<div class="conn-stat" style="font-size:11px;color:var(--text2);">Profili gör →</div>' +
+          '<div class="conn-stat" style="font-size:11px;color:var(--text2);">→</div>' +
         '</div>';
       }).join('');
     }
@@ -4459,7 +4510,7 @@ async function baglantilarYukle() {
 
   // Keşfet - diğer üyeler
   var { data: tumUyeler } = await sb.from('profiles')
-    .select('id, ad, soyad, sehir, rol, created_at, etiketler')
+    .select('id, ad, soyad, sehir, rol, created_at, etiketler, avatar_url')
     .neq('id', userId)
     .limit(12);
 
@@ -4476,7 +4527,7 @@ async function baglantilarYukle() {
         var ad = u.ad || 'Üye';
         var rutbe = rutbeHesapla(u.created_at);
         return '<div class="conn-item">' +
-          '<div class="conn-left"><div class="conn-av">' + ad.substring(0,2).toUpperCase() + '</div>' +
+          '<div class="conn-left">' + avatarHtml(u, 40) +
           '<div><div class="conn-name">' + ad + (u.soyad ? ' ' + u.soyad.charAt(0) + '.' : '') + '</div>' +
           '<div class="conn-loc">' + (u.sehir||'') + ' · ' + rutbe.label + '</div></div></div>' +
           '<button onclick="baglantiIstegiGonderDirekt(\'' + u.id + '\',this)" style="padding:7px 14px;background:var(--accent);color:#fff;border:none;border-radius:8px;font-family:\'Montserrat\',sans-serif;font-size:12px;font-weight:600;cursor:pointer;flex-shrink:0;">+ Bağlan</button>' +
@@ -4510,51 +4561,70 @@ var goruntulenenProfilId = null;
 async function profilGor(userId) {
   if (!userId) return;
   goruntulenenProfilId = userId;
-  var { data } = await sb.from('profiles').select('*').eq('id', userId).single();
-  if (!data) return;
 
   var modal = document.getElementById('profil-modal');
   if (!modal) return;
+  modal.style.display = 'flex';
 
-  var avEl    = document.getElementById('pm-av');
-  var adEl    = document.getElementById('pm-ad');
-  var locEl   = document.getElementById('pm-loc');
-  var badgesEl= document.getElementById('pm-badges');
-  var meslekEl= document.getElementById('pm-meslek');
-  var meslekTx= document.getElementById('pm-meslek-text');
-  var etiketEl= document.getElementById('pm-etiketler');
-  var rozetEl = document.getElementById('pm-rozetler');
-  var bagBtn  = document.getElementById('pm-baglanti-btn');
-  var admBtn  = document.getElementById('pm-admin-btn');
-  var modAct  = document.getElementById('pm-mod-actions');
+  // Yüklenirken placeholder
+  var avEl = document.getElementById('pm-av');
+  var adEl = document.getElementById('pm-ad');
+  if (adEl) adEl.textContent = 'Yükleniyor...';
+  if (avEl) avEl.textContent = '...';
+
+  var { data } = await sb.from('profiles').select('*').eq('id', userId).single();
+  if (!data) { modal.style.display = 'none'; return; }
 
   var ad = (data.ad || 'Üye') + (data.soyad ? ' ' + data.soyad.charAt(0) + '.' : '');
+
+  // Avatar
   if (avEl) {
-    if (data.avatar_url) avEl.innerHTML = '<img src="' + data.avatar_url + '" style="width:100%;height:100%;object-fit:cover;border-radius:50%;">';
-    else avEl.textContent = (data.ad || 'U').substring(0,2).toUpperCase();
+    if (data.avatar_url) {
+      avEl.innerHTML = '<img src="' + data.avatar_url + '" style="width:100%;height:100%;object-fit:cover;">';
+    } else {
+      avEl.textContent = (data.ad || 'U').substring(0,2).toUpperCase();
+    }
   }
+
+  // İsim & konum
   if (adEl) adEl.textContent = ad;
+  var locEl = document.getElementById('pm-loc');
   if (locEl) locEl.textContent = data.sehir ? '📍 ' + data.sehir : '';
 
-  // Rozet/rütbe
+  // Rütbe & rol badge'leri
   var rutbe = rutbeHesapla(data.created_at);
+  var badgesEl = document.getElementById('pm-badges');
   if (badgesEl) {
     var rolHtml = '';
-    if (data.rol === 'superadmin') rolHtml = '<span class="prof-badge role-superadmin">👑 Süper Admin</span>';
-    else if (data.rol === 'admin') rolHtml = '<span class="prof-badge role-admin">⚙️ Admin</span>';
-    else if (data.rol === 'mod')   rolHtml = '<span class="prof-badge role-mod">🛡️ Mod</span>';
-    badgesEl.innerHTML = '<div class="prof-badge ' + rutbe.cls + '">' + rutbe.label + '</div>' + rolHtml;
+    if (data.rol === 'superadmin') rolHtml = '<span class="prof-badge role-superadmin" style="font-size:10px;">👑 Süper Admin</span>';
+    else if (data.rol === 'admin') rolHtml = '<span class="prof-badge role-admin" style="font-size:10px;">⚙️ Admin</span>';
+    else if (data.rol === 'mod')   rolHtml = '<span class="prof-badge role-mod" style="font-size:10px;">🛡️ Mod</span>';
+    badgesEl.innerHTML = '<span class="prof-badge ' + rutbe.cls + '" style="font-size:10px;">' + rutbe.label + '</span>' + rolHtml;
   }
 
-  if (meslekEl && meslekTx) {
-    if (data.meslek) { meslekTx.textContent = data.meslek; meslekEl.style.display = 'block'; }
-    else meslekEl.style.display = 'none';
-  }
+  // Meslek
+  var meslekEl = document.getElementById('pm-meslek');
+  var meslekTx = document.getElementById('pm-meslek-text');
+  if (meslekEl) meslekEl.style.display = data.meslek ? 'block' : 'none';
+  if (meslekTx && data.meslek) meslekTx.textContent = data.meslek;
+
+  // Etiketler
+  var etiketEl = document.getElementById('pm-etiketler');
   if (etiketEl) {
-    etiketEl.innerHTML = (data.etiketler || []).map(function(t){ return '<span class="p-tag" style="font-size:11px;">' + t + '</span>'; }).join('');
+    etiketEl.innerHTML = (data.etiketler || []).map(function(t){
+      return '<span style="font-size:11px;padding:4px 10px;border-radius:14px;background:var(--surface);color:var(--text);border:0.5px solid var(--border);">' + t + '</span>';
+    }).join('');
+  }
+
+  // Üyelik süresi
+  var sureEl = document.getElementById('pm-sure');
+  if (sureEl && data.created_at) {
+    var gun = Math.floor((Date.now() - new Date(data.created_at).getTime()) / (1000*60*60*24));
+    sureEl.textContent = '📅 ' + gun + ' gündür toplulukta';
   }
 
   // Bağlantı durumu
+  var bagBtn = document.getElementById('pm-baglanti-btn');
   if (bagBtn && aktifKullanici && userId !== aktifKullanici.id) {
     var { data: mevcut } = await sb.from('arkadasliklar')
       .select('id, durum')
@@ -4562,25 +4632,33 @@ async function profilGor(userId) {
       .maybeSingle();
     if (mevcut) {
       bagBtn.textContent = mevcut.durum === 'kabul' ? '✓ Bağlantısın' : '⏳ İstek Gönderildi';
-      bagBtn.disabled = true;
-      bagBtn.style.background = 'var(--mid)';
+      bagBtn.disabled = true; bagBtn.style.background = 'var(--mid)';
     } else {
-      bagBtn.textContent = '+ Bağlantı Kur';
-      bagBtn.disabled = false;
-      bagBtn.style.background = 'var(--accent)';
+      bagBtn.textContent = '+ Bağlantı Kur'; bagBtn.disabled = false; bagBtn.style.background = 'var(--accent)';
     }
     bagBtn.style.display = 'block';
   } else if (bagBtn) {
-    bagBtn.style.display = 'none';
+    bagBtn.style.display = userId === (aktifKullanici && aktifKullanici.id) ? 'none' : 'block';
   }
 
-  // Admin/mod yetkileri
+  // Rep butonu — kendine gösterme
+  var repBtn = document.getElementById('pm-rep-btn');
+  if (repBtn) repBtn.style.display = (userId === (aktifKullanici && aktifKullanici.id)) ? 'none' : 'block';
+
+  // Admin / mod yetkileri
   var aktifRol = aktifKullanici ? aktifKullanici.rol : 'uye';
-  if (admBtn) admBtn.style.display = (aktifRol === 'superadmin' || aktifRol === 'admin') ? 'block' : 'none';
+  var admBtn = document.getElementById('pm-admin-btn');
+  var modAct = document.getElementById('pm-mod-actions');
+  if (admBtn) admBtn.style.display = (aktifRol === 'superadmin' || aktifRol === 'admin') ? 'flex' : 'none';
   if (modAct) modAct.style.display = (aktifRol === 'superadmin' || aktifRol === 'admin' || aktifRol === 'mod') ? 'block' : 'none';
 
-  modal.style.display = 'flex';
+  // Rep bar
   repModalGoster(userId);
+}
+
+function adminTimeoutAcModal() {
+  var adEl = document.getElementById('pm-ad');
+  adminTimeoutAc(goruntulenenProfilId, adEl ? adEl.textContent : 'Kullanıcı');
 }
 
 function profilModalKapat() {
