@@ -4995,17 +4995,23 @@ async function adminTimeoutKaldir(userId) {
 /* Giriş kontrolünde timeout kontrolü */
 function timeoutKontrol(profil) {
   if (!profil) return false;
-  if (profil.timeout_bitis && new Date(profil.timeout_bitis) > new Date()) {
-    var bitisStr = new Date(profil.timeout_bitis).toLocaleString('tr-TR');
-    alert('⏱️ Hesabın geçici olarak kısıtlanmıştır.\n\nBitiş: ' + bitisStr + (profil.timeout_sebep ? '\nSebep: ' + profil.timeout_sebep : ''));
-    sb.auth.signOut();
-    location.reload();
-    return true;
+  // Timeout kontrolü — kolon yoksa (undefined) veya null ise geç
+  if (profil.timeout_bitis) {
+    try {
+      if (new Date(profil.timeout_bitis) > new Date()) {
+        var bitisStr = new Date(profil.timeout_bitis).toLocaleString('tr-TR');
+        alert('⏱️ Hesabın geçici olarak kısıtlanmıştır.\n\nBitiş: ' + bitisStr + (profil.timeout_sebep ? '\nSebep: ' + profil.timeout_sebep : ''));
+        sb.auth.signOut();
+        setTimeout(function(){ location.reload(); }, 500);
+        return true;
+      }
+    } catch(e) { /* tarih parse hatası — geç */ }
   }
-  if (profil.banlandi) {
-    alert('🚫 Hesabın kalıcı olarak banlanmıştır. Daha fazla bilgi için toplulukla iletişime geç.');
+  // Ban kontrolü — sadece açıkça true ise
+  if (profil.banlandi === true) {
+    alert('🚫 Hesabın kalıcı olarak banlanmıştır.');
     sb.auth.signOut();
-    location.reload();
+    setTimeout(function(){ location.reload(); }, 500);
     return true;
   }
   return false;
