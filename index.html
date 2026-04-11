@@ -3107,6 +3107,17 @@ function tagSec(el) {
   el.classList.toggle('sel');
 }
 
+// iOS Safari için event delegation — tag-cloud'lara touch desteği
+document.addEventListener('DOMContentLoaded', function() {
+  document.body.addEventListener('touchend', function(e) {
+    var chip = e.target.closest('.tag-chip');
+    if (chip) {
+      e.preventDefault();
+      chip.classList.toggle('sel');
+    }
+  }, { passive: false });
+});
+
 // Dark mode'u hemen uygula (flash önlemek için)
 if (isDark) {
   document.documentElement.dataset.dark = 'true';
@@ -4579,28 +4590,36 @@ async function mesajGonder() {
     if (postEl) feedEl.insertBefore(postEl, feedEl.firstChild);
   }
 
-  // DB'ye kaydet — sonuç gelince tmp id'yi gerçeğiyle değiştir
-  var { data: sonuc, error: insertErr } = await sb.from('mesajlar').insert({
+  // DB'ye kaydet
+  var { error: insertErr } = await sb.from('mesajlar').insert({
     kanal_id: aktifKanalId,
     kullanici_id: aktifKullanici.id,
     icerik: icerik || ' ',
     resim_url: resimUrl,
     parent_id: null
-  }).select().single();
+  });
 
   if (insertErr) {
     console.error('Mesaj gönderilemedi:', insertErr.message);
     // Optimistic elemanı kaldır
-    var tmpFail = document.getElementById('forum-post-' + tmpId);
+    var tmpFail = document.querySelector('[id^="forum-post-tmp-"]');
     if (tmpFail) tmpFail.remove();
-    // Kullanıcıya göster — alert ile
-    alert('⚠️ Mesaj gönderilemedi: ' + insertErr.message + '\n\nSupabase RLS politikasını kontrol et.');
+    alert('⚠️ Mesaj gönderilemedi: ' + insertErr.message);
     return;
   }
 
-  if (sonuc) {
-    var tmpEl = document.getElementById('forum-post-' + tmpId);
-    if (tmpEl) tmpEl.id = 'forum-post-' + sonuc.id;
+  // Insert başarılı — tmp elementi temizle, mesajları yeniden yükle
+  var tmpEl = document.querySelector('[id^="forum-post-tmp-"]');
+  if (tmpEl) tmpEl.remove();
+
+  // Mesajları yenile (realtime çalışmıyorsa garanti fallback)
+  if (aktifKanalId) {
+    var kanalBaslik = document.getElementById('forum-ch-title');
+    var kanalEmoji  = document.getElementById('forum-ch-emoji');
+    mesajlariYukle(aktifKanalId,
+      kanalBaslik ? kanalBaslik.textContent : '',
+      kanalEmoji  ? kanalEmoji.textContent  : '💬'
+    );
   }
 }
 
@@ -6817,14 +6836,19 @@ async function adminIcerikYukle() {
 
 async function adminBulusmaSil(bulId, btn) {
   if (!confirm('Bu buluşmayı silmek istediğine emin misin?')) return;
-  var { error: e1 } = await sb.from('bulusma_katilimcilar').delete().eq('bulusma_id', bulId);
-  var { error: e2 } = await sb.from('bulusmalar').delete().eq('id', bulId);
-  if (e2) { alert('Silinemedi: ' + e2.message); return; }
-  // Kartı DOM'dan kaldır — data-bulid attribute ile bul
+
+  // Önce DOM'dan kaldır (optimistic)
   var kart = document.querySelector('[data-bulid="' + bulId + '"]');
-  if (kart) { kart.remove(); return; }
-  // Fallback: listyi yenile
-  adminIcerikYukle();
+  if (kart) kart.remove();
+  else if (btn) btn.closest('div[data-bulid]') ? btn.closest('div[data-bulid]').remove() : btn.parentElement.remove();
+
+  // DB'den sil
+  await sb.from('bulusma_katilimcilar').delete().eq('bulusma_id', bulId);
+  var { error } = await sb.from('bulusmalar').delete().eq('id', bulId);
+  if (error) {
+    console.error('Buluşma silinemedi:', error.message);
+    alert('DB\'den silinemedi: ' + error.message + '\n(Ekrandan kaldırıldı, sayfayı yenileyince geri gelir)');
+  }
 }
 
 async function adminDavetlerYukle() {
