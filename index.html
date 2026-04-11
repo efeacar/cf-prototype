@@ -6712,6 +6712,7 @@ function arsivFiltreSifirla() {
 }
 
 
+async function adminKanallarYukle() {
   var { data: kanallar } = await sb.from('kanallar').select('*').order('created_at');
   var kanalList = document.getElementById('admin-kanallar-list');
   if (!kanalList) return;
