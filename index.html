@@ -1559,6 +1559,109 @@ select.inp {
   /* Notification panel */
   #notif-panel { width: calc(100vw - 24px); right: 12px; left: 12px; }
 }
+
+/* ══════════════════════════════
+   ADMIN PANELİ — ELEGant UI
+══════════════════════════════ */
+.adm-tabs {
+  display: flex;
+  gap: 6px;
+  margin-bottom: 22px;
+  flex-wrap: wrap;
+}
+.adm-tab {
+  padding: 8px 14px;
+  border-radius: 20px;
+  border: 1.5px solid var(--border);
+  background: transparent;
+  font-family: 'Montserrat', sans-serif;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text2);
+  cursor: pointer;
+  transition: all .18s;
+  white-space: nowrap;
+}
+.adm-tab:hover { border-color: var(--accent); color: var(--accent); }
+.adm-tab.active {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: #fff;
+}
+.adm-stat-grid {
+  display: grid;
+  grid-template-columns: repeat(4,1fr);
+  gap: 10px;
+  margin-bottom: 20px;
+}
+@media(max-width:600px) { .adm-stat-grid { grid-template-columns: repeat(2,1fr); } }
+.adm-stat {
+  background: var(--dark);
+  border-radius: 14px;
+  padding: 18px 14px;
+  text-align: center;
+}
+.adm-stat-val { font-size: 28px; color: #F0E8DC; font-weight: 800; line-height: 1; }
+.adm-stat-lbl { font-size: 9px; color: rgba(240,232,220,.4); margin-top:5px; text-transform:uppercase; letter-spacing:.8px; }
+.adm-stat-trend { font-size: 10px; margin-top: 4px; }
+.adm-card {
+  background: var(--light);
+  border: 0.5px solid var(--border);
+  border-radius: 12px;
+  padding: 16px;
+  margin-bottom: 10px;
+}
+.adm-row {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+.adm-btn {
+  padding: 6px 12px;
+  border-radius: 7px;
+  font-family: 'Montserrat', sans-serif;
+  font-size: 11px;
+  font-weight: 600;
+  cursor: pointer;
+  border: 0.5px solid var(--border);
+  background: var(--surface);
+  color: var(--text);
+  transition: all .15s;
+}
+.adm-btn:hover { border-color: var(--accent); color: var(--accent); }
+.adm-btn.danger { color: #E24B4A; border-color: rgba(226,75,74,.3); background: transparent; }
+.adm-btn.danger:hover { background: rgba(226,75,74,.06); }
+.adm-btn.gold { color: #8B6914; border-color: rgba(232,200,74,.3); background: rgba(232,200,74,.08); }
+.adm-btn.primary { background: var(--dark); color: #F0E8DC; border-color: var(--dark); }
+.adm-btn.primary:hover { background: var(--accent); border-color: var(--accent); }
+.adm-btn.accent { background: var(--accent); color: #fff; border-color: var(--accent); }
+.adm-section { font-size: 10px; font-weight: 700; color: var(--text2); letter-spacing: 1px; text-transform: uppercase; margin: 22px 0 10px; }
+.adm-toggle-btn {
+  width: 100%;
+  padding: 11px 16px;
+  background: var(--surface);
+  border: 0.5px solid var(--border);
+  border-radius: 10px;
+  font-family: 'Montserrat', sans-serif;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text);
+  cursor: pointer;
+  text-align: left;
+  transition: all .15s;
+  margin-bottom: 18px;
+}
+.adm-toggle-btn:hover { border-color: var(--accent); }
+/* Soru arşivi */
+.adm-soru-card {
+  background: var(--light);
+  border: 0.5px solid var(--border);
+  border-radius: 12px;
+  padding: 14px 16px;
+  margin-bottom: 8px;
+}
 </style>
 </head>
 <body>
@@ -2583,50 +2686,84 @@ select.inp {
       <!-- ADMİN PANELİ -->
       <div class="sc" id="sc-admin">
         <div class="page-header">
-          <div class="page-title">⚙️ Admin Paneli</div>
-          <div class="page-sub" id="admin-rol-label">Yükleniyor...</div>
+          <div>
+            <div class="page-title">Admin Paneli</div>
+            <div class="page-sub" id="admin-rol-label">Yükleniyor...</div>
+          </div>
+          <button id="admin-gorunum-btn" class="adm-toggle-btn" onclick="adminGorunumToggle()" style="width:auto;margin:0;padding:8px 14px;font-size:12px;">
+            👁️ Normal Görünüm
+          </button>
         </div>
 
         <div class="page-body" style="max-width:900px;">
 
-          <!-- İstatistikler -->
-          <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:12px;">
-            <div style="background:var(--dark);border-radius:12px;padding:16px;text-align:center;">
-              <div id="stat-uye" style="font-size:26px;color:#F0E8DC;font-weight:800;">—</div>
-              <div style="font-size:10px;color:rgba(240,232,220,.4);margin-top:4px;text-transform:uppercase;letter-spacing:.5px;">Üye</div>
+          <!-- İstatistik Kartları -->
+          <div class="adm-stat-grid">
+            <div class="adm-stat">
+              <div class="adm-stat-val" id="stat-uye">—</div>
+              <div class="adm-stat-lbl">Üye</div>
+              <div class="adm-stat-trend" id="stat-uye-trend"></div>
             </div>
-            <div style="background:var(--dark);border-radius:12px;padding:16px;text-align:center;">
-              <div id="stat-mesaj" style="font-size:26px;color:#F0E8DC;font-weight:800;">—</div>
-              <div style="font-size:10px;color:rgba(240,232,220,.4);margin-top:4px;text-transform:uppercase;letter-spacing:.5px;">Mesaj</div>
+            <div class="adm-stat">
+              <div class="adm-stat-val" id="stat-mesaj">—</div>
+              <div class="adm-stat-lbl">Mesaj</div>
+              <div class="adm-stat-trend" id="stat-mesaj-trend"></div>
             </div>
-            <div style="background:var(--dark);border-radius:12px;padding:16px;text-align:center;">
-              <div id="stat-bulusma" style="font-size:26px;color:#F0E8DC;font-weight:800;">—</div>
-              <div style="font-size:10px;color:rgba(240,232,220,.4);margin-top:4px;text-transform:uppercase;letter-spacing:.5px;">Buluşma</div>
+            <div class="adm-stat">
+              <div class="adm-stat-val" id="stat-bulusma">—</div>
+              <div class="adm-stat-lbl">Buluşma</div>
+              <div class="adm-stat-trend"></div>
             </div>
-            <div style="background:var(--dark);border-radius:12px;padding:16px;text-align:center;">
-              <div id="stat-kanal" style="font-size:26px;color:#F0E8DC;font-weight:800;">—</div>
-              <div style="font-size:10px;color:rgba(240,232,220,.4);margin-top:4px;text-transform:uppercase;letter-spacing:.5px;">Kanal</div>
+            <div class="adm-stat">
+              <div class="adm-stat-val" id="stat-kanal">—</div>
+              <div class="adm-stat-lbl">Kanal</div>
+              <div class="adm-stat-trend" id="stat-prem-trend"></div>
             </div>
           </div>
 
-          <!-- Görünüm Önizleme Toggle -->
-          <div style="margin-bottom:16px;">
-            <button id="admin-gorunum-btn" onclick="adminGorunumToggle()" style="width:100%;padding:11px 16px;background:var(--surface);border:0.5px solid var(--border);border-radius:10px;font-family:'Montserrat',sans-serif;font-size:13px;font-weight:600;color:var(--text);cursor:pointer;text-align:left;transition:all .15s;" onmouseover="this.style.borderColor='var(--accent)'" onmouseout="this.style.borderColor='var(--border)'">
-              👁️ Normal Görünüm — Premium'u Önizle
-            </button>
+          <!-- Pill Sekmeler -->
+          <div class="adm-tabs">
+            <button class="adm-tab active" id="sekme-dashboard" onclick="adminSekme('dashboard')">📊 Dashboard</button>
+            <button class="adm-tab" id="sekme-uyeler"    onclick="adminSekme('uyeler')">👥 Kullanıcılar</button>
+            <button class="adm-tab" id="sekme-kanallar"  onclick="adminSekme('kanallar')">💬 Kanallar</button>
+            <button class="adm-tab" id="sekme-icerik"    onclick="adminSekme('icerik')">📝 İçerik</button>
+            <button class="adm-tab" id="sekme-arsiv"     onclick="adminSekme('arsiv')">🗂️ Soru Arşivi</button>
+            <button class="adm-tab" id="sekme-davet"     onclick="adminSekme('davet')">🎟️ Davetler</button>
+            <button class="adm-tab" id="sekme-yetkiler"  onclick="adminSekme('yetkiler')">🔐 Yetkiler</button>
           </div>
 
-          <!-- Sekmeler -->
-          <div style="display:flex;gap:4px;margin-bottom:20px;border-bottom:0.5px solid var(--border);padding-bottom:0;overflow-x:auto;">
-            <button onclick="adminSekme('uyeler')" id="sekme-uyeler" style="padding:10px 14px;background:none;border:none;border-bottom:2px solid var(--accent);font-family:'Montserrat',sans-serif;font-size:12px;font-weight:600;color:var(--accent);cursor:pointer;margin-bottom:-1px;white-space:nowrap;">👥 Kullanıcılar</button>
-            <button onclick="adminSekme('kanallar')" id="sekme-kanallar" style="padding:10px 14px;background:none;border:none;border-bottom:2px solid transparent;font-family:'Montserrat',sans-serif;font-size:12px;font-weight:500;color:var(--text2);cursor:pointer;margin-bottom:-1px;white-space:nowrap;">💬 Kanallar</button>
-            <button onclick="adminSekme('icerik')" id="sekme-icerik" style="padding:10px 14px;background:none;border:none;border-bottom:2px solid transparent;font-family:'Montserrat',sans-serif;font-size:12px;font-weight:500;color:var(--text2);cursor:pointer;margin-bottom:-1px;white-space:nowrap;">📝 İçerik</button>
-            <button onclick="adminSekme('davet')" id="sekme-davet" style="padding:10px 14px;background:none;border:none;border-bottom:2px solid transparent;font-family:'Montserrat',sans-serif;font-size:12px;font-weight:500;color:var(--text2);cursor:pointer;margin-bottom:-1px;white-space:nowrap;">🎟️ Davetler</button>
-            <button onclick="adminSekme('yetkiler')" id="sekme-yetkiler" style="padding:10px 14px;background:none;border:none;border-bottom:2px solid transparent;font-family:'Montserrat',sans-serif;font-size:12px;font-weight:500;color:var(--text2);cursor:pointer;margin-bottom:-1px;white-space:nowrap;">🔐 Yetkiler</button>
+          <!-- DASHBOARD SEKMESİ -->
+          <div id="admin-panel-dashboard">
+            <!-- Büyüme grafiği -->
+            <div class="adm-section">Son 7 Günde Büyüme</div>
+            <div class="adm-card" style="padding:20px;">
+              <canvas id="adm-chart" height="140" style="width:100%;display:block;"></canvas>
+            </div>
+
+            <!-- Hızlı Özet -->
+            <div class="adm-section">Hızlı Özet</div>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px;">
+              <div class="adm-card" style="margin:0;">
+                <div style="font-size:11px;color:var(--text2);margin-bottom:4px;">Premium Üyeler</div>
+                <div style="font-size:22px;font-weight:800;" id="dash-prem-sayi">—</div>
+                <div style="font-size:11px;color:var(--text2);margin-top:2px;" id="dash-prem-oran">toplam içinde</div>
+              </div>
+              <div class="adm-card" style="margin:0;">
+                <div style="font-size:11px;color:var(--text2);margin-bottom:4px;">Bu Hafta Katılan</div>
+                <div style="font-size:22px;font-weight:800;" id="dash-hafta-uye">—</div>
+                <div style="font-size:11px;color:var(--text2);margin-top:2px;">yeni üye</div>
+              </div>
+            </div>
+
+            <!-- Son aktivite -->
+            <div class="adm-section">Son Aktivite</div>
+            <div id="dash-son-aktivite">
+              <div style="color:var(--text2);font-size:13px;">Yükleniyor...</div>
+            </div>
           </div>
 
-          <!-- Kullanıcılar Sekmesi -->
-          <div id="admin-panel-uyeler">
+          <!-- KULLANICILAR SEKMESİ -->
+          <div id="admin-panel-uyeler" style="display:none;">
             <div style="display:flex;gap:10px;margin-bottom:16px;flex-wrap:wrap;">
               <input id="admin-arama" class="inp" placeholder="🔍 Ad, e-posta veya şehir ara..." oninput="adminKullaniciAra(this.value)" style="flex:1;min-width:200px;padding:10px 14px;">
               <select id="admin-rol-filtre" class="inp" onchange="adminKullaniciAra(document.getElementById('admin-arama').value)" style="appearance:none;width:auto;padding:10px 14px;">
@@ -2647,21 +2784,19 @@ select.inp {
             </div>
           </div>
 
-          <!-- Kanallar Sekmesi -->
+          <!-- KANALLAR SEKMESİ -->
           <div id="admin-panel-kanallar" style="display:none;">
-            <button onclick="adminKanalAc()" style="margin-bottom:16px;padding:11px 20px;background:var(--accent);color:#fff;border:none;border-radius:9px;font-family:'Montserrat',sans-serif;font-size:13px;font-weight:600;cursor:pointer;">+ Yeni Kanal Ekle</button>
+            <button onclick="adminKanalAc()" class="adm-btn accent" style="margin-bottom:16px;padding:11px 20px;font-size:13px;">+ Yeni Kanal Ekle</button>
             <div id="admin-kanallar-list">
               <div style="color:var(--text2);font-size:13px;">Yükleniyor...</div>
             </div>
           </div>
 
-          <!-- İçerik Sekmesi -->
+          <!-- İÇERİK SEKMESİ -->
           <div id="admin-panel-icerik" style="display:none;">
-
-            <!-- Duyuru Gönder -->
-            <div class="sec-head">📢 Tüm Üyelere Duyuru Gönder</div>
-            <div style="background:var(--light);border-radius:12px;border:0.5px solid var(--border);padding:16px;margin-bottom:20px;">
-              <div class="field"><label class="inp-label">Duyuru Metni</label><input id="admin-duyuru-inp" class="inp" placeholder="Duyuru metnini yaz... (örn: Yeni buluşma eklendi!)"></div>
+            <div class="adm-section">📢 Tüm Üyelere Duyuru Gönder</div>
+            <div class="adm-card">
+              <div class="field"><label class="inp-label">Duyuru Metni</label><input id="admin-duyuru-inp" class="inp" placeholder="Duyuru metnini yaz..."></div>
               <div class="field">
                 <label class="inp-label">Hedef</label>
                 <select id="admin-duyuru-hedef" class="inp" style="appearance:none;">
@@ -2669,42 +2804,57 @@ select.inp {
                   <option value="premium">Yalnızca Premium Üyeler</option>
                 </select>
               </div>
-              <button onclick="adminDuyuruGonder()" style="padding:11px 20px;background:var(--dark);color:#F0E8DC;border:none;border-radius:9px;font-family:'Montserrat',sans-serif;font-size:13px;font-weight:600;cursor:pointer;">📢 Duyuruyu Gönder</button>
+              <button onclick="adminDuyuruGonder()" class="adm-btn primary" style="padding:11px 20px;font-size:13px;">📢 Duyuruyu Gönder</button>
               <div id="admin-duyuru-sonuc" style="font-size:12px;color:var(--text2);margin-top:10px;"></div>
             </div>
 
-            <div class="sec-head">Günün Sorusu</div>
-            <div class="field"><label class="inp-label">Yeni Soru</label><input id="admin-soru-inp" class="inp" placeholder="Soruyu buraya yaz..."></div>
-            <div class="field"><label class="inp-label">Bitiş Zamanı</label><input id="admin-soru-bitis" class="inp" type="datetime-local"></div>
-            <button onclick="adminSoruYayinla()" style="padding:12px 20px;background:var(--dark);color:#F0E8DC;border:none;border-radius:9px;font-family:'Montserrat',sans-serif;font-size:13px;font-weight:600;cursor:pointer;margin-bottom:20px;">✓ Soruyu Yayınla</button>
+            <div class="adm-section">Günün Sorusu</div>
+            <div class="adm-card">
+              <div class="field"><label class="inp-label">Yeni Soru</label><input id="admin-soru-inp" class="inp" placeholder="Soruyu buraya yaz..."></div>
+              <div class="field"><label class="inp-label">Bitiş Zamanı</label><input id="admin-soru-bitis" class="inp" type="datetime-local"></div>
+              <button onclick="adminSoruYayinla()" class="adm-btn primary" style="padding:11px 20px;font-size:13px;">✓ Soruyu Yayınla</button>
+            </div>
 
-            <div class="sec-head">Son Mesajlar (Moderasyon)</div>
+            <div class="adm-section">Son Mesajlar (Moderasyon)</div>
             <div id="admin-son-mesajlar">
               <div style="color:var(--text2);font-size:13px;">Yükleniyor...</div>
             </div>
 
-            <div class="sec-head" style="margin-top:20px;">Son Buluşmalar</div>
+            <div class="adm-section" style="margin-top:20px;">Son Buluşmalar</div>
             <div id="admin-son-bulusmalar">
               <div style="color:var(--text2);font-size:13px;">Yükleniyor...</div>
             </div>
           </div>
 
-          <!-- Davetler Sekmesi -->
+          <!-- SORU ARŞİVİ SEKMESİ -->
+          <div id="admin-panel-arsiv" style="display:none;">
+            <div style="display:flex;gap:10px;margin-bottom:16px;flex-wrap:wrap;align-items:center;">
+              <input id="arsiv-tarih-baslangic" class="inp" type="date" style="width:auto;padding:9px 12px;" oninput="adminSoruArsivYukle()">
+              <span style="color:var(--text2);font-size:13px;">—</span>
+              <input id="arsiv-tarih-bitis" class="inp" type="date" style="width:auto;padding:9px 12px;" oninput="adminSoruArsivYukle()">
+              <button onclick="arsivFiltreSifirla()" class="adm-btn" style="padding:9px 14px;">Sıfırla</button>
+            </div>
+            <div id="admin-arsiv-list">
+              <div style="color:var(--text2);font-size:13px;">Yükleniyor...</div>
+            </div>
+          </div>
+
+          <!-- DAVETLER SEKMESİ -->
           <div id="admin-panel-davet" style="display:none;">
-            <div class="sec-head">Davet Kodu Oluştur</div>
-            <div style="background:var(--light);border-radius:12px;border:0.5px solid var(--border);padding:16px;margin-bottom:16px;">
+            <div class="adm-section">Davet Kodu Oluştur</div>
+            <div class="adm-card">
               <div class="field"><label class="inp-label">Kaç adet?</label><input id="admin-davet-adet" class="inp" type="number" min="1" max="50" value="5" style="width:120px;"></div>
-              <button onclick="adminDavetUret()" style="padding:11px 20px;background:var(--accent);color:#fff;border:none;border-radius:9px;font-family:'Montserrat',sans-serif;font-size:13px;font-weight:600;cursor:pointer;">Kod Üret</button>
+              <button onclick="adminDavetUret()" class="adm-btn accent" style="padding:11px 20px;font-size:13px;">Kod Üret</button>
             </div>
             <div id="admin-davet-list">
               <div style="color:var(--text2);font-size:13px;">Yükleniyor...</div>
             </div>
           </div>
 
-          <!-- Yetkiler Sekmesi (sadece superadmin) -->
+          <!-- YETKİLER SEKMESİ -->
           <div id="admin-panel-yetkiler" style="display:none;">
             <div style="background:rgba(139,0,0,.08);border:0.5px solid rgba(139,0,0,.2);border-radius:10px;padding:12px 16px;margin-bottom:20px;font-size:12px;color:#8B0000;">
-              🔐 Bu bölüm yalnızca <strong>Süper Admin</strong> tarafından düzenlenebilir. Yapılan değişiklikler tüm moderasyon sistemini etkiler.
+              🔐 Bu bölüm yalnızca <strong>Süper Admin</strong> tarafından düzenlenebilir.
             </div>
             <div id="yetkiler-panel">
               <div style="color:var(--text2);font-size:13px;">Yükleniyor...</div>
@@ -6035,21 +6185,20 @@ function adminModKapat() {
 var adminTumUyeler = []; // cache
 
 function adminSekme(sekme) {
-  var sekmeler = ['uyeler','kanallar','icerik','davet','yetkiler'];
+  var sekmeler = ['dashboard','uyeler','kanallar','icerik','arsiv','davet','yetkiler'];
   sekmeler.forEach(function(s) {
     var panel = document.getElementById('admin-panel-' + s);
     var btn   = document.getElementById('sekme-' + s);
     if (panel) panel.style.display = s === sekme ? 'block' : 'none';
-    if (btn) {
-      btn.style.borderBottomColor = s === sekme ? 'var(--accent)' : 'transparent';
-      btn.style.color  = s === sekme ? 'var(--accent)' : 'var(--text2)';
-      btn.style.fontWeight = s === sekme ? '600' : '500';
-    }
+    if (btn)   btn.classList.toggle('active', s === sekme);
   });
-  if (sekme === 'kanallar') adminKanallarYukle();
-  if (sekme === 'icerik')   adminIcerikYukle();
-  if (sekme === 'davet')    adminDavetlerYukle();
-  if (sekme === 'yetkiler') adminYetkilerYukle();
+  if (sekme === 'dashboard') adminDashboardYukle();
+  if (sekme === 'uyeler')    adminKullaniciListesiGoster(adminTumUyeler);
+  if (sekme === 'kanallar')  adminKanallarYukle();
+  if (sekme === 'icerik')    adminIcerikYukle();
+  if (sekme === 'arsiv')     adminSoruArsivYukle();
+  if (sekme === 'davet')     adminDavetlerYukle();
+  if (sekme === 'yetkiler')  adminYetkilerYukle();
 }
 
 function kullaniciKartHtml(u, aktifRol) {
@@ -6108,9 +6257,9 @@ async function adminPanelYukle() {
     return;
   }
 
-  var rolLabelMap = { superadmin: '👑 Süper Admin Paneli', admin: '⚙️ Admin Paneli', mod: '🛡️ Moderatör Paneli' };
+  var rolLabelMap = { superadmin: '👑 Süper Admin', admin: '⚙️ Admin', mod: '🛡️ Moderatör' };
   var labelEl = document.getElementById('admin-rol-label');
-  if (labelEl) labelEl.textContent = rolLabelMap[aktifRol] || 'Admin Paneli';
+  if (labelEl) labelEl.textContent = rolLabelMap[aktifRol] || 'Admin';
 
   // İstatistikler
   var [{ count: uyeSayi }, { count: mesajSayi }, { count: bulusmaSayi }, { count: kanalSayi }] = await Promise.all([
@@ -6122,18 +6271,19 @@ async function adminPanelYukle() {
   var f = function(id, v) { var el = document.getElementById(id); if(el) el.textContent = v || 0; };
   f('stat-uye', uyeSayi); f('stat-mesaj', mesajSayi); f('stat-bulusma', bulusmaSayi); f('stat-kanal', kanalSayi);
 
-  // Görünüm toggle butonu metnini güncelle
+  // Görünüm toggle butonu
   var gorunumBtn = document.getElementById('admin-gorunum-btn');
-  if (gorunumBtn) gorunumBtn.textContent = isPrem ? '👁️ Premium Görünüm Aktif — Normal\'e Geç' : '👁️ Normal Görünüm — Premium\'u Önizle';
+  if (gorunumBtn) gorunumBtn.textContent = isPrem ? '👁️ Premium Görünüm Aktif' : '👁️ Normal Görünüm';
 
-  // Kullanıcıları yükle
+  // Kullanıcıları yükle (arka planda, uyeler sekmesi için)
   var { data: uyeler } = await sb.from('profiles')
     .select('id, ad, soyad, sehir, rol, created_at, meslek, banlandi, timeout_bitis, timeout_sebep, premium')
     .order('created_at', { ascending: false })
     .limit(100);
-
   adminTumUyeler = uyeler || [];
-  adminKullaniciListesiGoster(adminTumUyeler, aktifRol);
+
+  // Dashboard sekmesini aç
+  adminSekme('dashboard');
 }
 
 function adminKullaniciListesiGoster(uyeler, aktifRol) {
@@ -6384,7 +6534,184 @@ function bildirimDinle(userId) {
   }
 }
 
-async function adminKanallarYukle() {
+/* ── DASHBOARD ── */
+async function adminDashboardYukle() {
+  // Premium üye sayısı
+  var { count: premSayi } = await sb.from('profiles')
+    .select('id', { count: 'exact', head: true })
+    .eq('premium', true);
+
+  var toplamUye = adminTumUyeler.length || 1;
+  var pEl  = document.getElementById('dash-prem-sayi');
+  var pOEl = document.getElementById('dash-prem-oran');
+  if (pEl)  pEl.textContent  = premSayi || 0;
+  if (pOEl) pOEl.textContent = 'toplamın %' + Math.round(((premSayi||0) / toplamUye) * 100) + '\'i';
+
+  // Bu hafta katılan
+  var haftaOnce = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString();
+  var { count: haftaUye } = await sb.from('profiles')
+    .select('id', { count: 'exact', head: true })
+    .gte('created_at', haftaOnce);
+  var hwEl = document.getElementById('dash-hafta-uye');
+  if (hwEl) hwEl.textContent = haftaUye || 0;
+
+  // Son aktivite (son mesajlar)
+  var { data: sonMesajlar } = await sb.from('mesajlar')
+    .select('icerik, created_at, profiles(ad)')
+    .order('created_at', { ascending: false })
+    .limit(5);
+
+  var aktEl = document.getElementById('dash-son-aktivite');
+  if (aktEl && sonMesajlar) {
+    aktEl.innerHTML = sonMesajlar.map(function(m) {
+      var ad = m.profiles ? (m.profiles.ad || 'Üye') : 'Üye';
+      var metin = m.icerik && m.icerik.trim() ? m.icerik.substring(0, 60) + (m.icerik.length > 60 ? '…' : '') : '📷 Fotoğraf';
+      return '<div class="adm-card" style="display:flex;align-items:center;gap:12px;padding:12px 14px;margin-bottom:6px;">' +
+        '<div style="width:34px;height:34px;border-radius:50%;background:var(--surface);display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;color:var(--text2);flex-shrink:0;">' + (ad).substring(0,2).toUpperCase() + '</div>' +
+        '<div style="flex:1;min-width:0;">' +
+          '<div style="font-size:12px;font-weight:600;">' + ad + '</div>' +
+          '<div style="font-size:12px;color:var(--text2);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">' + metin + '</div>' +
+        '</div>' +
+        '<div style="font-size:11px;color:var(--text2);flex-shrink:0;">' + zamanaGore(m.created_at) + '</div>' +
+      '</div>';
+    }).join('');
+  }
+
+  // Basit bar chart — son 7 gün üye kayıtları
+  adminCizimGrafik();
+}
+
+function adminCizimGrafik() {
+  var canvas = document.getElementById('adm-chart');
+  if (!canvas) return;
+  var ctx = canvas.getContext('2d');
+  canvas.width = canvas.offsetWidth * window.devicePixelRatio || 600;
+  canvas.height = 140 * window.devicePixelRatio;
+  ctx.scale(window.devicePixelRatio, window.devicePixelRatio);
+
+  var W = canvas.offsetWidth || 600, H = 140;
+  ctx.clearRect(0, 0, W, H);
+
+  // Son 7 gün etiketleri
+  var gunler = [], gun7Verileri = [];
+  for (var i = 6; i >= 0; i--) {
+    var d = new Date(Date.now() - i * 86400000);
+    gunler.push(d.toLocaleDateString('tr-TR', { weekday: 'short' }));
+    // Gerçek veri olmadan demo — kayıt tarihlerine göre say
+    var gunBaslangic = new Date(d); gunBaslangic.setHours(0,0,0,0);
+    var gunBitis     = new Date(d); gunBitis.setHours(23,59,59,999);
+    var sayi = adminTumUyeler.filter(function(u) {
+      var t = new Date(u.created_at);
+      return t >= gunBaslangic && t <= gunBitis;
+    }).length;
+    gun7Verileri.push(sayi);
+  }
+
+  var maxVal = Math.max.apply(null, gun7Verileri) || 1;
+  var padL = 10, padR = 10, padT = 14, padB = 28;
+  var chartW = W - padL - padR, chartH = H - padT - padB;
+  var barW = chartW / gunler.length * 0.55;
+  var gap  = chartW / gunler.length;
+
+  // CSS variable renkleri için fallback
+  var accentColor = 'rgba(192,74,26,0.85)';
+  var text2Color  = 'rgba(139,107,80,0.7)';
+
+  gun7Verileri.forEach(function(val, i) {
+    var x = padL + gap * i + (gap - barW) / 2;
+    var barH = val > 0 ? Math.max(4, (val / maxVal) * chartH) : 3;
+    var y = padT + chartH - barH;
+
+    // Bar
+    ctx.fillStyle = accentColor;
+    ctx.beginPath();
+    ctx.roundRect(x, y, barW, barH, [4, 4, 0, 0]);
+    ctx.fill();
+
+    // Değer
+    if (val > 0) {
+      ctx.fillStyle = accentColor;
+      ctx.font = '600 10px Montserrat, sans-serif';
+      ctx.textAlign = 'center';
+      ctx.fillText(val, x + barW / 2, y - 4);
+    }
+
+    // Gün etiketi
+    ctx.fillStyle = text2Color;
+    ctx.font = '500 10px Montserrat, sans-serif';
+    ctx.textAlign = 'center';
+    ctx.fillText(gunler[i], x + barW / 2, H - 8);
+  });
+}
+
+/* ── SORU ARŞİVİ ── */
+async function adminSoruArsivYukle() {
+  var listEl = document.getElementById('admin-arsiv-list');
+  if (!listEl) return;
+  listEl.innerHTML = '<div style="color:var(--text2);font-size:13px;">Yükleniyor...</div>';
+
+  var baslangicEl = document.getElementById('arsiv-tarih-baslangic');
+  var bitisEl     = document.getElementById('arsiv-tarih-bitis');
+
+  var query = sb.from('gunun_sorusu')
+    .select('id, soru, aktif, bitis_zamani, created_at, cevaplar(id, icerik, created_at, kullanici_id, profiles:kullanici_id(ad))')
+    .order('created_at', { ascending: false })
+    .limit(50);
+
+  if (baslangicEl && baslangicEl.value) {
+    query = query.gte('created_at', baslangicEl.value + 'T00:00:00');
+  }
+  if (bitisEl && bitisEl.value) {
+    query = query.lte('created_at', bitisEl.value + 'T23:59:59');
+  }
+
+  var { data: sorular, error } = await query;
+
+  if (error || !sorular || sorular.length === 0) {
+    listEl.innerHTML = '<div style="color:var(--text2);font-size:13px;padding:20px 0;text-align:center;">Arşivde soru bulunamadı.</div>';
+    return;
+  }
+
+  listEl.innerHTML = sorular.map(function(s) {
+    var tarih      = new Date(s.created_at).toLocaleDateString('tr-TR', { day: 'numeric', month: 'long', year: 'numeric' });
+    var bitisTxt   = s.bitis_zamani ? new Date(s.bitis_zamani).toLocaleDateString('tr-TR', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' }) : null;
+    var aktifBadge = s.aktif
+      ? '<span style="font-size:10px;background:rgba(29,158,117,.12);color:#1D9E75;padding:1px 7px;border-radius:6px;font-weight:600;margin-left:6px;">● Aktif</span>'
+      : '<span style="font-size:10px;background:var(--surface);color:var(--text2);padding:1px 7px;border-radius:6px;font-weight:600;margin-left:6px;">Arşiv</span>';
+    var cevaplar = s.cevaplar || [];
+    var cevapHtml = cevaplar.length === 0
+      ? '<div style="font-size:12px;color:var(--text2);padding:6px 0;">Henüz cevap yok.</div>'
+      : cevaplar.slice(0, 3).map(function(c) {
+          var ad = c.profiles ? (c.profiles.ad || 'Üye') : 'Üye';
+          return '<div style="font-size:12px;padding:6px 0;border-top:0.5px solid var(--border);display:flex;gap:8px;align-items:flex-start;">' +
+            '<span style="font-weight:600;min-width:60px;color:var(--text2);">' + ad.substring(0,10) + '</span>' +
+            '<span style="color:var(--text);">' + (c.icerik||'').substring(0,80) + (c.icerik && c.icerik.length > 80 ? '…' : '') + '</span>' +
+          '</div>';
+        }).join('') + (cevaplar.length > 3 ? '<div style="font-size:11px;color:var(--text2);padding:4px 0;">+' + (cevaplar.length - 3) + ' cevap daha</div>' : '');
+
+    var acikId = 'arsiv-detay-' + s.id;
+    return '<div class="adm-soru-card">' +
+      '<div style="display:flex;justify-content:space-between;align-items:flex-start;gap:8px;cursor:pointer;" onclick="var el=document.getElementById(\'' + acikId + '\');el.style.display=el.style.display===\'none\'?\'block\':\'none\';">' +
+        '<div style="flex:1;">' +
+          '<div style="font-size:13px;font-weight:700;margin-bottom:4px;">' + (s.soru || '—') + aktifBadge + '</div>' +
+          '<div style="font-size:11px;color:var(--text2);">📅 ' + tarih + (bitisTxt ? ' · ⏱ ' + bitisTxt + ' bitiş' : '') + ' · 💬 ' + cevaplar.length + ' cevap</div>' +
+        '</div>' +
+        '<span style="font-size:14px;color:var(--text2);flex-shrink:0;">▾</span>' +
+      '</div>' +
+      '<div id="' + acikId + '" style="display:none;margin-top:10px;">' + cevapHtml + '</div>' +
+    '</div>';
+  }).join('');
+}
+
+function arsivFiltreSifirla() {
+  var b = document.getElementById('arsiv-tarih-baslangic');
+  var e = document.getElementById('arsiv-tarih-bitis');
+  if (b) b.value = '';
+  if (e) e.value = '';
+  adminSoruArsivYukle();
+}
+
+
   var { data: kanallar } = await sb.from('kanallar').select('*').order('created_at');
   var kanalList = document.getElementById('admin-kanallar-list');
   if (!kanalList) return;
