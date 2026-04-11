@@ -1307,6 +1307,10 @@ body {
   -webkit-tap-highlight-color: transparent;
   touch-action: manipulation;
   display: inline-block;
+  font-family: 'Montserrat', sans-serif;
+  line-height: 1.4;
+  -webkit-appearance: none;
+  appearance: none;
 }
 .tag-chip:hover { border-color: var(--mid); color: var(--text); }
 .tag-chip.sel { background: var(--dark); color: #F0E6D8; border-color: var(--dark); }
@@ -1770,14 +1774,14 @@ select.inp {
       <div class="field">
         <label class="inp-label" style="margin-bottom:10px;">Etiketler (en az 2)</label>
         <div class="tag-cloud">
-          <span class="tag-chip sel" ontouchstart="" onclick="tagSec(this)">Solo seyahat</span>
-          <span class="tag-chip" ontouchstart="" onclick="tagSec(this)">Sakin yaşam</span>
-          <span class="tag-chip sel" ontouchstart="" onclick="tagSec(this)">Kariyer</span>
-          <span class="tag-chip" ontouchstart="" onclick="tagSec(this)">Kitap</span>
-          <span class="tag-chip" ontouchstart="" onclick="tagSec(this)">Kahve</span>
-          <span class="tag-chip" ontouchstart="" onclick="tagSec(this)">Doğa</span>
-          <span class="tag-chip" ontouchstart="" onclick="tagSec(this)">Film &amp; Dizi</span>
-          <span class="tag-chip" ontouchstart="" onclick="tagSec(this)">Hayvanlar</span>
+          <button type="button" class="tag-chip sel" onclick="tagSec(this)">Solo seyahat</button>
+          <button type="button" class="tag-chip" onclick="tagSec(this)">Sakin yaşam</button>
+          <button type="button" class="tag-chip sel" onclick="tagSec(this)">Kariyer</button>
+          <button type="button" class="tag-chip" onclick="tagSec(this)">Kitap</button>
+          <button type="button" class="tag-chip" onclick="tagSec(this)">Kahve</button>
+          <button type="button" class="tag-chip" onclick="tagSec(this)">Doğa</button>
+          <button type="button" class="tag-chip" onclick="tagSec(this)">Film &amp; Dizi</button>
+          <button type="button" class="tag-chip" onclick="tagSec(this)">Hayvanlar</button>
         </div>
       </div>
       <div class="field">
@@ -2650,18 +2654,18 @@ select.inp {
           <div class="field">
             <label class="inp-label" style="margin-bottom:10px;">Etiketlerin</label>
             <div class="tag-cloud" id="edit-etiketler">
-              <span class="tag-chip" ontouchstart="" onclick="tagSec(this)">Solo seyahat</span>
-              <span class="tag-chip" ontouchstart="" onclick="tagSec(this)">Sakin yaşam</span>
-              <span class="tag-chip" ontouchstart="" onclick="tagSec(this)">Kariyer</span>
-              <span class="tag-chip" ontouchstart="" onclick="tagSec(this)">Kitap</span>
-              <span class="tag-chip" ontouchstart="" onclick="tagSec(this)">Kahve</span>
-              <span class="tag-chip" ontouchstart="" onclick="tagSec(this)">Doğa</span>
-              <span class="tag-chip" ontouchstart="" onclick="tagSec(this)">Film & Dizi</span>
-              <span class="tag-chip" ontouchstart="" onclick="tagSec(this)">Hayvanlar</span>
-              <span class="tag-chip" ontouchstart="" onclick="tagSec(this)">Yemek & Mutfak</span>
-              <span class="tag-chip" ontouchstart="" onclick="tagSec(this)">Fotoğraf</span>
-              <span class="tag-chip" ontouchstart="" onclick="tagSec(this)">Müzik</span>
-              <span class="tag-chip" ontouchstart="" onclick="tagSec(this)">Spor</span>
+              <button type="button" class="tag-chip" onclick="tagSec(this)">Solo seyahat</button>
+              <button type="button" class="tag-chip" onclick="tagSec(this)">Sakin yaşam</button>
+              <button type="button" class="tag-chip" onclick="tagSec(this)">Kariyer</button>
+              <button type="button" class="tag-chip" onclick="tagSec(this)">Kitap</button>
+              <button type="button" class="tag-chip" onclick="tagSec(this)">Kahve</button>
+              <button type="button" class="tag-chip" onclick="tagSec(this)">Doğa</button>
+              <button type="button" class="tag-chip" onclick="tagSec(this)">Film & Dizi</button>
+              <button type="button" class="tag-chip" onclick="tagSec(this)">Hayvanlar</button>
+              <button type="button" class="tag-chip" onclick="tagSec(this)">Yemek & Mutfak</button>
+              <button type="button" class="tag-chip" onclick="tagSec(this)">Fotoğraf</button>
+              <button type="button" class="tag-chip" onclick="tagSec(this)">Müzik</button>
+              <button type="button" class="tag-chip" onclick="tagSec(this)">Spor</button>
             </div>
           </div>
           <div id="edit-error" style="display:none;background:#FAECE7;color:#993C1D;border:1px solid #f5c4b3;border-radius:10px;padding:12px 16px;margin-bottom:14px;font-size:13px;font-weight:500;"></div>
