@@ -3797,8 +3797,11 @@ async function kanallariYukle() {
   listEl.innerHTML = '';
   if (header) listEl.appendChild(header);
 
+  var aktifRol = aktifKullanici ? aktifKullanici.rol : 'uye';
+  var isAdmin  = aktifRol === 'superadmin' || aktifRol === 'admin' || aktifRol === 'mod';
+
   data.forEach(function(k, i) {
-    var isPremKanal = !isPrem; // Tüm kanallar premium kullanıcılara açık, diğerleri için kilitli
+    var isPremKanal = !isPrem && !isAdmin; // Admin her zaman erişebilir
     var div = document.createElement('div');
     div.className = 'cl-item' + (i === 0 ? ' active' : '');
     div.onclick = function() {
@@ -3813,9 +3816,9 @@ async function kanallariYukle() {
     listEl.appendChild(div);
   });
 
-  if (data.length > 0 && isPrem) {
+  if (data.length > 0 && (isPrem || isAdmin)) {
     mesajlariYukle(data[0].id, data[0].ad, data[0].emoji);
-  } else if (data.length > 0 && !isPrem) {
+  } else if (data.length > 0 && !isPrem && !isAdmin) {
     // Premium değil — kanal panelini kilitle
     var kanalPanel = document.getElementById('kanal-panel');
     if (kanalPanel) {
