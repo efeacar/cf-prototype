@@ -6884,13 +6884,17 @@ async function adminIcerikYukle() {
 async function adminBulusmaSil(bulId, btn) {
   if (!confirm('Bu buluşmayı silmek istediğine emin misin?')) return;
 
+  // Kartı DOM'dan hemen kaldır
+  var kart = btn ? btn.closest('[data-bulid]') : document.querySelector('[data-bulid="' + bulId + '"]');
+  if (kart) kart.remove();
+
   // DB'den sil
   await sb.from('bulusma_katilimcilar').delete().eq('bulusma_id', bulId);
   var { error } = await sb.from('bulusmalar').delete().eq('id', bulId);
-  if (error) { alert('Silinemedi: ' + error.message); return; }
-
-  // Listeyi komple yenile — en güvenilir yöntem
-  adminIcerikYukle();
+  if (error) {
+    alert('DB\'den silinemedi: ' + error.message);
+    adminIcerikYukle(); // Listeyi geri yükle
+  }
 }
 
 async function adminDavetlerYukle() {
