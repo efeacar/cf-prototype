@@ -4594,6 +4594,7 @@ function mesajResimIptal() {
 }
 
 /* ── MESAJ GÖNDER (Yeni Post) ── */
+var mesajResimFile = null;
 async function mesajGonder() {
   var inp = document.getElementById('ch-inp-main');
   if (!inp || !aktifKullanici) { console.warn('mesajGonder: inp veya kullanici yok'); return; }
