@@ -1795,7 +1795,7 @@ select.inp {
         <div class="prem-banner">
           <div class="prem-banner-title">Premium'a geç</div>
           <div class="prem-banner-sub">DM, buluşmalar ve özel kanallar için.</div>
-          <button class="prem-banner-btn" onclick="setMode(&#39;prm&#39;)">₺89 / ay →</button>
+          <button class="prem-banner-btn" onclick="navTo('premium-compare')">₺89 / ay →</button>
         </div>
       </div>
       <div style="padding:10px 12px;border-top:0.5px solid var(--border);">
@@ -1828,7 +1828,7 @@ select.inp {
 
           <div class="sec-head">Senin için</div>
           <div class="home-grid">
-            <div class="card" onclick="navTo(&#39;library&#39;)">
+            <div class="card" onclick="navToKendiniTanit()">
               <div class="card-title">Herkese kendini tanıt</div>
               <div class="card-sub">Yeni üyeler seni bekliyor.</div>
               <span class="badge red">Tanışma · 3 yeni</span>
@@ -2003,7 +2003,7 @@ select.inp {
               <div class="lo-icon">📅</div>
               <div class="lo-title">Buluşmalara katıl</div>
               <div class="lo-sub">Buluşmaları görmek, katılmak ve oluşturmak için Premium üye ol.</div>
-              <button class="lo-btn" onclick="setMode('prm')">Kilidi Aç — ₺89/ay</button>
+              <button class="lo-btn" onclick="navTo('premium-compare')">Kilidi Aç — ₺89/ay</button>
               <div class="lo-note">İstediğin zaman iptal edebilirsin</div>
             </div>
           </div>
@@ -2475,7 +2475,7 @@ select.inp {
               <div class="sub-pill free" id="sub-badge">Ücretsiz</div>
             </div>
             <div id="sub-upgrade" style="display: block;">
-              <button class="btn-accent" onclick="setMode(&#39;prm&#39;)" style="margin-top:0;">Premium'a Geç — ₺89/ay</button>
+              <button class="btn-accent" onclick="navTo('premium-compare')" style="margin-top:0;">Premium'a Geç — ₺89/ay</button>
               <div style="text-align:center;font-size:11px;color:rgba(240,232,220,.3);margin-top:6px;">veya ₺790/yıl · 3 ay bedava</div>
             </div>
             <div id="sub-cancel" style="display:none;">
@@ -2715,6 +2715,45 @@ select.inp {
       </div>
 
 
+      <!-- PREMIUM KARŞILAŞTIRMA -->
+      <div class="sc" id="sc-premium-compare">
+        <div class="page-header" style="display:flex;align-items:center;gap:14px;">
+          <button onclick="navTo(window._prevScreen||'home')" style="background:none;border:none;cursor:pointer;font-size:20px;color:var(--text2);padding:0;">←</button>
+          <div>
+            <div class="page-title">Premium'a Geç ⭐</div>
+            <div class="page-sub">Topluluğun tüm özelliklerine eriş</div>
+          </div>
+        </div>
+        <div class="page-body" style="padding-bottom:32px;">
+
+          <!-- Fiyat kartı -->
+          <div style="background:linear-gradient(135deg,var(--accent),var(--accent2));border-radius:16px;padding:24px;text-align:center;margin-bottom:20px;color:#fff;">
+            <div style="font-size:12px;font-weight:600;letter-spacing:2px;opacity:.8;margin-bottom:8px;">AYLIK</div>
+            <div style="font-size:46px;font-weight:800;letter-spacing:-2px;line-height:1;">₺89</div>
+            <div style="font-size:13px;opacity:.8;margin-top:4px;">/ ay · İstediğin zaman iptal et</div>
+          </div>
+
+          <!-- Karşılaştırma tablosu -->
+          <div style="background:var(--surface);border-radius:14px;overflow:hidden;margin-bottom:20px;">
+            <div style="display:grid;grid-template-columns:1fr 1fr 1fr;background:var(--bg);border-bottom:1px solid var(--border);">
+              <div style="padding:12px 14px;font-size:11px;font-weight:700;color:var(--text2);letter-spacing:.5px;">ÖZELLİK</div>
+              <div style="padding:12px 8px;font-size:11px;font-weight:700;color:var(--text2);text-align:center;">ÜCRETSİZ</div>
+              <div style="padding:12px 8px;font-size:11px;font-weight:700;color:var(--accent);text-align:center;">⭐ PREMİUM</div>
+            </div>
+            <div id="prem-compare-rows"></div>
+          </div>
+
+          <!-- CTA -->
+          <button class="btn-accent" onclick="premiumOdemeBaslat()" style="width:100%;font-size:15px;padding:16px;">
+            Premium Üye Ol — ₺89/ay
+          </button>
+          <div style="text-align:center;font-size:11px;color:var(--text2);margin-top:10px;">
+            💳 Güvenli ödeme · Otomatik yenileme · İstediğin zaman iptal
+          </div>
+
+        </div>
+      </div>
+
     </div><!-- /main -->
 
   </div><!-- /app-body -->
@@ -2918,7 +2957,7 @@ if (isDark) {
 
 /* ── ROUTING ── */
 var AUTH_SCREENS = ['login','giris-form','reg1','reg2'];
-var APP_SCREENS  = ['home','bugun','library','channel','meet','meetdetay','bulusma-olustur','bulusma-duzenle','conn','dm','kesf','profile','rozetler','hesabim','profil-duzenle','admin'];
+var APP_SCREENS  = ['home','bugun','library','channel','meet','meetdetay','bulusma-olustur','bulusma-duzenle','conn','dm','kesf','profile','rozetler','hesabim','profil-duzenle','admin','premium-compare'];
 var NAV_MAP = { home:'nav-home', 'bulusma-olustur':'nav-meet', 'bulusma-duzenle':'nav-meet', library:'nav-library', channel:'nav-library', meet:'nav-meet', meetdetay:'nav-meet', conn:'nav-conn', dm:'nav-conn', kesf:'nav-kesf', profile:'nav-profile', rozetler:'nav-rozetler', hesabim:'nav-hesabim', admin:'nav-admin' };
 
 var MOBILE_NAV_MAP = {
@@ -2967,6 +3006,8 @@ function go(id) {
     updateNav(id);
     updateMobileNav(id);
     localStorage.setItem('aktifSayfa', id);
+    if (id !== 'premium-compare') window._prevScreen = window._currentScreen || 'home';
+    window._currentScreen = id;
   }
   window.scrollTo(0, 0);
 }
@@ -2992,6 +3033,43 @@ function updateMobileNav(id) {
 }
 
 /* ── PREMIUM ── */
+function navToPremiumCompare() {
+  window._prevScreen = window._currentScreen || 'home';
+  navTo('premium-compare');
+  renderPremiumCompare();
+}
+
+function renderPremiumCompare() {
+  var rows = [
+    ['💬 Kanallar', 'Genel kanallar', 'Tüm kanallar + özel'],
+    ['🗓 Buluşmalar', '—', 'Gör & katıl'],
+    ['🤝 Bağlantılar', '—', 'DM + yakındakiler'],
+    ['👁 Kimler okudu', '—', '✓'],
+    ['🔒 Özel kanallar', '—', 'Kariyer, İlişki…'],
+    ['⭐ Premium rozeti', '—', '✓'],
+    ['📣 Öncelikli destek', '—', '✓'],
+  ];
+  var el = document.getElementById('prem-compare-rows');
+  if (!el) return;
+  el.innerHTML = rows.map(function(r, i) {
+    return '<div style="display:grid;grid-template-columns:1fr 1fr 1fr;border-bottom:' + (i < rows.length-1 ? '1px solid var(--border)' : 'none') + ';">' +
+      '<div style="padding:12px 14px;font-size:12px;font-weight:600;">' + r[0] + '</div>' +
+      '<div style="padding:12px 8px;font-size:12px;color:var(--text2);text-align:center;">' + r[1] + '</div>' +
+      '<div style="padding:12px 8px;font-size:12px;color:var(--accent);text-align:center;font-weight:600;">' + r[2] + '</div>' +
+    '</div>';
+  }).join('');
+}
+
+function premiumOdemeBaslat() {
+  // TODO: Gerçek ödeme entegrasyonu eklenecek
+  // Şimdilik mock — premium aktifleştirir
+  setMode('prm');
+  navTo(window._prevScreen || 'home');
+  setTimeout(function() {
+    alert('🎉 Premium üyeliğin aktifleşti! (Demo mod)');
+  }, 300);
+}
+
 function setMode(mode) {
   isPrem = mode === 'prm';
   applyMode();
@@ -3079,8 +3157,8 @@ function votePoll(pid, idx, pct) {
 }
 
 /* ── HANDLERS ── */
-function handleNearby() { if (!isPrem) setMode('prm'); else navTo('conn'); }
-function handlePremChannel() { if (!isPrem) setMode('prm'); }
+function handleNearby() { if (!isPrem) navTo('premium-compare'); else navTo('conn'); }
+function handlePremChannel() { if (!isPrem) navTo('premium-compare'); }
 
 function toggleJoin(btn) {
   var j = btn.dataset.joined==='true';
@@ -3260,6 +3338,14 @@ async function profilKaydet() {
       kvkk_onay: true,
       rol: 'uye'
     });
+
+    // Trigger/RLS'nin premium'u true set etme ihtimaline karşı
+    // explicit UPDATE ile false'a kilitle
+    await sb.from('profiles')
+      .update({ premium: false })
+      .eq('id', userId)
+      .neq('rol', 'superadmin')
+      .neq('rol', 'admin');
 
     if (davetKoduId) {
       await sb.from('davet_kodlari').update({ kullanildi: true, kullanan: userId }).eq('id', davetKoduId);
@@ -3557,7 +3643,7 @@ async function kanallariYukle() {
     var div = document.createElement('div');
     div.className = 'cl-item' + (i === 0 ? ' active' : '');
     div.onclick = function() {
-      if (isPremKanal) { setMode('prm'); return; }
+      if (isPremKanal) { navTo('premium-compare'); return; }
       document.querySelectorAll('.cl-item').forEach(function(el){ el.classList.remove('active'); });
       div.classList.add('active');
       mesajlariYukle(k.id, k.ad, k.emoji);
@@ -3573,7 +3659,46 @@ async function kanallariYukle() {
   }
 }
 
-/* ── MESAJLARI YÜKLE ── */
+/* ── KENDİNİ TANIT KANALINA GİT ── */
+async function navToKendiniTanit() {
+  // Önce library ekranına git (kanal listesi yüklensin)
+  navTo('library');
+  await kanallariYukle();
+
+  // "Kendini Tanıt" kanalını bul ve aç
+  var { data } = await sb.from('kanallar')
+    .select('*')
+    .ilike('ad', '%kendin%tanıt%')
+    .limit(1)
+    .single();
+
+  // Eğer ilike çalışmazsa geniş arama
+  if (!data) {
+    var res = await sb.from('kanallar').select('*');
+    if (res.data) {
+      data = res.data.find(function(k) {
+        return k.ad && k.ad.toLowerCase().replace(/\s/g,'').includes('kendin');
+      });
+    }
+  }
+
+  if (data) {
+    // Premium kontrolü
+    if (data.premium_gerekli && !isPrem) { navTo('premium-compare'); return; }
+
+    // Kanal listesinde o item'ı aktif et
+    document.querySelectorAll('.cl-item').forEach(function(el){ el.classList.remove('active'); });
+    var items = document.querySelectorAll('.cl-item');
+    items.forEach(function(el) {
+      if (el.querySelector('.cli-name') && el.querySelector('.cli-name').textContent.toLowerCase().includes('kendin')) {
+        el.classList.add('active');
+      }
+    });
+    mesajlariYukle(data.id, data.ad, data.emoji);
+  }
+}
+
+
 var aktifKanalId = null;
 var mesajSubscription = null;
 
@@ -5356,6 +5481,7 @@ navTo = function(id) {
   if (id === 'conn')    baglantilarYukle();
   if (id === 'dm')      dmListeYukle();
   if (id === 'admin')   adminPanelYukle();
+  if (id === 'premium-compare') renderPremiumCompare();
 };
 
 /* ══════════════════════════════
