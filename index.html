@@ -4596,11 +4596,11 @@ function mesajResimIptal() {
 /* ── MESAJ GÖNDER (Yeni Post) ── */
 async function mesajGonder() {
   var inp = document.getElementById('ch-inp-main');
-  if (!inp || !aktifKanalId || !aktifKullanici) return;
+  if (!inp || !aktifKullanici) { console.warn('mesajGonder: inp veya kullanici yok'); return; }
+  if (!aktifKanalId) { console.warn('mesajGonder: aktifKanalId yok'); alert('Önce bir kanal seç.'); return; }
   var icerik = inp.value.trim();
   if (!icerik && !mesajResimFile) return;
 
-  // Input'u hemen temizle
   inp.value = '';
   inp.style.height = 'auto';
   var resimUrl = null;
@@ -4617,46 +4617,56 @@ async function mesajGonder() {
     mesajResimIptal();
   }
 
-  // DB'ye kaydet — sadece INSERT, SELECT gerektirmez
-  var { error: insertErr } = await sb.from('mesajlar').insert({
-    kanal_id: aktifKanalId,
-    kullanici_id: aktifKullanici.id,
-    icerik: icerik || ' ',
-    resim_url: resimUrl,
-    parent_id: null
-  });
+  try {
+    console.log('INSERT başlıyor — kanal:', aktifKanalId, 'kullanici:', aktifKullanici.id);
 
-  if (insertErr) {
-    inp.value = icerik; // Metni geri yaz
-    alert('⚠️ Mesaj gönderilemedi: ' + insertErr.message);
-    return;
+    var { error: insertErr } = await sb.from('mesajlar').insert({
+      kanal_id: aktifKanalId,
+      kullanici_id: aktifKullanici.id,
+      icerik: icerik || ' ',
+      resim_url: resimUrl,
+      parent_id: null
+    });
+
+    if (insertErr) {
+      console.error('INSERT hatası:', insertErr);
+      inp.value = icerik;
+      alert('⚠️ Mesaj gönderilemedi: ' + insertErr.message);
+      return;
+    }
+
+    console.log('INSERT başarılı');
+
+    var feedEl = document.getElementById('forum-feed');
+    if (!feedEl) { console.warn('forum-feed bulunamadı'); return; }
+
+    if (feedEl.children.length === 1 && !feedEl.firstElementChild.classList.contains('forum-post')) {
+      feedEl.innerHTML = '';
+    }
+
+    var fakeId = 'local-' + Date.now();
+    var m = {
+      id: fakeId,
+      kullanici_id: aktifKullanici.id,
+      icerik: icerik || ' ',
+      resim_url: resimUrl,
+      created_at: new Date().toISOString(),
+      profiles: aktifKullanici,
+      parent_id: null,
+      upvote_sayisi: 0
+    };
+
+    var wrapper = document.createElement('div');
+    wrapper.innerHTML = forumPostHtml(m, []);
+    var postEl = wrapper.firstElementChild;
+    if (postEl) feedEl.insertBefore(postEl, feedEl.firstChild);
+    else console.warn('postEl oluşturulamadı');
+
+  } catch(ex) {
+    console.error('mesajGonder exception:', ex);
+    inp.value = icerik;
+    alert('⚠️ Beklenmedik hata: ' + ex.message);
   }
-
-  // INSERT başarılı — local data ile elementi oluştur (SELECT RLS'e gerek yok)
-  var feedEl = document.getElementById('forum-feed');
-  if (!feedEl) return;
-
-  // "Henüz gönderi yok" placeholder'ı kaldır
-  if (feedEl.children.length === 1 && !feedEl.firstElementChild.classList.contains('forum-post')) {
-    feedEl.innerHTML = '';
-  }
-
-  var fakeId = 'local-' + Date.now();
-  var m = {
-    id: fakeId,
-    kullanici_id: aktifKullanici.id,
-    icerik: icerik || ' ',
-    resim_url: resimUrl,
-    created_at: new Date().toISOString(),
-    profiles: aktifKullanici,
-    parent_id: null,
-    upvote_sayisi: 0
-  };
-
-  var wrapper = document.createElement('div');
-  wrapper.innerHTML = forumPostHtml(m, []);
-  var postEl = wrapper.firstElementChild;
-  if (postEl) feedEl.insertBefore(postEl, feedEl.firstChild);
 }
 
 /* ── PROFİL GÖR ── */
