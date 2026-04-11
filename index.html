@@ -1770,14 +1770,14 @@ select.inp {
       <div class="field">
         <label class="inp-label" style="margin-bottom:10px;">Etiketler (en az 2)</label>
         <div class="tag-cloud">
-          <span class="tag-chip sel" onclick="tagSec(this)">Solo seyahat</span>
-          <span class="tag-chip" onclick="tagSec(this)">Sakin yaşam</span>
-          <span class="tag-chip sel" onclick="tagSec(this)">Kariyer</span>
-          <span class="tag-chip" onclick="tagSec(this)">Kitap</span>
-          <span class="tag-chip" onclick="tagSec(this)">Kahve</span>
-          <span class="tag-chip" onclick="tagSec(this)">Doğa</span>
-          <span class="tag-chip" onclick="tagSec(this)">Film &amp; Dizi</span>
-          <span class="tag-chip" onclick="tagSec(this)">Hayvanlar</span>
+          <span class="tag-chip sel" ontouchstart="" onclick="tagSec(this)">Solo seyahat</span>
+          <span class="tag-chip" ontouchstart="" onclick="tagSec(this)">Sakin yaşam</span>
+          <span class="tag-chip sel" ontouchstart="" onclick="tagSec(this)">Kariyer</span>
+          <span class="tag-chip" ontouchstart="" onclick="tagSec(this)">Kitap</span>
+          <span class="tag-chip" ontouchstart="" onclick="tagSec(this)">Kahve</span>
+          <span class="tag-chip" ontouchstart="" onclick="tagSec(this)">Doğa</span>
+          <span class="tag-chip" ontouchstart="" onclick="tagSec(this)">Film &amp; Dizi</span>
+          <span class="tag-chip" ontouchstart="" onclick="tagSec(this)">Hayvanlar</span>
         </div>
       </div>
       <div class="field">
@@ -2650,18 +2650,18 @@ select.inp {
           <div class="field">
             <label class="inp-label" style="margin-bottom:10px;">Etiketlerin</label>
             <div class="tag-cloud" id="edit-etiketler">
-              <span class="tag-chip" onclick="tagSec(this)">Solo seyahat</span>
-              <span class="tag-chip" onclick="tagSec(this)">Sakin yaşam</span>
-              <span class="tag-chip" onclick="tagSec(this)">Kariyer</span>
-              <span class="tag-chip" onclick="tagSec(this)">Kitap</span>
-              <span class="tag-chip" onclick="tagSec(this)">Kahve</span>
-              <span class="tag-chip" onclick="tagSec(this)">Doğa</span>
-              <span class="tag-chip" onclick="tagSec(this)">Film & Dizi</span>
-              <span class="tag-chip" onclick="tagSec(this)">Hayvanlar</span>
-              <span class="tag-chip" onclick="tagSec(this)">Yemek & Mutfak</span>
-              <span class="tag-chip" onclick="tagSec(this)">Fotoğraf</span>
-              <span class="tag-chip" onclick="tagSec(this)">Müzik</span>
-              <span class="tag-chip" onclick="tagSec(this)">Spor</span>
+              <span class="tag-chip" ontouchstart="" onclick="tagSec(this)">Solo seyahat</span>
+              <span class="tag-chip" ontouchstart="" onclick="tagSec(this)">Sakin yaşam</span>
+              <span class="tag-chip" ontouchstart="" onclick="tagSec(this)">Kariyer</span>
+              <span class="tag-chip" ontouchstart="" onclick="tagSec(this)">Kitap</span>
+              <span class="tag-chip" ontouchstart="" onclick="tagSec(this)">Kahve</span>
+              <span class="tag-chip" ontouchstart="" onclick="tagSec(this)">Doğa</span>
+              <span class="tag-chip" ontouchstart="" onclick="tagSec(this)">Film & Dizi</span>
+              <span class="tag-chip" ontouchstart="" onclick="tagSec(this)">Hayvanlar</span>
+              <span class="tag-chip" ontouchstart="" onclick="tagSec(this)">Yemek & Mutfak</span>
+              <span class="tag-chip" ontouchstart="" onclick="tagSec(this)">Fotoğraf</span>
+              <span class="tag-chip" ontouchstart="" onclick="tagSec(this)">Müzik</span>
+              <span class="tag-chip" ontouchstart="" onclick="tagSec(this)">Spor</span>
             </div>
           </div>
           <div id="edit-error" style="display:none;background:#FAECE7;color:#993C1D;border:1px solid #f5c4b3;border-radius:10px;padding:12px 16px;margin-bottom:14px;font-size:13px;font-weight:500;"></div>
@@ -4111,11 +4111,22 @@ async function mesajlariYukle(kanalId, kanalAd, kanalEmoji) {
 
   if (feedEl) {
     if (!data || data.length === 0) {
-      feedEl.innerHTML = '<div style="padding:60px 20px;text-align:center;">' +
-        '<div style="font-size:36px;margin-bottom:12px;">💬</div>' +
-        '<div style="font-size:15px;font-weight:600;color:var(--text);margin-bottom:6px;">Henüz gönderi yok</div>' +
-        '<div style="font-size:13px;color:var(--text2);">Bu kanalda ilk gönderinizi siz yapın!</div>' +
-      '</div>';
+      // RLS SELECT politikası yoksa test et
+      var { count } = await sb.from('mesajlar').select('id', { count: 'exact', head: true }).eq('kanal_id', kanalId);
+      if (count && count > 0) {
+        // Mesajlar var ama SELECT politikası eksik
+        feedEl.innerHTML = '<div style="padding:40px 20px;text-align:center;">' +
+          '<div style="font-size:13px;color:#E24B4A;font-weight:600;">⚠️ Mesajlar yüklenemedi</div>' +
+          '<div style="font-size:12px;color:var(--text2);margin-top:8px;">Supabase\'de mesajlar tablosuna SELECT politikası eklenmeli.</div>' +
+          '<code style="display:block;margin-top:12px;padding:10px;background:var(--surface);border-radius:8px;font-size:11px;text-align:left;">CREATE POLICY "Herkes okuyabilir" ON mesajlar FOR SELECT TO authenticated USING (true);</code>' +
+        '</div>';
+      } else {
+        feedEl.innerHTML = '<div style="padding:60px 20px;text-align:center;">' +
+          '<div style="font-size:36px;margin-bottom:12px;">💬</div>' +
+          '<div style="font-size:15px;font-weight:600;color:var(--text);margin-bottom:6px;">Henüz gönderi yok</div>' +
+          '<div style="font-size:13px;color:var(--text2);">Bu kanalda ilk gönderinizi siz yapın!</div>' +
+        '</div>';
+      }
     } else {
       feedEl.innerHTML = data.map(function(m) {
         return forumPostHtml(m, cevapMap[m.id] || []);
@@ -4609,29 +4620,31 @@ async function mesajGonder() {
   }).select('id');
 
   if (insertErr) {
-    console.error('INSERT hatası:', insertErr);
+    // RLS hatası — optimistic postu kaldır, kullanıcıya göster
     var tmpFail = document.querySelector('[id^="forum-post-tmp-"]');
     if (tmpFail) tmpFail.remove();
     alert('⚠️ Mesaj gönderilemedi: ' + insertErr.message);
     return;
   }
 
-  console.log('INSERT başarılı:', insertData);
-
-  // tmp elementi kaldır, 300ms bekle sonra yenile (DB commit garantisi)
+  // INSERT başarılı — tmp id'yi gerçek id ile güncelle, post ekranda kalır
   var tmpEl = document.querySelector('[id^="forum-post-tmp-"]');
-  if (tmpEl) tmpEl.remove();
-
-  setTimeout(function() {
-    var kanalBaslik = document.getElementById('forum-ch-title');
-    var kanalEmojiEl = document.getElementById('forum-ch-emoji');
-    if (aktifKanalId) {
-      mesajlariYukle(aktifKanalId,
-        kanalBaslik ? kanalBaslik.textContent : '',
-        kanalEmojiEl ? kanalEmojiEl.textContent : '💬'
-      );
+  if (tmpEl && insertData && insertData[0]) {
+    tmpEl.id = 'forum-post-' + insertData[0].id;
+    // Post body ve edit id'lerini de güncelle
+    var bodyEl = tmpEl.querySelector('[id^="post-body-"]');
+    var editEl = tmpEl.querySelector('[id^="post-edit-"]');
+    if (bodyEl) bodyEl.id = 'post-body-' + insertData[0].id;
+    if (editEl) editEl.id = 'post-edit-' + insertData[0].id;
+  }
+  // feedEl'deki "Henüz gönderi yok" div'ini kaldır (ilk mesajsa)
+  if (feedEl) {
+    var emptyDiv = feedEl.querySelector('div:not(.forum-post)');
+    if (emptyDiv && !emptyDiv.classList.contains('forum-post')) {
+      // Sadece tek bir içerik varsa ve forum-post değilse kaldır
+      if (feedEl.children.length === 2) emptyDiv.remove();
     }
-  }, 400);
+  }
 }
 
 /* ── PROFİL GÖR ── */
