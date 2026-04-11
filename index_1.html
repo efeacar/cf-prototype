@@ -3107,12 +3107,13 @@ function tagSec(el) {
   el.classList.toggle('sel');
 }
 
-// iOS Safari için event delegation — tag-cloud'lara touch desteği
-document.addEventListener('DOMContentLoaded', function() {
+// iOS Safari için — DOMContentLoaded'a gerek yok, script body içinde çalışıyor
+window.addEventListener('load', function() {
   document.body.addEventListener('touchend', function(e) {
-    var chip = e.target.closest('.tag-chip');
+    var chip = e.target.closest ? e.target.closest('.tag-chip') : null;
     if (chip) {
       e.preventDefault();
+      e.stopPropagation();
       chip.classList.toggle('sel');
     }
   }, { passive: false });
@@ -3812,33 +3813,41 @@ async function kanallariYukle() {
   var isAdmin  = aktifRol === 'superadmin' || aktifRol === 'admin' || aktifRol === 'mod';
 
   data.forEach(function(k, i) {
-    var isPremKanal = !isPrem && !isAdmin; // Admin her zaman erişebilir
     var div = document.createElement('div');
     div.className = 'cl-item' + (i === 0 ? ' active' : '');
     div.onclick = function() {
-      if (isPremKanal) { navTo('premium-compare'); return; }
       document.querySelectorAll('.cl-item').forEach(function(el){ el.classList.remove('active'); });
       div.classList.add('active');
       mesajlariYukle(k.id, k.ad, k.emoji);
     };
     div.innerHTML = '<div class="cli-emoji">' + (k.emoji || '💬') + '</div>' +
       '<div><div class="cli-name">' + k.ad + '</div>' +
-      '<div class="cli-sub">' + (isPremKanal ? '🔒 Premium' : (k.aciklama || '')) + '</div></div>';
+      '<div class="cli-sub">' + (k.aciklama || '') + '</div></div>';
     listEl.appendChild(div);
   });
 
-  if (data.length > 0 && (isPrem || isAdmin)) {
+  // İlk kanalı yükle
+  if (data.length > 0) {
     mesajlariYukle(data[0].id, data[0].ad, data[0].emoji);
-  } else if (data.length > 0 && !isPrem && !isAdmin) {
-    // Premium değil — kanal panelini kilitle
-    var kanalPanel = document.getElementById('kanal-panel');
-    if (kanalPanel) {
-      kanalPanel.innerHTML = '<div style="display:flex;flex-direction:column;align-items:center;justify-content:center;height:100%;gap:16px;padding:40px 24px;text-align:center;">' +
-        '<div style="font-size:40px;">🔒</div>' +
-        '<div style="font-size:16px;font-weight:700;">Kanallar Premium\'a özel</div>' +
-        '<div style="font-size:13px;color:var(--text2);">Tüm kanallara katılmak ve mesaj göndermek için Premium üye ol.</div>' +
-        '<button class="btn-accent" onclick="navTo(\'premium-compare\')" style="margin-top:8px;">Premium\'a Geç →</button>' +
-      '</div>';
+  }
+
+  // Compose kutusunu premium kontrolüne bağla
+  var compose = document.querySelector('.forum-compose');
+  if (compose) {
+    if (isPrem || isAdmin) {
+      compose.style.display = '';
+      var locked = document.getElementById('compose-premium-lock');
+      if (locked) locked.remove();
+    } else {
+      compose.style.display = 'none';
+      if (!document.getElementById('compose-premium-lock')) {
+        var lockBar = document.createElement('div');
+        lockBar.id = 'compose-premium-lock';
+        lockBar.style.cssText = 'padding:14px 20px;background:var(--surface);border-top:0.5px solid var(--border);display:flex;align-items:center;justify-content:space-between;gap:12px;flex-shrink:0;';
+        lockBar.innerHTML = '<span style="font-size:13px;color:var(--text2);">🔒 Mesaj göndermek için Premium gerekli</span>' +
+          '<button onclick="navTo(\'premium-compare\')" style="padding:7px 14px;background:var(--accent);color:#fff;border:none;border-radius:8px;font-family:\'Montserrat\',sans-serif;font-size:12px;font-weight:600;cursor:pointer;">Premium\'a Geç</button>';
+        compose.parentElement.appendChild(lockBar);
+      }
     }
   }
 }
@@ -4591,36 +4600,38 @@ async function mesajGonder() {
   }
 
   // DB'ye kaydet
-  var { error: insertErr } = await sb.from('mesajlar').insert({
+  var { data: insertData, error: insertErr } = await sb.from('mesajlar').insert({
     kanal_id: aktifKanalId,
     kullanici_id: aktifKullanici.id,
     icerik: icerik || ' ',
     resim_url: resimUrl,
     parent_id: null
-  });
+  }).select('id');
 
   if (insertErr) {
-    console.error('Mesaj gönderilemedi:', insertErr.message);
-    // Optimistic elemanı kaldır
+    console.error('INSERT hatası:', insertErr);
     var tmpFail = document.querySelector('[id^="forum-post-tmp-"]');
     if (tmpFail) tmpFail.remove();
     alert('⚠️ Mesaj gönderilemedi: ' + insertErr.message);
     return;
   }
 
-  // Insert başarılı — tmp elementi temizle, mesajları yeniden yükle
+  console.log('INSERT başarılı:', insertData);
+
+  // tmp elementi kaldır, 300ms bekle sonra yenile (DB commit garantisi)
   var tmpEl = document.querySelector('[id^="forum-post-tmp-"]');
   if (tmpEl) tmpEl.remove();
 
-  // Mesajları yenile (realtime çalışmıyorsa garanti fallback)
-  if (aktifKanalId) {
+  setTimeout(function() {
     var kanalBaslik = document.getElementById('forum-ch-title');
-    var kanalEmoji  = document.getElementById('forum-ch-emoji');
-    mesajlariYukle(aktifKanalId,
-      kanalBaslik ? kanalBaslik.textContent : '',
-      kanalEmoji  ? kanalEmoji.textContent  : '💬'
-    );
-  }
+    var kanalEmojiEl = document.getElementById('forum-ch-emoji');
+    if (aktifKanalId) {
+      mesajlariYukle(aktifKanalId,
+        kanalBaslik ? kanalBaslik.textContent : '',
+        kanalEmojiEl ? kanalEmojiEl.textContent : '💬'
+      );
+    }
+  }, 400);
 }
 
 /* ── PROFİL GÖR ── */
@@ -6837,18 +6848,13 @@ async function adminIcerikYukle() {
 async function adminBulusmaSil(bulId, btn) {
   if (!confirm('Bu buluşmayı silmek istediğine emin misin?')) return;
 
-  // Önce DOM'dan kaldır (optimistic)
-  var kart = document.querySelector('[data-bulid="' + bulId + '"]');
-  if (kart) kart.remove();
-  else if (btn) btn.closest('div[data-bulid]') ? btn.closest('div[data-bulid]').remove() : btn.parentElement.remove();
-
   // DB'den sil
   await sb.from('bulusma_katilimcilar').delete().eq('bulusma_id', bulId);
   var { error } = await sb.from('bulusmalar').delete().eq('id', bulId);
-  if (error) {
-    console.error('Buluşma silinemedi:', error.message);
-    alert('DB\'den silinemedi: ' + error.message + '\n(Ekrandan kaldırıldı, sayfayı yenileyince geri gelir)');
-  }
+  if (error) { alert('Silinemedi: ' + error.message); return; }
+
+  // Listeyi komple yenile — en güvenilir yöntem
+  adminIcerikYukle();
 }
 
 async function adminDavetlerYukle() {
