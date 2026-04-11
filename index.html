@@ -1304,6 +1304,9 @@ body {
   cursor: pointer;
   transition: all .15s;
   user-select: none;
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
+  display: inline-block;
 }
 .tag-chip:hover { border-color: var(--mid); color: var(--text); }
 .tag-chip.sel { background: var(--dark); color: #F0E6D8; border-color: var(--dark); }
@@ -1767,14 +1770,14 @@ select.inp {
       <div class="field">
         <label class="inp-label" style="margin-bottom:10px;">Etiketler (en az 2)</label>
         <div class="tag-cloud">
-          <span class="tag-chip sel" onclick="this.classList.toggle(&#39;sel&#39;)">Solo seyahat</span>
-          <span class="tag-chip" onclick="this.classList.toggle(&#39;sel&#39;)">Sakin yaşam</span>
-          <span class="tag-chip sel" onclick="this.classList.toggle(&#39;sel&#39;)">Kariyer</span>
-          <span class="tag-chip" onclick="this.classList.toggle(&#39;sel&#39;)">Kitap</span>
-          <span class="tag-chip" onclick="this.classList.toggle(&#39;sel&#39;)">Kahve</span>
-          <span class="tag-chip" onclick="this.classList.toggle(&#39;sel&#39;)">Doğa</span>
-          <span class="tag-chip" onclick="this.classList.toggle(&#39;sel&#39;)">Film &amp; Dizi</span>
-          <span class="tag-chip" onclick="this.classList.toggle(&#39;sel&#39;)">Hayvanlar</span>
+          <span class="tag-chip sel" onclick="tagSec(this)">Solo seyahat</span>
+          <span class="tag-chip" onclick="tagSec(this)">Sakin yaşam</span>
+          <span class="tag-chip sel" onclick="tagSec(this)">Kariyer</span>
+          <span class="tag-chip" onclick="tagSec(this)">Kitap</span>
+          <span class="tag-chip" onclick="tagSec(this)">Kahve</span>
+          <span class="tag-chip" onclick="tagSec(this)">Doğa</span>
+          <span class="tag-chip" onclick="tagSec(this)">Film &amp; Dizi</span>
+          <span class="tag-chip" onclick="tagSec(this)">Hayvanlar</span>
         </div>
       </div>
       <div class="field">
@@ -2647,18 +2650,18 @@ select.inp {
           <div class="field">
             <label class="inp-label" style="margin-bottom:10px;">Etiketlerin</label>
             <div class="tag-cloud" id="edit-etiketler">
-              <span class="tag-chip" onclick="this.classList.toggle('sel')">Solo seyahat</span>
-              <span class="tag-chip" onclick="this.classList.toggle('sel')">Sakin yaşam</span>
-              <span class="tag-chip" onclick="this.classList.toggle('sel')">Kariyer</span>
-              <span class="tag-chip" onclick="this.classList.toggle('sel')">Kitap</span>
-              <span class="tag-chip" onclick="this.classList.toggle('sel')">Kahve</span>
-              <span class="tag-chip" onclick="this.classList.toggle('sel')">Doğa</span>
-              <span class="tag-chip" onclick="this.classList.toggle('sel')">Film & Dizi</span>
-              <span class="tag-chip" onclick="this.classList.toggle('sel')">Hayvanlar</span>
-              <span class="tag-chip" onclick="this.classList.toggle('sel')">Yemek & Mutfak</span>
-              <span class="tag-chip" onclick="this.classList.toggle('sel')">Fotoğraf</span>
-              <span class="tag-chip" onclick="this.classList.toggle('sel')">Müzik</span>
-              <span class="tag-chip" onclick="this.classList.toggle('sel')">Spor</span>
+              <span class="tag-chip" onclick="tagSec(this)">Solo seyahat</span>
+              <span class="tag-chip" onclick="tagSec(this)">Sakin yaşam</span>
+              <span class="tag-chip" onclick="tagSec(this)">Kariyer</span>
+              <span class="tag-chip" onclick="tagSec(this)">Kitap</span>
+              <span class="tag-chip" onclick="tagSec(this)">Kahve</span>
+              <span class="tag-chip" onclick="tagSec(this)">Doğa</span>
+              <span class="tag-chip" onclick="tagSec(this)">Film & Dizi</span>
+              <span class="tag-chip" onclick="tagSec(this)">Hayvanlar</span>
+              <span class="tag-chip" onclick="tagSec(this)">Yemek & Mutfak</span>
+              <span class="tag-chip" onclick="tagSec(this)">Fotoğraf</span>
+              <span class="tag-chip" onclick="tagSec(this)">Müzik</span>
+              <span class="tag-chip" onclick="tagSec(this)">Spor</span>
             </div>
           </div>
           <div id="edit-error" style="display:none;background:#FAECE7;color:#993C1D;border:1px solid #f5c4b3;border-radius:10px;padding:12px 16px;margin-bottom:14px;font-size:13px;font-weight:500;"></div>
@@ -3099,6 +3102,11 @@ select.inp {
 var isPrem = false;
 var isDark = localStorage.getItem('darkMode') === '1';
 
+/* ── TAG SEÇİMİ (mobil uyumlu) ── */
+function tagSec(el) {
+  el.classList.toggle('sel');
+}
+
 // Dark mode'u hemen uygula (flash önlemek için)
 if (isDark) {
   document.documentElement.dataset.dark = 'true';
@@ -3532,25 +3540,26 @@ async function girisYap() {
   var btn = document.querySelector('#sc-giris-form .btn-accent');
   if (btn) { btn.textContent = 'Giriş yapılıyor...'; btn.disabled = true; }
 
+  var resetBtn = function() { if (btn) { btn.textContent = 'Giriş Yap →'; btn.disabled = false; } };
+
   try {
     var { data, error } = await sb.auth.signInWithPassword({ email: email.value, password: sifre.value });
 
     if (error) {
       showError('E-posta veya şifre hatalı.');
-      if (btn) { btn.textContent = 'Giriş Yap →'; btn.disabled = false; }
+      resetBtn();
       return;
     }
 
-    // Kullanıcı verisini yükle, sonra anasayfaya git
     clearError();
-    await kullaniciBilgisiYukle(data.user.id);
-    gunuSorusunuYukle();
+    try { await kullaniciBilgisiYukle(data.user.id); } catch(e2) { console.warn('kullaniciBilgisi hata:', e2); }
+    try { gunuSorusunuYukle(); } catch(e3) { console.warn('gunuSorusu hata:', e3); }
     go('home');
   } catch(e) {
-    showError('Bir hata oluştu: ' + e.message);
+    showError('Bir hata oluştu: ' + (e && e.message ? e.message : String(e)));
   }
 
-  if (btn) { btn.textContent = 'Giriş Yap →'; btn.disabled = false; }
+  resetBtn();
 }
 
 /* ── OTURUM KONTROL ── */
@@ -3789,7 +3798,7 @@ async function kanallariYukle() {
   if (header) listEl.appendChild(header);
 
   data.forEach(function(k, i) {
-    var isPremKanal = k.premium_gerekli && !isPrem;
+    var isPremKanal = !isPrem; // Tüm kanallar premium kullanıcılara açık, diğerleri için kilitli
     var div = document.createElement('div');
     div.className = 'cl-item' + (i === 0 ? ' active' : '');
     div.onclick = function() {
@@ -3800,12 +3809,23 @@ async function kanallariYukle() {
     };
     div.innerHTML = '<div class="cli-emoji">' + (k.emoji || '💬') + '</div>' +
       '<div><div class="cli-name">' + k.ad + '</div>' +
-      '<div class="cli-sub" >' + (isPremKanal ? '🔒 Premium' : (k.aciklama || '')) + '</div></div>';
+      '<div class="cli-sub">' + (isPremKanal ? '🔒 Premium' : (k.aciklama || '')) + '</div></div>';
     listEl.appendChild(div);
   });
 
-  if (data.length > 0 && !data[0].premium_gerekli) {
+  if (data.length > 0 && isPrem) {
     mesajlariYukle(data[0].id, data[0].ad, data[0].emoji);
+  } else if (data.length > 0 && !isPrem) {
+    // Premium değil — kanal panelini kilitle
+    var kanalPanel = document.getElementById('kanal-panel');
+    if (kanalPanel) {
+      kanalPanel.innerHTML = '<div style="display:flex;flex-direction:column;align-items:center;justify-content:center;height:100%;gap:16px;padding:40px 24px;text-align:center;">' +
+        '<div style="font-size:40px;">🔒</div>' +
+        '<div style="font-size:16px;font-weight:700;">Kanallar Premium\'a özel</div>' +
+        '<div style="font-size:13px;color:var(--text2);">Tüm kanallara katılmak ve mesaj göndermek için Premium üye ol.</div>' +
+        '<button class="btn-accent" onclick="navTo(\'premium-compare\')" style="margin-top:8px;">Premium\'a Geç →</button>' +
+      '</div>';
+    }
   }
 }
 
@@ -4128,7 +4148,15 @@ async function mesajlariYukle(kanalId, kanalAd, kanalEmoji) {
           }
         }
       }
-    ).subscribe(function(s, e) { if(e) console.warn('Forum realtime:', e.message); });
+    ).subscribe(function(status, err) {
+      var subEl = document.getElementById('forum-ch-sub');
+      if (status === 'SUBSCRIBED') {
+        if (subEl) subEl.style.color = '';
+      } else if (status === 'CHANNEL_ERROR' || status === 'TIMED_OUT') {
+        console.warn('Forum realtime bağlantı sorunu:', status, err);
+        if (subEl) { subEl.textContent = '⚠️ Canlı bağlantı yok — yenilemek için tıkla'; subEl.style.cursor='pointer'; subEl.style.color='#E24B4A'; subEl.onclick = function(){ mesajlariYukle(kanalId, kanalAd, kanalEmoji); }; }
+      }
+    });
 }
 
 function forumPostHtml(m, cevaplar) {
@@ -4562,15 +4590,8 @@ async function mesajGonder() {
     // Optimistic elemanı kaldır
     var tmpFail = document.getElementById('forum-post-' + tmpId);
     if (tmpFail) tmpFail.remove();
-    // Kullanıcıya göster
-    var feedErr = document.getElementById('forum-feed');
-    if (feedErr) {
-      var errDiv = document.createElement('div');
-      errDiv.style.cssText = 'padding:10px 20px;color:#E24B4A;font-size:12px;';
-      errDiv.textContent = '⚠️ Mesaj gönderilemedi: ' + insertErr.message;
-      feedErr.insertBefore(errDiv, feedErr.firstChild);
-      setTimeout(function(){ errDiv.remove(); }, 5000);
-    }
+    // Kullanıcıya göster — alert ile
+    alert('⚠️ Mesaj gönderilemedi: ' + insertErr.message + '\n\nSupabase RLS politikasını kontrol et.');
     return;
   }
 
@@ -5394,28 +5415,29 @@ async function gunuSorusunuYukle() {
     .select('*')
     .eq('aktif', true)
     .order('created_at', { ascending: false })
-    .limit(1)
-    .single();
+    .limit(1);
 
-  if (error || !data) {
+  var soru = data && data.length > 0 ? data[0] : null;
+
+  if (!soru) {
     var els = ['home-soru-text','bugun-soru-text'];
     els.forEach(function(id){ var el=document.getElementById(id); if(el) el.textContent='Bugün soru yok.'; });
     return;
   }
 
-  aktifSoruId = data.id;
+  aktifSoruId = soru.id;
 
   var homeSoru  = document.getElementById('home-soru-text');
   var bugunSoru = document.getElementById('bugun-soru-text');
-  if (homeSoru)  homeSoru.textContent  = data.soru;
-  if (bugunSoru) bugunSoru.textContent = data.soru;
+  if (homeSoru)  homeSoru.textContent  = soru.soru;
+  if (bugunSoru) bugunSoru.textContent = soru.soru;
 
   // Kalan süre — canlı geri sayım
   var homeCount = document.getElementById('home-soru-count');
-  if (data.bitis_zamani && homeCount) {
+  if (soru.bitis_zamani && homeCount) {
     // Önceki timer'ı temizle
     if (window._soruTimer) clearInterval(window._soruTimer);
-    var bitis = new Date(data.bitis_zamani);
+    var bitis = new Date(soru.bitis_zamani);
 
     function soruSureGuncelle() {
       var fark = bitis - new Date();
@@ -5434,7 +5456,7 @@ async function gunuSorusunuYukle() {
     window._soruTimer = setInterval(soruSureGuncelle, 1000);
   }
 
-  cevaplariYukle(data.id);
+  cevaplariYukle(soru.id);
 }
 
 async function cevaplariYukle(soruId) {
@@ -6625,7 +6647,11 @@ function adminCizimGrafik() {
     // Bar
     ctx.fillStyle = accentColor;
     ctx.beginPath();
-    ctx.roundRect(x, y, barW, barH, [4, 4, 0, 0]);
+    if (ctx.roundRect) {
+      ctx.roundRect(x, y, barW, barH, [4, 4, 0, 0]);
+    } else {
+      ctx.rect(x, y, barW, barH);
+    }
     ctx.fill();
 
     // Değer
@@ -6774,7 +6800,7 @@ async function adminIcerikYukle() {
       bulEl.innerHTML = bulusmalar.map(function(b) {
         var host = b.olusturan_profil ? (b.olusturan_profil.ad||'Üye') : 'Üye';
         var tarihStr = b.tarih ? new Date(b.tarih).toLocaleDateString('tr-TR') : '—';
-        return '<div style="background:var(--light);border-radius:10px;border:0.5px solid var(--border);padding:12px 14px;margin-bottom:8px;display:flex;justify-content:space-between;align-items:center;gap:12px;">' +
+        return '<div data-bulid="' + b.id + '" style="background:var(--light);border-radius:10px;border:0.5px solid var(--border);padding:12px 14px;margin-bottom:8px;display:flex;justify-content:space-between;align-items:center;gap:12px;">' +
           '<div>' +
             '<div style="font-size:13px;font-weight:600;color:var(--text);">' + (b.baslik||'Başlıksız') + '</div>' +
             '<div style="font-size:11px;color:var(--text2);margin-top:2px;">👤 ' + host + ' · 📍 ' + (b.sehir||'—') + ' · 📅 ' + tarihStr + '</div>' +
@@ -6788,9 +6814,14 @@ async function adminIcerikYukle() {
 
 async function adminBulusmaSil(bulId, btn) {
   if (!confirm('Bu buluşmayı silmek istediğine emin misin?')) return;
-  await sb.from('bulusma_katilimcilar').delete().eq('bulusma_id', bulId);
-  await sb.from('bulusmalar').delete().eq('id', bulId);
-  if (btn) btn.closest('div').remove();
+  var { error: e1 } = await sb.from('bulusma_katilimcilar').delete().eq('bulusma_id', bulId);
+  var { error: e2 } = await sb.from('bulusmalar').delete().eq('id', bulId);
+  if (e2) { alert('Silinemedi: ' + e2.message); return; }
+  // Kartı DOM'dan kaldır — data-bulid attribute ile bul
+  var kart = document.querySelector('[data-bulid="' + bulId + '"]');
+  if (kart) { kart.remove(); return; }
+  // Fallback: listyi yenile
+  adminIcerikYukle();
 }
 
 async function adminDavetlerYukle() {
@@ -6901,13 +6932,21 @@ async function adminSoruYayinla() {
   var inp  = document.getElementById('admin-soru-inp');
   var bits = document.getElementById('admin-soru-bitis');
   if (!inp || !inp.value.trim()) { alert('Soru boş olamaz.'); return; }
+
+  // Önce tüm aktif soruları pasife al
   await sb.from('gunun_sorusu').update({ aktif: false }).eq('aktif', true);
-  await sb.from('gunun_sorusu').insert({ soru: inp.value.trim(), aktif: true, bitis_zamani: bits && bits.value ? bits.value : null });
+
+  // Yeni soruyu ekle
+  var { data: yeniSoru, error } = await sb.from('gunun_sorusu')
+    .insert({ soru: inp.value.trim(), aktif: true, bitis_zamani: bits && bits.value ? bits.value : null })
+    .select().single();
+
+  if (error) { alert('Hata: ' + error.message); return; }
+
   inp.value = '';
   if (bits) bits.value = '';
-  // Anasayfayı güncelle
   gunuSorusunuYukle();
-  alert('Günün sorusu yayınlandı!');
+  alert('✅ Günün sorusu yayınlandı!');
 }
 
 async function adminKanalSil(kanalId) {
