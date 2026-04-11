@@ -1966,7 +1966,7 @@ select.inp {
                       <textarea class="forum-compose-inp" id="ch-inp-main" placeholder="Topluluğa bir şey sor veya paylaş... (@isim ile etiketle)" rows="1"
                         oninput="this.style.height='auto';this.style.height=Math.min(this.scrollHeight,120)+'px';composeMentionKontrol(this)"
                         onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();mesajGonder();}"></textarea>
-                      <div class="mention-dropdown" id="mention-drop-compose" style="display:none;position:absolute;bottom:calc(100%+4px);left:0;right:0;background:var(--light);border:1px solid var(--border);border-radius:10px;box-shadow:var(--shadow-lg);z-index:50;max-height:160px;overflow-y:auto;"></div>
+                      <div class="mention-dropdown" id="mention-drop-compose" style="display:none;position:fixed;background:var(--light);border:1px solid var(--border);border-radius:10px;box-shadow:var(--shadow-lg);z-index:500;max-height:160px;overflow-y:auto;width:280px;"></div>
                       <div style="display:flex;align-items:center;gap:8px;justify-content:space-between;">
                         <button onclick="document.getElementById('msg-img-input').click()" style="background:none;border:none;cursor:pointer;color:var(--text2);padding:4px;border-radius:6px;transition:color .15s;display:flex;align-items:center;gap:4px;font-size:12px;font-weight:500;font-family:'Montserrat',sans-serif;" onmouseover="this.style.color='var(--text)'" onmouseout="this.style.color='var(--text2)'">
                           <svg width="16" height="16" viewBox="0 0 18 18" fill="none"><rect x="1" y="4" width="16" height="11" rx="2" stroke="currentColor" stroke-width="1.3"/><circle cx="9" cy="9.5" r="2.5" stroke="currentColor" stroke-width="1.3"/><path d="M6 4V3a1 1 0 011-1h4a1 1 0 011 1v1" stroke="currentColor" stroke-width="1.3"/></svg>
@@ -2174,6 +2174,8 @@ select.inp {
             <div id="detay-katilimcilar" style="display:flex;flex-wrap:wrap;gap:4px;margin-bottom:20px;"></div>
             <button class="btn-accent" id="join-btn" onclick="katilToggle()" style="max-width:280px;">Katıl</button>
             <button id="duzenle-btn" onclick="bulusmaDuzenleAc()" style="display:none;margin-top:10px;max-width:280px;width:100%;padding:12px;background:var(--dark);color:#F0E8DC;border:none;border-radius:10px;font-family:'Montserrat',sans-serif;font-size:13px;font-weight:600;cursor:pointer;">✏️ Buluşmayı Düzenle</button>
+            <button id="bulusma-sil-btn" onclick="bulusmaySil()" style="display:none;margin-top:10px;max-width:280px;width:100%;padding:12px;background:transparent;color:#E24B4A;border:0.5px solid rgba(226,75,74,.3);border-radius:10px;font-family:'Montserrat',sans-serif;font-size:13px;font-weight:600;cursor:pointer;">🗑️ Buluşmayı Sil</button>
+            <button id="bulusma-sil-btn" onclick="bulusmaySil()" style="display:none;margin-top:8px;max-width:280px;width:100%;padding:12px;background:transparent;color:#E24B4A;border:1px solid rgba(226,75,74,.3);border-radius:10px;font-family:'Montserrat',sans-serif;font-size:13px;font-weight:600;cursor:pointer;">🗑️ Buluşmayı Sil</button>
             <button onclick="showFeatureModal()" style="margin-top:10px;max-width:280px;display:block;width:100%;padding:12px;background:transparent;color:var(--accent);border:1.5px solid var(--accent);border-radius:10px;font-family:'Montserrat',sans-serif;font-size:13px;font-weight:600;cursor:pointer;" id="feature-btn">⭐ Bu Buluşmayı Öne Çıkar</button>
             <div style="font-size:12px;color:var(--text2);margin-top:10px;">Topluluk kurallarını kabul etmiş sayılırsın</div>
           </div>
@@ -2949,6 +2951,11 @@ function go(id) {
 
   if (isAuth) {
     document.getElementById('app-shell').classList.remove('show');
+    // Tüm auth ekranlarını sıfırla
+    AUTH_SCREENS.forEach(function(a){
+      var el = document.getElementById('sc-' + a);
+      if (el) { el.classList.remove('show'); el.style.display = 'none'; }
+    });
     var authEl = document.getElementById('sc-' + id);
     if (authEl) { authEl.style.display = 'flex'; authEl.classList.add('show'); }
   } else if (isApp) {
@@ -3361,6 +3368,12 @@ async function kullaniciBilgisiYukle(userId) {
   aktifKullanici = data;
   // isPrem'i gerçek Supabase verisinden al
   isPrem = data.premium === true;
+  // Admin/superadmin için görünüm tercihini localStorage'dan geri yükle
+  if (data.rol === 'superadmin' || data.rol === 'admin') {
+    var kayitliGorunum = localStorage.getItem('adminGorunum');
+    if (kayitliGorunum === 'prem') isPrem = true;
+    else if (kayitliGorunum === 'normal') isPrem = false;
+  }
   applyMode();
   kullaniciBilgisiGoster(data);
   davetKodlariniYukle(userId);
@@ -3806,9 +3819,10 @@ async function mesajlariYukle(kanalId, kanalAd, kanalEmoji) {
           if (benim) return;
           var profRes = await sb.from('profiles').select('id, ad, soyad, rol, avatar_url').eq('id', m.kullanici_id).single();
           m.profiles = profRes.data;
-          var div = document.createElement('div');
-          div.innerHTML = forumPostHtml(m, []);
-          feedEl.insertBefore(div.firstChild, feedEl.firstChild);
+          var rtWrapper = document.createElement('div');
+          rtWrapper.innerHTML = forumPostHtml(m, []);
+          var rtPost = rtWrapper.querySelector('.forum-post') || rtWrapper.firstElementChild;
+          if (rtPost) feedEl.insertBefore(rtPost, feedEl.firstChild);
         } else {
           // Kendi cevaplarımızı optimistic ile ekledik (tmp- id ile)
           if (benim) {
@@ -3831,7 +3845,8 @@ async function mesajlariYukle(kanalId, kanalAd, kanalEmoji) {
             m.profiles = profRes2.data;
             var cevapDiv = document.createElement('div');
             cevapDiv.innerHTML = forumCevapHtml(m);
-            repliesEl.appendChild(cevapDiv.firstChild);
+            var cevapEl = cevapDiv.querySelector('.forum-reply') || cevapDiv.firstElementChild;
+            if (cevapEl) repliesEl.appendChild(cevapEl);
             var sayi = repliesEl.querySelectorAll('.forum-reply').length;
             var cevapBtn = postEl.querySelector('.forum-reply-count');
             if (cevapBtn) cevapBtn.textContent = sayi + ' cevap';
@@ -3905,7 +3920,7 @@ function forumPostHtml(m, cevaplar) {
       '</div>' +
       '<div style="flex:1;position:relative;">' +
         '<input class="forum-inp mention-inp" data-parent="' + m.id + '" placeholder="Cevap yaz... (@isim ile etiketle)" onkeydown="if(event.key===\'Enter\'&&!event.shiftKey){event.preventDefault();forumCevapGonder(\'' + m.id + '\',this);}" oninput="mentionKontrol(this)">' +
-        '<div class="mention-dropdown" id="mention-drop-' + m.id + '" style="display:none;position:absolute;bottom:calc(100%+4px);left:0;right:0;background:var(--light);border:1px solid var(--border);border-radius:10px;box-shadow:var(--shadow-lg);z-index:50;max-height:160px;overflow-y:auto;"></div>' +
+        '<div class="mention-dropdown" id="mention-drop-' + m.id + '" style="display:none;position:fixed;background:var(--light);border:1px solid var(--border);border-radius:10px;box-shadow:var(--shadow-lg);z-index:500;max-height:160px;overflow-y:auto;width:260px;"></div>' +
       '</div>' +
       '<button onclick="forumCevapGonder(\'' + m.id + '\',this.parentElement.querySelector(\'.forum-inp\'))" style="background:var(--accent);border:none;border-radius:8px;padding:6px 12px;color:#fff;font-family:\'Montserrat\',sans-serif;font-size:12px;font-weight:600;cursor:pointer;flex-shrink:0;">Gönder</button>' +
     '</div>' +
@@ -4130,7 +4145,6 @@ async function mentionKontrol(inp) {
   mentionAktifInp = inp;
   var val = inp.value;
   var cursor = inp.selectionStart;
-  // @ işaretini bul
   var onceki = val.substring(0, cursor);
   var atIdx = onceki.lastIndexOf('@');
   if (atIdx === -1) { mentionKapat(inp); return; }
@@ -4152,10 +4166,25 @@ async function mentionKontrol(inp) {
 
     if (!kullanicilar || kullanicilar.length === 0) { mentionKapat(inp); return; }
 
+    // Pozisyonu input'un üstüne sabit olarak ayarla
+    var rect = inp.getBoundingClientRect();
+    var dropHeight = Math.min(kullanicilar.length * 44, 160);
+    var mobileNavH = window.innerWidth <= 768 ? 62 : 0;
+    var topVal = rect.top - dropHeight - 8;
+    // Yukarıda yeterli yer yoksa aşağıya aç
+    if (topVal < 70) topVal = rect.bottom + 4;
+    // Ekranın altına taşmasını önle
+    var maxTop = window.innerHeight - dropHeight - mobileNavH - 4;
+    if (topVal > maxTop) topVal = maxTop;
+    dropEl.style.top    = topVal + 'px';
+    dropEl.style.bottom = 'auto';
+    dropEl.style.left   = Math.max(8, rect.left) + 'px';
+    dropEl.style.width  = Math.min(Math.max(rect.width, 240), window.innerWidth - 16) + 'px';
     dropEl.style.display = 'block';
+
     dropEl.innerHTML = kullanicilar.map(function(u) {
       var ad = (u.ad || 'Üye') + (u.soyad ? ' ' + u.soyad.charAt(0) + '.' : '');
-      return '<div onclick="mentionSec(\'' + ad.replace(/'/g,'') + '\',\'' + (atIdx) + '\')" style="padding:8px 12px;cursor:pointer;display:flex;align-items:center;gap:8px;font-size:13px;color:var(--text);transition:background .12s;" onmouseover="this.style.background=\'var(--surface)\'" onmouseout="this.style.background=\'\'">' +
+      return '<div onclick="mentionSec(\'' + ad.replace(/'/g,'') + '\',\'' + atIdx + '\')" style="padding:8px 12px;cursor:pointer;display:flex;align-items:center;gap:8px;font-size:13px;color:var(--text);transition:background .12s;" onmouseover="this.style.background=\'var(--surface)\'" onmouseout="this.style.background=\'\'">' +
         avatarHtml(u, 26) + '<span>' + ad + '</span>' +
       '</div>';
     }).join('');
@@ -4245,13 +4274,30 @@ async function mesajGonder() {
   }
 
   // DB'ye kaydet — sonuç gelince tmp id'yi gerçeğiyle değiştir
-  var { data: sonuc } = await sb.from('mesajlar').insert({
+  var { data: sonuc, error: insertErr } = await sb.from('mesajlar').insert({
     kanal_id: aktifKanalId,
     kullanici_id: aktifKullanici.id,
     icerik: icerik || ' ',
     resim_url: resimUrl,
     parent_id: null
   }).select().single();
+
+  if (insertErr) {
+    console.error('Mesaj gönderilemedi:', insertErr.message);
+    // Optimistic elemanı kaldır
+    var tmpFail = document.getElementById('forum-post-' + tmpId);
+    if (tmpFail) tmpFail.remove();
+    // Kullanıcıya göster
+    var feedErr = document.getElementById('forum-feed');
+    if (feedErr) {
+      var errDiv = document.createElement('div');
+      errDiv.style.cssText = 'padding:10px 20px;color:#E24B4A;font-size:12px;';
+      errDiv.textContent = '⚠️ Mesaj gönderilemedi: ' + insertErr.message;
+      feedErr.insertBefore(errDiv, feedErr.firstChild);
+      setTimeout(function(){ errDiv.remove(); }, 5000);
+    }
+    return;
+  }
 
   if (sonuc) {
     var tmpEl = document.getElementById('forum-post-' + tmpId);
@@ -4837,6 +4883,11 @@ async function bulusmaDetayYukle(id) {
     // Düzenle butonunu sadece oluşturana göster
     var duzenleBtn = document.getElementById('duzenle-btn');
     if (duzenleBtn) duzenleBtn.style.display = (b.olusturan === user.id) ? 'block' : 'none';
+    // Sil butonunu admin/mod/oluşturan'a göster
+    var silBtn = document.getElementById('bulusma-sil-btn');
+    var aktifRol = aktifKullanici ? aktifKullanici.rol : 'uye';
+    var yetkili = aktifRol === 'superadmin' || aktifRol === 'admin' || aktifRol === 'mod';
+    if (silBtn) silBtn.style.display = (yetkili || b.olusturan === user.id) ? 'block' : 'none';
   }
 }
 
@@ -5394,7 +5445,9 @@ async function baglantilarYukle() {
           '<div class="conn-left" onclick="profilGor(\'' + (p ? p.id : '') + '\')" style="cursor:pointer;flex:1;">' +
             avatarHtml(p, 40) +
             '<div><div class="conn-name">' + ad + '</div>' +
-            '<div class="conn-loc">' + (p && p.sehir ? p.sehir : '') + ' · ' + rutbe.label + ' ' + rolBadgeHtml(p && p.rol) + '</div></div>' +
+            '<div class="conn-loc">' + (p && p.sehir ? p.sehir : '') +
+              ((p && p.rol !== 'superadmin' && p.rol !== 'admin') ? ' · ' + rutbe.label : '') +
+              ' ' + rolBadgeHtml(p && p.rol) + '</div></div>' +
           '</div>' +
           '<button onclick="dmAc(\'' + (p ? p.id : '') + '\',\'' + ad.replace(/'/g,'') + '\',' + JSON.stringify(p && p.avatar_url ? p.avatar_url : null) + ')" style="padding:7px 12px;background:var(--surface);border:0.5px solid var(--border);border-radius:8px;font-family:\'Montserrat\',sans-serif;font-size:12px;font-weight:600;color:var(--text);cursor:pointer;flex-shrink:0;white-space:nowrap;">💬 Mesaj</button>' +
         '</div>';
@@ -6063,6 +6116,7 @@ async function adminDuyuruGonder() {
 function adminGorunumToggle() {
   isPrem = !isPrem;
   applyMode();
+  localStorage.setItem('adminGorunum', isPrem ? 'prem' : 'normal');
   var panelBtn = document.getElementById('admin-gorunum-btn');
   var topBtn   = document.getElementById('topbar-prem-btn');
   var label = isPrem ? '⭐ Premium' : '⭐ Normal';
@@ -6397,6 +6451,8 @@ async function adminSoruYayinla() {
   await sb.from('gunun_sorusu').insert({ soru: inp.value.trim(), aktif: true, bitis_zamani: bits && bits.value ? bits.value : null });
   inp.value = '';
   if (bits) bits.value = '';
+  // Anasayfayı güncelle
+  gunuSorusunuYukle();
   alert('Günün sorusu yayınlandı!');
 }
 
